@@ -6,5 +6,7 @@ namespace auth_service.authservice.application.InterfaceApplication
     {
         Task<TokenResult> AddRefreshToken(Guid idUser);
 
+        Task<bool> RevokeOldToken(Guid idUser);
+
     }
 }

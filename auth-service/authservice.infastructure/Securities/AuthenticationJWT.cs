@@ -19,14 +19,17 @@ namespace auth_service.authservice.infastructure.Securities
         public TokenResult GenerateToken(string email, string role, string type)
         {
             int time;
+            DateTime timeExpire;
             if (type == "AccessToken")
             {
                 time = int.Parse(_iconfig["Jwt:Time:AccessToken"]!);
+                timeExpire = DateTime.UtcNow.AddMinutes(time);
             }
             else
             {
                 time = int.Parse(_iconfig["Jwt:Time:RefreshToken"]!);
-            }   
+                timeExpire = DateTime.UtcNow.AddDays(time);
+            }
 
             var listClaim = new List<Claim>()
             {
@@ -41,9 +44,9 @@ namespace auth_service.authservice.infastructure.Securities
                     issuer: _iconfig["JWT:Issuer"],
                     audience: _iconfig["JWT:Audience"],
                     claims: listClaim,
-                    expires: type == "AccessToken" ? DateTime.UtcNow.AddMinutes(time) : DateTime.UtcNow.AddHours(time),
+                    expires: timeExpire,
                     signingCredentials: creds);
-            return new TokenResult  { TypeToken = type, Token = new JwtSecurityTokenHandler().WriteToken(token), TimeExpire = time, TimeCreate = DateTime.Now };
+            return new TokenResult { TypeToken = type, Token = new JwtSecurityTokenHandler().WriteToken(token), TimeExpire = timeExpire, TimeCreate = DateTime.Now };
         }
 
     }

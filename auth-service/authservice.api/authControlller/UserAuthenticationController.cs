@@ -2,6 +2,7 @@
 using auth_service.authservice.application.dtos;
 using auth_service.authservice.application.InterfaceApplication;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.WebSockets;
 
 
 namespace auth_service.authservice.api.authControlller
@@ -44,13 +45,22 @@ namespace auth_service.authservice.api.authControlller
             {
                 var infoToken = _iAuthen.GenerateToken(loginAccount.Email, "Customer", "AccessToken"); // access token
 
-                var refreshTokenInfor = await _iRefreshToken.AddRefreshToken(result.UserId.Value); // refresh token
+                var resultRevokeToken = await _iRefreshToken.RevokeOldToken(result.UserId.Value); // thu hoi token cu
 
-                return Ok(new { account = loginAccount.Email, accessToken = infoToken , refreshToken = refreshTokenInfor });
+                if (resultRevokeToken)
+                {
+                    var refreshTokenInfor = await _iRefreshToken.AddRefreshToken(result.UserId.Value); // refresh token
+                    return Ok(new { Id = result.UserId, account = loginAccount.Email, accessToken = infoToken, refreshToken = refreshTokenInfor });
+                }
+                else
+                {
+                    throw new RevokeTokenFailException("Revoke old token failed");
+                }
+
             }
             else
             {
-                return Unauthorized(new { status = result.IsSuccess, email = loginAccount.Email , message = result.Message });
+                return Unauthorized(new { status = result.IsSuccess, email = loginAccount.Email, message = result.Message });
             }
 
         }

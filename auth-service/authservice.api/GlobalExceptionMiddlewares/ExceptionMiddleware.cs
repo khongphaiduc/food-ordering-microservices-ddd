@@ -33,6 +33,8 @@ namespace auth_service.authservice.api.Middlewares
             context.Response.StatusCode = ex switch
             {
                 NotFoundException => StatusCodes.Status404NotFound,
+                RevokeTokenFailException => StatusCodes.Status508LoopDetected,
+
                 _ => StatusCodes.Status500InternalServerError
             };
 

@@ -4,7 +4,7 @@
     {
         public string TypeToken { get; set; }
         public string Token { get; set; }
-        public int TimeExpire { get; set; }
+        public DateTime TimeExpire { get; set; }
         public DateTime TimeCreate { get; set; }    
 
     }
