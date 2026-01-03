@@ -15,13 +15,15 @@ namespace auth_service.authservice.start
     {
         public static void Main(string[] args)
         {
+            DotNetEnv.Env.Load();
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
 
             builder.Services.AddControllers();
 
-            builder.Services.AddDbContext<FoodAuthContext>(option => option.UseSqlServer("Data Source=PHAMTRUNGDUC\\SQLEXPRESS;Initial Catalog=food_auth;Persist Security Info=True;User ID=sa;Password=123;Trust Server Certificate=True"));
+            builder.Services.AddDbContext<FoodAuthContext>(option => option.UseSqlServer(builder.Configuration["URLSQL"]));
 
 
             builder.Services.AddAuthentication(option =>
@@ -33,9 +35,9 @@ namespace auth_service.authservice.start
                 option.TokenValidationParameters = new TokenValidationParameters
                 {
 
-                    ValidateIssuer = true,   
-                    ValidateAudience = true,  
-                    ValidateLifetime = true,  
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = builder.Configuration["JWT:Issuer"],
                     ValidAudience = builder.Configuration["JWT:Audience"],
