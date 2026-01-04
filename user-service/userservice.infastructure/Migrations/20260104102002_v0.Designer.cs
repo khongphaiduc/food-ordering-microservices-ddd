@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using user_service.userservice.infastructure.Models;
+using user_service.userservice.infastructure.DBcontextService;
+
 
 #nullable disable
 

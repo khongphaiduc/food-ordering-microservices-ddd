@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using user_service.userservice.infastructure.Models;
 
-namespace user_service.userservice.infastructure.Models;
+namespace user_service.userservice.infastructure.DBcontextService;
 
 public partial class FoodUsersContext : DbContext
 {

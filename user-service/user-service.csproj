@@ -23,8 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="userservice.domain\" />
-    <Folder Include="userservice.application\" />
+    <Folder Include="userservice.application\Handler\" />
   </ItemGroup>
 
 </Project>
