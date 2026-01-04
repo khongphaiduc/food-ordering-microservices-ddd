@@ -8,7 +8,7 @@ using auth_service.authservice.infastructure.Models;
 
 namespace auth_service.authservice.api.authControlller
 {
-    [Route("api/users")]
+    [Route("api/auth")]
     [ApiController]
     public class OAuth2ByGoogleController : ControllerBase
     {

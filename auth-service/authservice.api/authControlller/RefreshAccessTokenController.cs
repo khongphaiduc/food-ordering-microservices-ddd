@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace auth_service.authservice.api.authControlller
 {
-    [Route("api/users")]
+    [Route("api/auth")]
     [ApiController]
     public class RefreshAccessTokenController : ControllerBase
     {
