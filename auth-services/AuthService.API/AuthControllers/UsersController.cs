@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace auth_services.AuthService.API.AuthControllers
 {
-    [Authorize]
-    [Route("api/users")]
+
+    [Route("api/auth")]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -23,8 +23,8 @@ namespace auth_services.AuthService.API.AuthControllers
             _iUserLogIn = checkLogin;
         }
 
-        [AllowAnonymous]
-        [HttpPost]
+        
+        [HttpPost("signup")]
         public async Task<IActionResult> SignUp(RequestCreateNewUser user)
         {
             var result = await _iUserSignUp.Execute(user);
@@ -41,18 +41,19 @@ namespace auth_services.AuthService.API.AuthControllers
         }
 
 
-        [AllowAnonymous]
+       
         [HttpPost("login")]
         public async Task<IActionResult> Login(RequestUserLogin user)
         {
             var result = await _iUserLogIn.IsUserLoginAsync(user);
 
-            if (!result)
+            if (!result.IsLoginSuccessful)
             {
-                return Unauthorized("Login Fail");
+                return Unauthorized(result.Message);
             }
 
             return Ok(result);
         }
+
     }
 }

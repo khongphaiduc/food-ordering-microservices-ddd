@@ -32,6 +32,19 @@ namespace auth_services.AuthService.Domain.Aggregate
         {
         }
 
+        internal UserAggregate(Guid id, FullNameOfUser username, Email email, string passwordHash, string passwordSalt, bool isActive, DateTime createdAt, DateTime? updatedAt, List<RefreshTokenEntity> reFreshToken)
+        {
+            Id = id;
+            Username = username;
+            Email = email;
+            PasswordHash = passwordHash;
+            PasswordSalt = passwordSalt;
+            IsActive = isActive;
+            CreatedAt = createdAt;
+            UpdatedAt = updatedAt;
+            _reFreshToken = reFreshToken;
+        }
+
         public void AddReFreshToken(RefreshTokenEntity refreshToken)
         {
             _reFreshToken.Add(refreshToken);

@@ -4,7 +4,7 @@ namespace auth_services.AuthService.Application.Service
 {
     public interface ICheckLogin
     {
-        Task<bool> IsUserLoginAsync(RequestUserLogin user);
+        Task<ResponseLoginUser> IsUserLoginAsync(RequestUserLogin user);
 
     }
 }

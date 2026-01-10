@@ -6,7 +6,10 @@ namespace auth_services.AuthService.Domain.Interface
     {
         Task<bool> AddNewUser(UserAggregate userAggregate);
 
+        Task<bool> UpdateUserRefreshToken(UserAggregate userAggregate);
         Task<bool> IsExitUser(string email);
+
+        Task<UserAggregate> GetUserById(Guid id);
 
     }
 }

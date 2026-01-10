@@ -1,10 +1,11 @@
-using auth_services.AuthService.Application.Interfaces;
+﻿using auth_services.AuthService.Application.Interfaces;
 using auth_services.AuthService.Application.Service;
 using auth_services.AuthService.Domain.Interface;
 using auth_services.AuthService.Infastructure.DbContextAuth;
 using auth_services.AuthService.Infastructure.Reposistory;
 using auth_services.AuthService.Infastructure.Security;
 using auth_services.AuthService.Infastructure.ServiceImpelemt;
+using auth_services.AuthService.Infastructure.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -27,7 +28,7 @@ namespace auth_services.AuthService.Start
             {
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer(option =>
+            .AddJwtBearer("AccessToken", option =>  // đặt tên secheme là TokenValue
             {
                 option.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -35,11 +36,23 @@ namespace auth_services.AuthService.Start
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = builder.Configuration["JWT:Issuer"],
-                    ValidAudience = builder.Configuration["JWT:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]!))
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key:AccessToken"]!))
                 };
-            }); ;
+            }).AddJwtBearer("RefreshToken", option =>
+            {
+                option.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key:RefreshToken"]!))
+                };
+            });
 
 
             builder.Services.AddScoped<IGenarateSalt, GenarateSalt>();
@@ -47,8 +60,12 @@ namespace auth_services.AuthService.Start
             builder.Services.AddScoped<ISignUpUser, SignUpUser>();
             builder.Services.AddScoped<ICheckLogin, CheckLogin>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IProvideAccessToken, ProvideAccessToken>(); 
 
-
+            // token
+            builder.Services.AddScoped<IGanarateTokenJWT, GanarateAccessTokenJWT>();
+            builder.Services.AddScoped<IGanarateTokenJWT, GanarateRefresheTokenJWT>();
+            builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
 
 
