@@ -16,14 +16,16 @@ namespace auth_services.AuthService.API.AuthControllers
     {
         private readonly ISignUpUser _iUserSignUp;
         private readonly ICheckLogin _iUserLogIn;
+        private readonly IUserLogOut _iUserLogOut;
 
-        public UsersController(ISignUpUser signUpUser, ICheckLogin checkLogin)
+        public UsersController(ISignUpUser signUpUser, ICheckLogin checkLogin, IUserLogOut userLogOut)
         {
             _iUserSignUp = signUpUser;
             _iUserLogIn = checkLogin;
+            _iUserLogOut = userLogOut;
         }
 
-        
+
         [HttpPost("signup")]
         public async Task<IActionResult> SignUp(RequestCreateNewUser user)
         {
@@ -41,7 +43,6 @@ namespace auth_services.AuthService.API.AuthControllers
         }
 
 
-       
         [HttpPost("login")]
         public async Task<IActionResult> Login(RequestUserLogin user)
         {
@@ -55,5 +56,20 @@ namespace auth_services.AuthService.API.AuthControllers
             return Ok(result);
         }
 
+
+        [HttpGet("logout")]
+        public async Task<IActionResult> Logout(Guid id)
+        {
+            var result = await _iUserLogOut.Execute(id);
+
+            if (result)
+            {
+                return Ok(new { message = "Logout successful" });
+            }
+            else
+            {
+                return BadRequest(new { message = "Logout failed" });
+            }
+        }
     }
 }

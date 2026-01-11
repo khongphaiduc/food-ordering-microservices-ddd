@@ -1,4 +1,5 @@
-﻿using auth_services.AuthService.Application.Interfaces;
+﻿using auth_services.AuthService.API.Middlwares;
+using auth_services.AuthService.Application.Interfaces;
 using auth_services.AuthService.Application.Service;
 using auth_services.AuthService.Domain.Interface;
 using auth_services.AuthService.Infastructure.DbContextAuth;
@@ -54,14 +55,15 @@ namespace auth_services.AuthService.Start
                 };
             });
 
+            builder.Services.AddHttpContextAccessor();   // cung cấp httcontext trong service
 
             builder.Services.AddScoped<IGenarateSalt, GenarateSalt>();
             builder.Services.AddScoped<IHashPassword, HashPassword>();
             builder.Services.AddScoped<ISignUpUser, SignUpUser>();
             builder.Services.AddScoped<ICheckLogin, CheckLogin>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IProvideAccessToken, ProvideAccessToken>(); 
-
+            builder.Services.AddScoped<IProvideAccessToken, ProvideAccessToken>();
+            builder.Services.AddScoped<IUserLogOut, UserLogOut>();
             // token
             builder.Services.AddScoped<IGanarateTokenJWT, GanarateAccessTokenJWT>();
             builder.Services.AddScoped<IGanarateTokenJWT, GanarateRefresheTokenJWT>();
@@ -75,11 +77,10 @@ namespace auth_services.AuthService.Start
 
 
             app.UseHttpsRedirection();
-
             app.UseAuthentication();
             app.UseAuthorization();
 
-
+            app.UseMiddleware<GlobalExceptionCustom>();
             app.MapControllers();
 
             app.Run();

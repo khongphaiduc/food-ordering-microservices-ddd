@@ -47,9 +47,9 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
                 };
             }
 
-            var s = _IhashPassword.HandleHashPassword(user.Password, realUserInDataBase.paswordSalt);
+            var PasswordFromUserSend = _IhashPassword.HandleHashPassword(user.Password, realUserInDataBase.paswordSalt);
 
-            if (s == realUserInDataBase.passwordHash)
+            if (PasswordFromUserSend == realUserInDataBase.passwordHash)
             {
 
                 var access = _iGenarateToken.OfType<GanarateAccessTokenJWT>().First().HandleGenarateJWT(realUserInDataBase.id, realUserInDataBase.Email, realUserInDataBase.Role);
@@ -61,6 +61,7 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
                 {
                     IsLoginSuccessful = true,
                     Id = realUserInDataBase.id,
+                    Email = realUserInDataBase.Email,
                     AccessToken = access,
                     RefreshToken = refresh,
                     Message = "Login successful",

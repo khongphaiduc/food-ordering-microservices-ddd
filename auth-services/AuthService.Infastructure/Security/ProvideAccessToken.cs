@@ -10,19 +10,37 @@ namespace auth_services.AuthService.Infastructure.Security
 {
     public class ProvideAccessToken : IProvideAccessToken
     {
+        private readonly IHttpContextAccessor _httcontext;
         private readonly IEnumerable<IGanarateTokenJWT> _iGenarateToken;
         private readonly IUserRepository _iUserRepository;
         private readonly FoodAuthContext _db;
+        private readonly IRefreshTokenRepository _iRefreshTokenRepository;
 
-        public ProvideAccessToken(IEnumerable<IGanarateTokenJWT> ganarateTokenJWTs, IUserRepository userRepository, FoodAuthContext foodAuthContext)
+        public ProvideAccessToken(IEnumerable<IGanarateTokenJWT> ganarateTokenJWTs, IUserRepository userRepository, FoodAuthContext foodAuthContext, IHttpContextAccessor httpContextAccessor, IRefreshTokenRepository refreshTokenRepository)
         {
+            _httcontext = httpContextAccessor;
             _iGenarateToken = ganarateTokenJWTs;
             _iUserRepository = userRepository;
             _db = foodAuthContext;
+            _iRefreshTokenRepository = refreshTokenRepository;
         }
 
         public async Task<ResponseAccessToken> Handle(RequestProvideAccessToken request)
         {
+
+            var tokenUser = _httcontext.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Replace("Bearer ", "");
+            
+            var isRevoked = await _iRefreshTokenRepository.IsRevokedToken(tokenUser!);
+
+            if (isRevoked)
+            {
+                return new ResponseAccessToken()
+                {
+                    IsSuccess = false,
+                    Message = "Token was revoked"
+                };
+            }
+
             var user = await _db.Users.Where(s => s.Id == request.Id && s.Email == request.Email && s.Roles.Any(s => s.Name == request.Role)).FirstOrDefaultAsync();
 
             if (user == null)
@@ -30,7 +48,7 @@ namespace auth_services.AuthService.Infastructure.Security
                 return new ResponseAccessToken()
                 {
                     IsSuccess = false,
-               
+
                 };
             }
 

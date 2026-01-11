@@ -21,7 +21,7 @@ namespace auth_services.AuthService.API.AuthControllers
 
         [HttpPost("accesstoken")]
         public async Task<IActionResult> AccessToken([FromBody] RequestProvideAccessToken request)
-        {
+        { 
             var token = await _iProvideToken.Handle(request);
             if (!token.IsSuccess)
             {

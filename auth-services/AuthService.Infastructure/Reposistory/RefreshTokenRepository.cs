@@ -29,5 +29,27 @@ namespace auth_services.AuthService.Infastructure.Reposistory
             return result;
         }
 
+        public async Task<bool> IsRevokedToken(string token)
+        {
+            var tokens = await _db.RefreshTokens.Where(s => s.Token == token && s.RevokedAt != null).FirstOrDefaultAsync();
+            return tokens != null ? true : false;
+        }
+
+        // thu hồi token
+        public async Task<bool> RevokedToken(Guid id)
+        {
+            var refreshToken = await _db.RefreshTokens.Where(s => s.UserId == id && s.RevokedAt == null).FirstOrDefaultAsync();
+
+            if (refreshToken != null)
+            {
+                refreshToken.RevokedAt = DateTime.UtcNow;
+               
+                return await _db.SaveChangesAsync()>0;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
