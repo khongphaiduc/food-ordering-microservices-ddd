@@ -25,12 +25,6 @@
 
   <ItemGroup>
     <Folder Include="ProductService.Application\Interface\" />
-    <Folder Include="ProductService.Application\DTOs\" />
-    <Folder Include="ProductService.Application\Service\" />
-    <Folder Include="ProductService.Domain\Aggragate\" />
-    <Folder Include="ProductService.Domain\Entities\" />
-    <Folder Include="ProductService.Domain\Interface\" />
-    <Folder Include="ProductService.Domain\ValueOject\" />
   </ItemGroup>
 
 </Project>
