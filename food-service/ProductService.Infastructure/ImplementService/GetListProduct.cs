@@ -55,20 +55,17 @@ namespace food_service.ProductService.Infastructure.ImplementService
                     Id = p.Id.ToString(),
                     Name = p.Name,
                     Price = p.Price,
-                    UrlImageMain = p.ProductImages.Where(img => img.IsMain).Select(img => img.ImageUrl).FirstOrDefault() ?? "https://img6.thuthuatphanmem.vn/uploads/2022/04/16/anh-rose-blackpink-cute-xinh_042754601.jpg",
+                    ImageFoods = p.ProductImages.Select(s => new ImageFood { ImageId = s.Id, IsMain = s.IsMain, UrlImage = s.ImageUrl }).ToList(),
                     IsAvailable = p.IsAvailable,
                     Decriptions = p.Description
                 })
                 .ToListAsync();
 
-
-            var tasks = listProduct.Select(async p =>
-            {
-                p.UrlImageMain = await _minio.GetUrlImage(
-                    _config["Minio:Bucket"]!,
-                    p.UrlImageMain
-                );
-            });
+            var tasks = listProduct.SelectMany(p => p.ImageFoods ?? new List<ImageFood>()).Where(img => !string.IsNullOrEmpty(img.UrlImage))
+              .Select(async img =>
+              {
+                  img.UrlImage = await _minio.GetUrlImage("bucket", img.UrlImage);
+              });
 
             await Task.WhenAll(tasks);
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace food_service.ProductService.API.Controllers
 {
     [Route("api/admin")]
-    [Authorize(AuthenticationSchemes = "AccessToken")]
+    //[Authorize(AuthenticationSchemes = "AccessToken")]
     [ApiController]
     public class AdminManagementController : ControllerBase
     {
