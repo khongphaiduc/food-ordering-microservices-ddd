@@ -49,6 +49,7 @@ namespace food_service.ProductService.Infastructure.ImplementService
                         {
                             IdImage = c.Id,
                             UrlImage = c.ImageUrl,
+                            IsMain = c.IsMain,
                         }).ToList(),
                     productVariantDTOs = s.ProductVariants
                         .Select(g => new ProductVariantDTO

@@ -49,7 +49,7 @@ namespace food_service.ProductService.Start
             {
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-           .AddJwtBearer("AccessToken", option =>  
+           .AddJwtBearer("AccessToken", option =>
            {
                option.TokenValidationParameters = new TokenValidationParameters
                {
@@ -89,7 +89,7 @@ namespace food_service.ProductService.Start
             builder.Services.AddScoped<IMinIOFood, MinIOFood>();
 
             builder.Services.AddScoped<IProductRecommendationService, ProductRecommendationService>();
-
+            builder.Services.AddScoped<IGetListCatgory, GetListCatgory>();
 
 
             //redis 

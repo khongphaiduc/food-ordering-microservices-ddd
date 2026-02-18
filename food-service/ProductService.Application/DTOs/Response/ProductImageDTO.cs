@@ -6,5 +6,7 @@
 
         public string UrlImage { get; set; }
 
+        public bool IsMain { get; set; } = false;
+
     }
 }

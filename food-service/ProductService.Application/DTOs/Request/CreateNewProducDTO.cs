@@ -11,6 +11,8 @@ namespace food_service.ProductService.Application.DTOs.Request
         public string Description { get; set; }
 
         public List<ImageProduct>? ImageProduct { get; set; }
+
+        public ImageProduct? MainImage { get; set; }
     }
 
 

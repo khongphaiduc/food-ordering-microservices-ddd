@@ -6,6 +6,7 @@ using food_service.ProductService.Domain.Entities;
 using food_service.ProductService.Domain.Interface;
 using food_service.ProductService.Domain.ValueOject;
 using Minio.Credentials;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace food_service.ProductService.Infastructure.ImplementService
 {
@@ -33,6 +34,14 @@ namespace food_service.ProductService.Infastructure.ImplementService
                     productAggregate.AddNewImage(ProductImagesEntity.CreateNewImage(productAggregate.Id, imageName, image.IsMain));
                 }
             }
+
+
+            if (request.MainImage != null)
+            {
+                var imageName = await _clientMinIOFood.UploadAsync(request.MainImage.image);
+                productAggregate.AddNewImage(ProductImagesEntity.CreateNewImage(productAggregate.Id, imageName, true));
+            }
+
 
             var resultAdd = await _iProductRepository.AddProductAsync(productAggregate);
 

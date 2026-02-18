@@ -10,6 +10,7 @@ using food_service.ProductService.Infastructure.Models;
 using Microsoft.EntityFrameworkCore;
 using Minio;
 using RabbitMQ.Client;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace food_service.ProductService.Infastructure.ImplementService
 {
@@ -73,6 +74,17 @@ namespace food_service.ProductService.Infastructure.ImplementService
                 }
             }
 
+            // add main image 
+            if (productRequest.AddMainImage != null)
+            {
+                var oldMainImage = productAggregate.ProductImagesEntities.Where(s => s.IsMain).FirstOrDefault();
+                if (oldMainImage != null) oldMainImage.UnsetAsMainImage();
+                var nameImage = await _minIO.UploadAsync(productRequest.AddMainImage.images);
+                productAggregate.AddNewImage(ProductImagesEntity.CreateNewImage(productAggregate.Id, nameImage, true));
+
+            }
+
+
             // remove image 
             if (productRequest.DeleteImage != null && productRequest.DeleteImage.Any())
             {
@@ -94,6 +106,15 @@ namespace food_service.ProductService.Infastructure.ImplementService
                         await _minIO.DeleteAsync(image.ImageUrl);
                     }
                 }
+
+
+                var checkMainImage = productAggregate.ProductImagesEntities.Where(s => s.IsMain).FirstOrDefault();
+                if (checkMainImage == null)
+                {
+                    var SetMainImage = productAggregate.ProductImagesEntities.FirstOrDefault();
+                    if (SetMainImage != null) { SetMainImage.SetAsMainImage(); }
+                }
+
             }
 
 
@@ -105,6 +126,20 @@ namespace food_service.ProductService.Infastructure.ImplementService
                     productAggregate.AddNewVariant(ProductVariantEntity.CreateNewVariant(product.Id, new Name(variantItem.Name), new Price(variantItem.ExtraPrice), variantItem.IsMain));
                 }
             }
+
+            // update variant 
+            if (productRequest.UpdateVariant != null && productRequest.UpdateVariant.Any())
+            {
+                foreach (var item in productRequest.UpdateVariant)
+                {
+                    var variantUpdate = productAggregate.ProductVariantEntities.FirstOrDefault(s => s.Id == item.IdVariant);
+                    if (variantUpdate == null) continue;
+                    if (item.Name != null) variantUpdate.ChangeVariantName(new Name(item.Name));
+                    variantUpdate.ChangePrice(new Price(item.ExtraPrice));
+                }
+            }
+
+
 
 
             // remove variant 

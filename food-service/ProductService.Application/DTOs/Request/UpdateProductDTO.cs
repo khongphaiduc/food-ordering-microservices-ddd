@@ -19,12 +19,15 @@ namespace food_service.ProductService.Application.DTOs.Request
 
         public List<ImagesDTO>? AddnewImagesProducts { get; set; }
 
+        public ImagesDTO? AddMainImage { get; set; }
+
         public List<VariantDTO>? AddNewVariantDTOs { get; set; }
+
+        public List<VariantDTO>? UpdateVariant { get; set; }
 
         public List<Guid>? DeleteImage { get; set; }
 
         public List<Guid>? DeleteVariant { get; set; }
-
 
     }
     public class ImagesDTO

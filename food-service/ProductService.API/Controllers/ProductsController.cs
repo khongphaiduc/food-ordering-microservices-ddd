@@ -1,4 +1,5 @@
 ﻿using food_service.ProductService.Application.DTOs.Request;
+using food_service.ProductService.Application.Interface;
 using food_service.ProductService.Application.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,12 +18,14 @@ namespace food_service.ProductService.API.Controllers
         private readonly IGetListProduct _iListProduct;
         private readonly IViewDetailProduct _iViewDetailProduct;
         private readonly IProductRecommendationService _recommentionProduct;
+        private readonly IGetListCatgory _getListCategory;
 
-        public ProductsController(IGetListProduct listProduct, IViewDetailProduct viewDetailProduct, IProductRecommendationService productRecommendationService)
+        public ProductsController(IGetListCatgory getListCatgory, IGetListProduct listProduct, IViewDetailProduct viewDetailProduct, IProductRecommendationService productRecommendationService)
         {
             _iListProduct = listProduct;
             _iViewDetailProduct = viewDetailProduct;
             _recommentionProduct = productRecommendationService;
+            _getListCategory = getListCatgory;
         }
 
 
@@ -34,6 +37,14 @@ namespace food_service.ProductService.API.Controllers
             var totalProduct = await _iListProduct.TotalProdut();
             return Ok(new { list = listProduct, totalProduct = totalProduct });
         }
+
+        [HttpGet("category")]
+        public async Task<IActionResult> GetListCategory()
+        {
+            var listCategory = await _getListCategory.Excute();
+            return Ok(new { list = listCategory });
+        }
+
 
 
 
