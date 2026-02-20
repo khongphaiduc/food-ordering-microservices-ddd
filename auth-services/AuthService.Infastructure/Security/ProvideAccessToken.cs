@@ -30,7 +30,7 @@ namespace auth_services.AuthService.Infastructure.Security
 
             var tokenUser = _httcontext.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Replace("Bearer ", "");
             
-            var isRevoked = await _iRefreshTokenRepository.IsRevokedToken(tokenUser!);
+            var isRevoked = await _iRefreshTokenRepository.IsRevokedToken(tokenUser!); // Check whether the refresh token was invoked 
 
             if (isRevoked)
             {

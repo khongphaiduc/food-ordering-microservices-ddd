@@ -28,6 +28,7 @@ namespace cart_service.CartService.Infastructure.ImplementServices
 
             var cartUser = await _db.Carts.Include(s => s.CartItems).Where(s => s.Status == "ACTIVE").FirstOrDefaultAsync(c => c.UserId == idUser);
 
+            // create new cart 
             if (cartUser == null)
             {
                 var idcart = await _createCart.Excute(new RequestCreateNewCartUser
@@ -79,9 +80,7 @@ namespace cart_service.CartService.Infastructure.ImplementServices
 
             foreach (var item in cart.cartItems)
             {
-                item.UrlImage = imageDict.TryGetValue(item.IdProduct, out var url)
-                    ? url
-                    : null;
+                item.UrlImage = imageDict.TryGetValue(item.IdProduct, out var url) ? url : null;
             }
 
             return cart;

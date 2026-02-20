@@ -3,23 +3,24 @@ using auth_services.AuthService.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.Tasks;
 using UserService.API.Protos;
 
 namespace auth_services.AuthService.API.AuthControllers
 {
+    [EnableRateLimiting("token")]
     [Authorize(AuthenticationSchemes = "RefreshToken")]
     [Route("api/auth")]
     [ApiController]
     public class ProvideAccessTokenController : ControllerBase
     {
         private readonly IProvideAccessToken _iProvideToken;
-        private readonly UserInfoGrpc.UserInfoGrpcClient _iUserClient;
 
-        public ProvideAccessTokenController(IProvideAccessToken provideAccessToken, UserInfoGrpc.UserInfoGrpcClient userInfoGrpcClient)
+        public ProvideAccessTokenController(IProvideAccessToken provideAccessToken)
         {
             _iProvideToken = provideAccessToken;
-            _iUserClient = userInfoGrpcClient;
+
         }
 
         [HttpPost("accesstoken")]
@@ -36,22 +37,6 @@ namespace auth_services.AuthService.API.AuthControllers
             }
             return Ok(token);
         }
-
-
-        // test call gRPC user service
-        [AllowAnonymous]
-        [HttpGet("testCreate")]
-        public IActionResult Index()
-        {
-            var s = _iUserClient.CreateNewInformationUser(new CreateNewInformationUserRequest
-            {
-                Id = Guid.NewGuid().ToString(),
-                Name = "Sơn Tùng MTP",
-                Email="sontungmtp@gmail.com",
-                Phone= "0123456789"
-            });
-
-            return Ok(s);
-        }
     }
 }
+

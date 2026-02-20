@@ -64,12 +64,17 @@ namespace auth_services.AuthService.Start
 
             builder.Services.AddRateLimiter(options =>
             {
-                options.AddFixedWindowLimiter("fixed", opt =>
-                {
-                    opt.Window = TimeSpan.FromSeconds(30);
-                    opt.PermitLimit = 100;     // 100 request
-                    opt.QueueLimit = 0;        // không cho chờ
-                });
+                options.AddPolicy("token", context =>
+                    RateLimitPartition.GetTokenBucketLimiter(
+                        partitionKey: context.User.Identity?.Name ?? "anonymous",
+                        factory: _ => new TokenBucketRateLimiterOptions
+                        {
+                            TokenLimit = 10,
+                            TokensPerPeriod = 5,
+                            ReplenishmentPeriod = TimeSpan.FromSeconds(1),
+                            QueueLimit = 0,
+                            AutoReplenishment = true
+                        }));
             });
 
 
@@ -102,7 +107,9 @@ namespace auth_services.AuthService.Start
 
 
             builder.Services.AddHostedService<OutBoxWorker>();
-
+            builder.Services.AddScoped<IAddAccountStaffs, AddAccountStaffs>();
+            builder.Services.AddScoped<IAddSafttRepository, AddSafttRepository>();
+            builder.Services.AddScoped<IGetListStaff, GetListStaff>();
             builder.Services.AddControllers();
 
             var app = builder.Build();

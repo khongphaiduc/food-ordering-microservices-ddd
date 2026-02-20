@@ -12,7 +12,7 @@ using UserService.API.Protos;
 
 namespace auth_services.AuthService.API.AuthControllers
 {
-    //[EnableRateLimiting("fixed")]
+    [EnableRateLimiting("token")]
     [Route("api/auth")]
     [ApiController]
     public class UsersController : ControllerBase

@@ -11,7 +11,6 @@ namespace food_service.ProductService.API.Controllers
 {
     //[EnableRateLimiting("rateFix")]
     [Route("api/products")]
-    //[Authorize(AuthenticationSchemes = "AccessToken")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
