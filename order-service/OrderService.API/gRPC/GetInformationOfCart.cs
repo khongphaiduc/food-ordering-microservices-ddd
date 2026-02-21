@@ -52,7 +52,7 @@ namespace order_service.OrderService.API.gRPC
 
                 CartId = Guid.Parse(cart.IdCart),
                 UserId = Guid.Parse(cart.UserId),
-                Status = OrderStatus.PENDING,
+                Status = OrderStatusPayment.PENDING,
                 TotalPrice = cart.TotalPrice,
                 CartItems = cart.CartItems.Select(x => new CartItemDTOsInternal
                 {

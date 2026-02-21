@@ -34,7 +34,7 @@ namespace order_service.OrderService.Infastructure.Repository
                     FinalAmount = NewOrderAggregate.FinalAmount.Value,
                     PaymentMethod = NewOrderAggregate.PaymentMethod.ToString(),
                     ShippingFee = NewOrderAggregate.ShippingFee,
-                    Status = NewOrderAggregate.Status.ToString(),
+                    Status = NewOrderAggregate.StatusOrderPayment.ToString(),
                     TotalAmount = NewOrderAggregate.TotalAmount.Value,
                     OrderCode = long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss")).ToString(),
 
@@ -120,7 +120,7 @@ namespace order_service.OrderService.Infastructure.Repository
 
             if (OrderBase == null) return;
 
-            OrderBase.Status = NewOrderAggregate.Status.ToString();
+            OrderBase.Status = NewOrderAggregate.StatusOrderPayment.ToString();
             OrderBase.TotalAmount = NewOrderAggregate.TotalAmount.Value;
             OrderBase.ShippingFee = NewOrderAggregate.ShippingFee;
             OrderBase.DiscountAmount = NewOrderAggregate.Discount.Value;

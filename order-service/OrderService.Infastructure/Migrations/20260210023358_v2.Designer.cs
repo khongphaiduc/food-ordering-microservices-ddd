@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using order_service.OrderService.Infastructure.Models;
 
+
 #nullable disable
 
 namespace order_service.Migrations
@@ -56,7 +57,7 @@ namespace order_service.Migrations
                     b.Property<decimal>("ShippingFee")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<string>("Status")
+                    b.Property<string>("StatusOrderPayment")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
@@ -179,7 +180,7 @@ namespace order_service.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.Property<string>("Status")
+                    b.Property<string>("StatusOrderPayment")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");

@@ -17,9 +17,11 @@ namespace order_service.OrderService.Appilcation.DTOs
 
         public string OrderCode { get; set; } = string.Empty;
 
-        public OrderStatus OrderStatus { get; set; }
+        public OrderStatusPayment OrderStatusPayment { get; set; }
 
+        public OrderStatus OrderStatus { get; set; }
         public decimal TotalPrice { get; set; }
+
 
         public PaymentMethod PaymentMethod { get; set; }
 

@@ -8,7 +8,7 @@ namespace order_service.OrderService.Appilcation.DTOs.DTOsInternal
 
         public Guid UserId { get; set; }
 
-        public OrderStatus Status { get; set; } 
+        public OrderStatusPayment Status { get; set; } 
 
         public long TotalPrice { get; set; }
 

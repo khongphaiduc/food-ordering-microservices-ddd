@@ -29,6 +29,8 @@ public partial class Order
 
     public DateTime? UpdatedAt { get; set; }
 
+    public string OrderStatus { get; set; } = "PENDING";
+
     public virtual OrderDelivery? OrderDelivery { get; set; }
 
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();

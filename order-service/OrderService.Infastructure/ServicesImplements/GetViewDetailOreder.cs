@@ -17,18 +17,19 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
 
         public async Task<ResponseViewDetailOrderDTO> Excute(RequestViewOrderDetail request)
         {
-            var order = await _db.Orders.Include(s => s.OrderItems).FirstOrDefaultAsync(s => s.Id == request.IdOrder && s.UserId == request.IdUser);
+            var order = await _db.Orders.Include(s => s.OrderItems).Include(s => s.OrderDelivery).FirstOrDefaultAsync(s => s.Id == request.IdOrder && s.UserId == request.IdUser);
 
             if (order == null) return new ResponseViewDetailOrderDTO();
 
             var s = new ResponseViewDetailOrderDTO
             {
-                OrderStatus = Enum.Parse<OrderStatus>(order.Status),
+                OrderStatusPayments = Enum.Parse<OrderStatusPayment>(order.Status),
+                orderStatus = Enum.Parse<OrderStatus>(order.OrderStatus),
                 ShippingFee = order.ShippingFee,
                 TotalPrice = order.TotalAmount,
                 DiscountAmount = order.DiscountAmount,
                 PaymentMethod = Enum.Parse<PaymentMethod>(order.PaymentMethod!),
-                CreateAt =  order.CreatedAt,
+                CreateAt = order.CreatedAt,
                 OrderItems = order.OrderItems.Select(oi => new ResponseViewDetailOrderItemDTO
                 {
                     ProductName = oi.ProductName,
@@ -39,6 +40,16 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
                 }).ToList(),
 
             };
+
+            if (order.OrderDelivery != null)
+            {
+                s.orderDeliveryDTO = new OrderDeliveryDTO
+                {
+                    DeliveryAddress = order.OrderDelivery.Address ?? "None",
+                    RecipientName = order.OrderDelivery.ReceiverName,
+                    RecipientPhone = order.OrderDelivery.Phone,
+                };
+            }
 
             Console.WriteLine();
 

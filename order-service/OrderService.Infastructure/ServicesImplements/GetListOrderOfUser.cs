@@ -18,7 +18,7 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
         public async Task<OrderHistoryPagination> GetListOrderForUser(RequestGetListOrderWithPagination request)
         {
             int index = request.PageIndex;
-            int takeNumber = 5;
+            int takeNumber = 8;
             var skipNumber = (index - 1) * takeNumber;
 
             var order = await _db.Orders
@@ -32,7 +32,8 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
           TotalPrice = s.FinalAmount,
           CreateAt = s.CreatedAt,
           OrderCode = s.OrderCode,
-          OrderStatus = Enum.Parse<OrderStatus>(s.Status),
+          OrderStatusPayment = Enum.Parse<OrderStatusPayment>(s.Status),
+          OrderStatus = Enum.Parse<OrderStatus>(s.OrderStatus),
           PaymentMethod = Enum.Parse<PaymentMethod>(s.PaymentMethod!)
       })
       .ToListAsync();

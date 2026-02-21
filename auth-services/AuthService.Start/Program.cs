@@ -35,7 +35,7 @@ namespace auth_services.AuthService.Start
             {
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer("AccessToken", option =>  // đặt tên secheme là TokenValue
+            .AddJwtBearer("AccessToken", option => 
             {
                 option.TokenValidationParameters = new TokenValidationParameters
                 {

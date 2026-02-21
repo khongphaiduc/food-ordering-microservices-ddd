@@ -28,7 +28,7 @@ namespace order_service.OrderService.API.gRPC
             };
 
 
-            Order.Status = OrderStatus.PAID.ToString();
+            Order.Status = OrderStatusPayment.PAID.ToString();
             Order.UpdatedAt = DateTime.UtcNow;
 
             var resultAfterUpdate = await _db.SaveChangesAsync();

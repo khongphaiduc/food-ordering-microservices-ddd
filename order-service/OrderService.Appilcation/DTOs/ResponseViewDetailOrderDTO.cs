@@ -4,7 +4,9 @@ namespace order_service.OrderService.Appilcation.DTOs
 {
     public class ResponseViewDetailOrderDTO
     {
-        public OrderStatus OrderStatus { get; set; }
+        public OrderStatusPayment OrderStatusPayments { get; set; }
+
+        public OrderStatus orderStatus { get; set; }
 
         public decimal ShippingFee { get; set; }
 

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace order_service.OrderService.API.OrderControllers
 {
     [Route("api/orders")]
-    [Authorize(AuthenticationSchemes = "AccessToken")]
+    //[Authorize(AuthenticationSchemes = "AccessToken")]
     [ApiController]
     public class OrdersController : ControllerBase
     {
@@ -38,7 +38,7 @@ namespace order_service.OrderService.API.OrderControllers
         }
 
 
-        // xem danh sách order 
+        // xem danh sách order of user 
         [HttpPost("histories")]
         public async Task<IActionResult> GetListOrders([FromBody] RequestGetListOrderWithPagination request)
         {
