@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using order_service.OrderService.Infastructure.Models;
 
@@ -11,9 +12,11 @@ using order_service.OrderService.Infastructure.Models;
 namespace order_service.Migrations
 {
     [DbContext(typeof(FoodOrderContext))]
-    partial class FoodOrderContextModelSnapshot : ModelSnapshot
+    [Migration("20260221131034_v20")]
+    partial class v20
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,7 +60,7 @@ namespace order_service.Migrations
                     b.Property<decimal>("ShippingFee")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<string>("StatusOrderPayment")
+                    b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
@@ -180,7 +183,7 @@ namespace order_service.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.Property<string>("StatusOrderPayment")
+                    b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");

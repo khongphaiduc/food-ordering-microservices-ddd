@@ -39,10 +39,6 @@
 		<PackageReference Include="RabbitMQ.Client" Version="7.2.0" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Folder Include="OrderService.Appilcation\Interface\" />
-	</ItemGroup>
-
 
 	<ItemGroup>
 		<Protobuf Include="OrderService.API\Proto\CreatePaymetForOrder.proto" GrpcServices="Client" />

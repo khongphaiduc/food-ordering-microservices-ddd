@@ -37,7 +37,7 @@ namespace order_service.OrderService.Infastructure.Repository
                     Status = NewOrderAggregate.StatusOrderPayment.ToString(),
                     TotalAmount = NewOrderAggregate.TotalAmount.Value,
                     OrderCode = long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss")).ToString(),
-
+                    OrderStatus = "PENDING",
                     UpdatedAt = NewOrderAggregate.UpdatedAt,
                     UserId = NewOrderAggregate.IdCustomer,
                     OrderItems = NewOrderAggregate.OrderItemsEntities.Select(s => new OrderItem

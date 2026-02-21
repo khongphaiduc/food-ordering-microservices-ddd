@@ -18,7 +18,7 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
         public async Task<OrderHistoryPagination> GetListOrderForUser(RequestGetListOrderWithPagination request)
         {
             int index = request.PageIndex;
-            int takeNumber = 8;
+            int takeNumber = 7;
             var skipNumber = (index - 1) * takeNumber;
 
             var order = await _db.Orders

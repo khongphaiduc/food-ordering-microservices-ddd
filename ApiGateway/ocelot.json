@@ -91,7 +91,7 @@
         }
       ],
       "UpstreamPathTemplate": "/orders/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE","PATCH" ]
     },
     {
       "DownstreamPathTemplate": "/api/payments/{everything}",

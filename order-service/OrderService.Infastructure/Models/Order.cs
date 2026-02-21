@@ -31,6 +31,10 @@ public partial class Order
 
     public string OrderStatus { get; set; } = "PENDING";
 
+    public string SnapshotNameCustomer { get; set; } = "Customer";
+
+    public string SnapshotPhone { get; set; } = "0987654321";
+
     public virtual OrderDelivery? OrderDelivery { get; set; }
 
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();

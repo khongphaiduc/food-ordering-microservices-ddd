@@ -5,13 +5,20 @@
 namespace order_service.Migrations
 {
     /// <inheritdoc />
-    public partial class v10 : Migration
+    public partial class v21 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "OrderStatusPayment",
+                name: "SnapshotNameCustomer",
+                table: "Orders",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
+
+            migrationBuilder.AddColumn<string>(
+                name: "SnapshotPhone",
                 table: "Orders",
                 type: "nvarchar(max)",
                 nullable: false,
@@ -22,7 +29,11 @@ namespace order_service.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "OrderStatusPayment",
+                name: "SnapshotNameCustomer",
+                table: "Orders");
+
+            migrationBuilder.DropColumn(
+                name: "SnapshotPhone",
                 table: "Orders");
         }
     }

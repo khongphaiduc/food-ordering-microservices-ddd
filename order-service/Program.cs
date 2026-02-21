@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using order_service.OrderService.API.gRPC;
+using order_service.OrderService.Appilcation.Interface;
 using order_service.OrderService.Appilcation.Services;
 using order_service.OrderService.Domain.Interface;
 using order_service.OrderService.Infastructure.Models;
@@ -74,6 +75,8 @@ namespace order_service
             builder.Services.AddScoped<IGetViewDetailOreder, GetViewDetailOreder>();
             builder.Services.AddScoped<GetInformationOfCart>();
             builder.Services.AddScoped<GetAddressUserServiceSideClient>();
+            builder.Services.AddScoped<IGetListOrders, GetListOrders>();
+            builder.Services.AddScoped<IUpdateStatusOrders, UpdateStatusOrders>();
             builder.Services.AddControllers();
 
             builder.Services.AddGrpc();

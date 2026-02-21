@@ -24,6 +24,9 @@ namespace order_service.OrderService.Domain.Aggregate
         public DateTime CreatedAt { get; private set; }
         public DateTime UpdatedAt { get; private set; }
 
+
+        public OrderStatus OrderStatus { get; private set; }
+
         private readonly List<OrderItemsEntity> orderItemsEntities = new();
         public IReadOnlyList<OrderItemsEntity> OrderItemsEntities => orderItemsEntities.AsReadOnly();
 
@@ -52,7 +55,7 @@ namespace order_service.OrderService.Domain.Aggregate
             };
         }
 
-        public OrdersAggregate(Guid idOrder, Guid idCustomer, Guid idCart, OrderStatusPayment status, Price totalAmount, decimal shippingFee, DiscountValue discount, Price finalAmount, PaymentMethod paymentMethod, DateTime createdAt, DateTime updatedAt, List<OrderItemsEntity> orderItemsEntities, List<OrderPaymentsEntity> orderPaymentsEntities, OrderDeliveryEntity? delivery)
+        internal OrdersAggregate(Guid idOrder, Guid idCustomer, Guid idCart, OrderStatusPayment status, Price totalAmount, decimal shippingFee, DiscountValue discount, Price finalAmount, PaymentMethod paymentMethod, DateTime createdAt, DateTime updatedAt, List<OrderItemsEntity> orderItemsEntities, List<OrderPaymentsEntity> orderPaymentsEntities, OrderDeliveryEntity? delivery)
         {
             IdOrder = idOrder;
             IdCustomer = idCustomer;
@@ -95,7 +98,7 @@ namespace order_service.OrderService.Domain.Aggregate
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void UpdateOrderStatus(OrderStatusPayment newStatus)
+        public void UpdateOrderStatusPayment(OrderStatusPayment newStatus)
         {
             StatusOrderPayment = newStatus;
             UpdatedAt = DateTime.UtcNow;
@@ -130,6 +133,12 @@ namespace order_service.OrderService.Domain.Aggregate
             if (StatusOrderPayment == OrderStatusPayment.CANCELLED) throw new InvalidOperationException("Order đã bị hủy, không thể thêm thông tin giao hàng");
             Delivery = delivery;
             UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void UpdateOrderStatus(OrderStatus status)
+        {
+            OrderStatus = status;
+            UpdatedAt = DateTime.UtcNow;    
         }
     }
 }

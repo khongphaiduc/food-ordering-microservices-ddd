@@ -7,15 +7,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using order_service.OrderService.Infastructure.Models;
 
-
-
 #nullable disable
 
 namespace order_service.Migrations
 {
     [DbContext(typeof(FoodOrderContext))]
-    [Migration("20260208134819_v12")]
-    partial class v12
+    [Migration("20260221131555_v21")]
+    partial class v21
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,9 +25,12 @@ namespace order_service.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("order_service.Models.Order", b =>
+            modelBuilder.Entity("order_service.OrderService.Infastructure.Models.Order", b =>
                 {
                     b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CartId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -48,14 +49,26 @@ namespace order_service.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("PaymentProvider")
+                    b.Property<string>("OrderStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentMethod")
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
                     b.Property<decimal>("ShippingFee")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<string>("StatusOrderPayment")
+                    b.Property<string>("SnapshotNameCustomer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SnapshotPhone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
@@ -78,7 +91,7 @@ namespace order_service.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("order_service.Models.OrderDelivery", b =>
+            modelBuilder.Entity("order_service.OrderService.Infastructure.Models.OrderDelivery", b =>
                 {
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
@@ -95,7 +108,7 @@ namespace order_service.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("PhoneNumer")
+                    b.Property<string>("Phone")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
@@ -111,7 +124,7 @@ namespace order_service.Migrations
                     b.ToTable("OrderDelivery", (string)null);
                 });
 
-            modelBuilder.Entity("order_service.Models.OrderItem", b =>
+            modelBuilder.Entity("order_service.OrderService.Infastructure.Models.OrderItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -154,12 +167,12 @@ namespace order_service.Migrations
                     b.ToTable("OrderItems");
                 });
 
-            modelBuilder.Entity("order_service.Models.OrderPayment", b =>
+            modelBuilder.Entity("order_service.OrderService.Infastructure.Models.OrderPayment", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("Value")
+                    b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -178,7 +191,7 @@ namespace order_service.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.Property<string>("StatusOrderPayment")
+                    b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
@@ -195,20 +208,20 @@ namespace order_service.Migrations
                     b.ToTable("OrderPayments");
                 });
 
-            modelBuilder.Entity("order_service.Models.OrderDelivery", b =>
+            modelBuilder.Entity("order_service.OrderService.Infastructure.Models.OrderDelivery", b =>
                 {
-                    b.HasOne("order_service.Models.Order", "Order")
+                    b.HasOne("order_service.OrderService.Infastructure.Models.Order", "Order")
                         .WithOne("OrderDelivery")
-                        .HasForeignKey("order_service.Models.OrderDelivery", "OrderId")
+                        .HasForeignKey("order_service.OrderService.Infastructure.Models.OrderDelivery", "OrderId")
                         .IsRequired()
                         .HasConstraintName("FK_OrderDelivery_Orders");
 
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("order_service.Models.OrderItem", b =>
+            modelBuilder.Entity("order_service.OrderService.Infastructure.Models.OrderItem", b =>
                 {
-                    b.HasOne("order_service.Models.Order", "Order")
+                    b.HasOne("order_service.OrderService.Infastructure.Models.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
                         .IsRequired()
@@ -217,9 +230,9 @@ namespace order_service.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("order_service.Models.OrderPayment", b =>
+            modelBuilder.Entity("order_service.OrderService.Infastructure.Models.OrderPayment", b =>
                 {
-                    b.HasOne("order_service.Models.Order", "Order")
+                    b.HasOne("order_service.OrderService.Infastructure.Models.Order", "Order")
                         .WithMany("OrderPayments")
                         .HasForeignKey("OrderId")
                         .IsRequired()
@@ -228,7 +241,7 @@ namespace order_service.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("order_service.Models.Order", b =>
+            modelBuilder.Entity("order_service.OrderService.Infastructure.Models.Order", b =>
                 {
                     b.Navigation("OrderDelivery");
 
