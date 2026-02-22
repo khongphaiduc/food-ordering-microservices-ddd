@@ -27,6 +27,11 @@ namespace order_service.OrderService.Domain.Aggregate
 
         public OrderStatus OrderStatus { get; private set; }
 
+        public string SnapshotNameCustomer { get; private set; }
+
+        public string SnapshotPhoneCustomer { get; private set; }
+
+
         private readonly List<OrderItemsEntity> orderItemsEntities = new();
         public IReadOnlyList<OrderItemsEntity> OrderItemsEntities => orderItemsEntities.AsReadOnly();
 
@@ -37,7 +42,7 @@ namespace order_service.OrderService.Domain.Aggregate
         public OrderDeliveryEntity? Delivery { get; private set; }
 
 
-        public static OrdersAggregate CreateNewOrder(Guid IdCart, Guid IdCustomer, OrderStatusPayment statusOrder, decimal ShippingFee, decimal Discount, PaymentMethod paymentMethod)
+        public static OrdersAggregate CreateNewOrder(Guid IdCart, Guid IdCustomer, OrderStatusPayment statusOrder, decimal ShippingFee, decimal Discount, PaymentMethod paymentMethod, string SnapshotNameCustomer, string SnapshotPhoneCustomer)
         {
             return new OrdersAggregate
             {
@@ -51,7 +56,9 @@ namespace order_service.OrderService.Domain.Aggregate
                 FinalAmount = new Price(0),
                 PaymentMethod = paymentMethod,
                 CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                UpdatedAt = DateTime.UtcNow,
+                SnapshotNameCustomer = SnapshotNameCustomer,
+                SnapshotPhoneCustomer = SnapshotPhoneCustomer
             };
         }
 
@@ -138,7 +145,7 @@ namespace order_service.OrderService.Domain.Aggregate
         public void UpdateOrderStatus(OrderStatus status)
         {
             OrderStatus = status;
-            UpdatedAt = DateTime.UtcNow;    
+            UpdatedAt = DateTime.UtcNow;
         }
     }
 }

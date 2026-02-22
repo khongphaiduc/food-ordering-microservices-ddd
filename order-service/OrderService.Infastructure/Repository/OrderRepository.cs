@@ -75,11 +75,10 @@ namespace order_service.OrderService.Infastructure.Repository
                         Phone = NewOrderAggregate.Delivery?.PhoneNumer.Value ?? "Not identity",
                         ReceiverName = NewOrderAggregate.Delivery?.ReciverName ?? "User not identity"
                     }
-
+                    ,
+                    SnapshotNameCustomer = NewOrderAggregate.SnapshotNameCustomer,
+                    SnapshotPhone = NewOrderAggregate.SnapshotPhoneCustomer,
                 };
-
-
-
 
                 await _db.Orders.AddAsync(OrderBase);
 

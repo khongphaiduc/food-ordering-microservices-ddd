@@ -1,10 +1,12 @@
-﻿using order_service.OrderService.API.gRPC;
+﻿using Microsoft.AspNetCore.SignalR;
+using order_service.OrderService.API.gRPC;
 using order_service.OrderService.Appilcation.DTOs;
 using order_service.OrderService.Appilcation.Services;
 using order_service.OrderService.Domain.Aggregate;
 using order_service.OrderService.Domain.Entities;
 using order_service.OrderService.Domain.Enums;
 using order_service.OrderService.Domain.Interface;
+using order_service.OrderService.Infastructure.OrderRealTime;
 using PaymentService.API.Proto;
 
 namespace order_service.OrderService.Infastructure.ServicesImplements
@@ -16,14 +18,16 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
         private readonly PaymentInforGrpc.PaymentInforGrpcClient _createPaymentPayOs;
         private readonly ILogger<CreateNewOrder> _logger;
         private readonly GetAddressUserServiceSideClient _AddressUser;
+        private readonly IHubContext<NotificationOrderHUB> _orderHub;
 
-        public CreateNewOrder(GetAddressUserServiceSideClient getAddressUserServiceSideClient, GetInformationOfCart getInformationOfCartClient, IOrderRepository orderRepository, PaymentInforGrpc.PaymentInforGrpcClient paymentInforGrpcClient, ILogger<CreateNewOrder> logger)
+        public CreateNewOrder(IHubContext<NotificationOrderHUB> hubContext, GetAddressUserServiceSideClient getAddressUserServiceSideClient, GetInformationOfCart getInformationOfCartClient, IOrderRepository orderRepository, PaymentInforGrpc.PaymentInforGrpcClient paymentInforGrpcClient, ILogger<CreateNewOrder> logger)
         {
             _cartClientGRPC = getInformationOfCartClient;
             _orderRepository = orderRepository;
             _createPaymentPayOs = paymentInforGrpcClient;
             _logger = logger;
             _AddressUser = getAddressUserServiceSideClient;
+            _orderHub = hubContext;
         }
 
         public async Task<string> Excute(Guid IdCart, PaymentMethod paymentMethod, Guid IdAddress)
@@ -38,7 +42,7 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
             var AddressUser = await _AddressUser.GetAddressUserAsync(new UserService.API.Protos.AddressformationUserRequest { IdAddress = IdAddress.ToString() });
 
             // order
-            var newOrderAggregate = OrdersAggregate.CreateNewOrder(cart.CartId, cart.UserId, cart.Status, 0, 0, paymentMethod);
+            var newOrderAggregate = OrdersAggregate.CreateNewOrder(cart.CartId, cart.UserId, cart.Status, 0, 0, paymentMethod, AddressUser.NameUser, AddressUser.Phone);
 
             // order items
             if (cart.CartItems != null && cart.CartItems.Any())
@@ -71,6 +75,30 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
                 var resultChangeStatusCart = await _cartClientGRPC.ChangeStatusCart(cart.CartId, StatusCart.CHECKED_OUT);  //  change status cart = Checked out
 
                 if (resultChangeStatusCart == false) return string.Empty;
+
+
+                var orderNotificationRealTimeDTO = new ViewOrderDTO
+                {
+                    OrderCode = "Đơn Food Mới",
+                    IdOrder = newOrderAggregate.IdOrder,
+                    NameCustomer = newOrderAggregate.SnapshotNameCustomer,
+                    CreateAt = newOrderAggregate.CreatedAt,
+                    orderStatus = OrderStatus.PENDING,
+                    OrderStatusPayment = newOrderAggregate.StatusOrderPayment,
+                    PaymentMethod = paymentMethod,
+                    TotalAmount = newOrderAggregate.TotalAmount.Value,
+                };
+
+                try
+                {
+                    await _orderHub.Clients.Group("ADMIN_GROUP").SendAsync("ReceiveOrder", orderNotificationRealTimeDTO);
+                    await _orderHub.Clients.Group("STAFF_GROUP").SendAsync("ReceiveOrder", orderNotificationRealTimeDTO);
+
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Realtime notification failed");
+                }
 
 
                 // thanh toán tiền mặt

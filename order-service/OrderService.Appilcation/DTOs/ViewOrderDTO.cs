@@ -6,7 +6,7 @@ namespace order_service.OrderService.Appilcation.DTOs
 
     public class ViewManagementOrder
     {
-        public List<ListOrderDTO>? listOrderDTOs { get; set; }
+        public List<ViewOrderDTO>? listOrderDTOs { get; set; }
         public int ConfirmationCount { get; set; }
         public int PreparingCount { get; set; }
         public int DeliveringCount { get; set; }
@@ -15,7 +15,7 @@ namespace order_service.OrderService.Appilcation.DTOs
 
     }
 
-    public class ListOrderDTO
+    public class ViewOrderDTO
     {
         public Guid IdOrder { get; set; }
 

@@ -48,7 +48,7 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
                 .OrderByDescending(s => s.CreatedAt)
                 .Skip(skipnumber)
                 .Take(request.PageSize)
-                .Select(s => new ListOrderDTO
+                .Select(s => new ViewOrderDTO
                 {
                     IdOrder = s.Id,
                     NameCustomer = s.SnapshotNameCustomer ?? "Customer",

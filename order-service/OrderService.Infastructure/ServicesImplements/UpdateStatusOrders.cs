@@ -21,8 +21,20 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
         {
             var order = await _db.Orders.FirstOrDefaultAsync(s => s.Id == request.IdOrder);
             //var orderAggregate = new OrdersAggregate(order.Id, order.UserId, order.CartId, Enum.Parse<OrderStatusPayment>(order.Status), new Price(order.TotalAmount), order.ShippingFee, new DiscountValue(order.DiscountAmount), new Price(order.FinalAmount), Enum.Parse<PaymentMethod>(order.PaymentMethod!), order.CreatedAt, order.UpdatedAt ?? order.CreatedAt, null, null, null);
+
+
             if (order == null) return false;
-            order.OrderStatus = request.Status.ToString();
+
+            if (request.Status == OrderStatus.CANCELLED)
+            {
+                order.Status = OrderStatusPayment.CANCELLED.ToString();
+                order.OrderStatus = request.Status.ToString();
+            }
+            else
+            {
+                order.OrderStatus = request.Status.ToString();
+            }
+
             return await _db.SaveChangesAsync() > 0;
         }
     }
