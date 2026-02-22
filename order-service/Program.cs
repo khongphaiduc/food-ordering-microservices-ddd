@@ -22,13 +22,13 @@ namespace order_service
             DotNetEnv.Env.Load();
             var builder = WebApplication.CreateBuilder(args);
 
-    
+
             builder.Services.AddDbContext<FoodOrderContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration["URLORDER"]);
             });
 
-           
+
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -61,19 +61,19 @@ namespace order_service
                 };
             });
 
-           
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowFrontend", policy =>
                 {
-                    policy.WithOrigins("http://localhost:5173") 
+                    policy.WithOrigins("http://localhost:5173")
                           .AllowAnyHeader()
                           .AllowAnyMethod()
-                          .AllowCredentials(); 
+                          .AllowCredentials();
                 });
             });
 
-         
+
             builder.Services.AddGrpcClient<CartInforGrpc.CartInforGrpcClient>(o => o.Address = new Uri("https://localhost:7185"));
             builder.Services.AddGrpcClient<PaymentInforGrpc.PaymentInforGrpcClient>(o => o.Address = new Uri("https://localhost:7251"));
             builder.Services.AddGrpcClient<UserAddressInfoGrpc.UserAddressInfoGrpcClient>(o => o.Address = new Uri("https://localhost:7199"));
@@ -86,6 +86,7 @@ namespace order_service
             builder.Services.AddScoped<GetAddressUserServiceSideClient>();
             builder.Services.AddScoped<IGetListOrders, GetListOrders>();
             builder.Services.AddScoped<IUpdateStatusOrders, UpdateStatusOrders>();
+            builder.Services.AddScoped<IStaffViewDetailOrders, StaffViewDetailOrders>();
 
             builder.Services.AddControllers();
             builder.Services.AddSignalR();
@@ -93,18 +94,18 @@ namespace order_service
 
             var app = builder.Build();
 
-       
+
 
             app.UseHttpsRedirection();
 
-            
+
             app.UseCors("AllowFrontend");
 
-            
+
             app.UseAuthentication();
             app.UseAuthorization();
 
-            
+
             app.MapHub<NotificationOrderHUB>("/ordersHub");
             app.MapGrpcService<UpdateStatusOrderService>();
             app.MapControllers();

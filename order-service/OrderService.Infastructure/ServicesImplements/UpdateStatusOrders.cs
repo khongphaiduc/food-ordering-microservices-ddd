@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using order_service.OrderService.Appilcation;
+using order_service.OrderService.Appilcation.DTOs;
 using order_service.OrderService.Appilcation.Interface;
 using order_service.OrderService.Domain.Aggregate;
 using order_service.OrderService.Domain.Enums;
@@ -28,6 +28,11 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
             if (request.Status == OrderStatus.CANCELLED)
             {
                 order.Status = OrderStatusPayment.CANCELLED.ToString();
+                order.OrderStatus = request.Status.ToString();
+            }
+            else if (request.Status == OrderStatus.COMPLETED && order.PaymentMethod == PaymentMethod.Cash.ToString())
+            {
+                order.Status = OrderStatusPayment.PAID.ToString();
                 order.OrderStatus = request.Status.ToString();
             }
             else

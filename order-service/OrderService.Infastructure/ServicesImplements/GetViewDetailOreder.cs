@@ -6,6 +6,7 @@ using order_service.OrderService.Infastructure.Models;
 
 namespace order_service.OrderService.Infastructure.ServicesImplements
 {
+    #region view detail order for customer
     public class GetViewDetailOreder : IGetViewDetailOreder
     {
         private readonly FoodOrderContext _db;
@@ -56,4 +57,5 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
             return s;
         }
     }
+    #endregion
 }

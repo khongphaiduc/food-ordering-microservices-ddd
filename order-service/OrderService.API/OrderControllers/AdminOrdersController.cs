@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using order_service.OrderService.Appilcation;
 using order_service.OrderService.Appilcation.DTOs;
 using order_service.OrderService.Appilcation.Interface;
+using order_service.OrderService.Appilcation.Services;
 using order_service.OrderService.Domain.Enums;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace order_service.OrderService.API.OrderControllers
@@ -12,15 +13,18 @@ namespace order_service.OrderService.API.OrderControllers
     [ApiController]
     public class AdminOrdersController : ControllerBase
     {
-        private IGetListOrders _getListOrder;
+        private readonly IStaffViewDetailOrders _staffViewOrderDetail;
+        private readonly IGetListOrders _getListOrder;
         private readonly IUpdateStatusOrders _updateOrderStatus;
 
-        public AdminOrdersController(IGetListOrders getListOrders, IUpdateStatusOrders updateStatusOrders)
+
+        public AdminOrdersController(IGetListOrders getListOrders, IUpdateStatusOrders updateStatusOrders, IStaffViewDetailOrders staffViewDetailOrders)
         {
+            _staffViewOrderDetail = staffViewDetailOrders;
             _getListOrder = getListOrders;
             _updateOrderStatus = updateStatusOrders;
-        }
 
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetListOrder([FromQuery] RequestGetListOrder request)
@@ -34,6 +38,13 @@ namespace order_service.OrderService.API.OrderControllers
         {
             var result = await _updateOrderStatus.Excute(request);
             return Ok(result);
+        }
+
+        [HttpGet("{idOrder}")]
+        public async Task<IActionResult> ViewOrderDetail([FromRoute] Guid idOrder)
+        {
+            var orderDetail = await _staffViewOrderDetail.Excute(idOrder);
+            return Ok(orderDetail);
         }
 
     }

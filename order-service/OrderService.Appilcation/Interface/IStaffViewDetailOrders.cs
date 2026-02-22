@@ -2,8 +2,8 @@
 
 namespace order_service.OrderService.Appilcation.Interface
 {
-    public interface IUpdateStatusOrders
+    public interface IStaffViewDetailOrders
     {
-        Task<bool> Excute(RequestUpdateStatusOrder request);
+        Task<StaffViewDetailOrderDTO> Excute(Guid IdOrder);
     }
 }

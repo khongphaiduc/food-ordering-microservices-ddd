@@ -1,6 +1,6 @@
 ﻿using order_service.OrderService.Domain.Enums;
 
-namespace order_service.OrderService.Appilcation
+namespace order_service.OrderService.Appilcation.DTOs
 {
     public class RequestUpdateStatusOrder
     {
