@@ -87,7 +87,9 @@ namespace order_service
             builder.Services.AddScoped<IGetListOrders, GetListOrders>();
             builder.Services.AddScoped<IUpdateStatusOrders, UpdateStatusOrders>();
             builder.Services.AddScoped<IStaffViewDetailOrders, StaffViewDetailOrders>();
-
+            builder.Services.AddScoped<IRevenue, Revenue>();
+            builder.Services.AddScoped<IGetNumberOfOrders, GetNumberOfOrders>();
+            builder.Services.AddScoped<IGetPreFitOfMonths, GetPreFitOfMonths>();
             builder.Services.AddControllers();
             builder.Services.AddSignalR();
             builder.Services.AddGrpc();

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace order_service.OrderService.API.OrderControllers
 {
     [Route("api/orders")]
-    //[Authorize(AuthenticationSchemes = "AccessToken")]
+    [Authorize(AuthenticationSchemes = "AccessToken")]
     [ApiController]
     public class OrdersController : ControllerBase
     {
