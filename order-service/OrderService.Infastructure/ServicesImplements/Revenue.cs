@@ -17,13 +17,13 @@ public class Revenue : IRevenue
 
     public async Task<RevenueDashboardResponse> Excute(GetRevenueDashboardRequest request)
     {
-        // Validate input
+        
         if (request.FromDate > request.ToDate)
         {
             throw new ArgumentException("FromDate must be less than or equal to ToDate");
         }
 
-        // Get current period revenue
+       
         var currentPeriodOrders = await GetOrdersByDateRange(request.FromDate, request.ToDate);
         var currentRevenue = currentPeriodOrders
             .Where(o => o.Status == "PAID" && (o.OrderStatus == "COMPLETED" || o.OrderStatus == "DELIVERING"))
@@ -32,7 +32,7 @@ public class Revenue : IRevenue
         var currentCompletedOrders = currentPeriodOrders
             .Count(o => o.OrderStatus == "COMPLETED" && o.Status == "PAID");
 
-        // Get compare period revenue based on CompareType
+        
         var compareRevenue = 0m;
         var compareOrderCount = 0;
         var compareCompletedOrders = 0;
@@ -50,13 +50,13 @@ public class Revenue : IRevenue
                 .Count(o => o.OrderStatus == "COMPLETED" && o.Status == "PAID");
         }
 
-        // Calculate differences and growth percentage
+       
         var revenueDifference = currentRevenue - compareRevenue;
         var revenueGrowthPercent = compareRevenue == 0
             ? (currentRevenue > 0 ? 100 : 0)
             : Math.Round((revenueDifference / compareRevenue) * 100, 2);
 
-        // Calculate completion percentage
+      
         var percentCompletion = currentOrderCount == 0
             ? 0
             : Math.Round((decimal)currentCompletedOrders / currentOrderCount * 100, 2);

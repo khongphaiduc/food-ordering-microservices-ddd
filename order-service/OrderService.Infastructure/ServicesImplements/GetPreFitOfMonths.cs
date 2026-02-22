@@ -20,18 +20,16 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
 
         public async Task<GetPreFitOfMonthDTO> Excute(RequestGetPrefitOfMonthDTO requets)
         {
-            // Validate input
+           
             if (requets.Year < 1 || requets.Month < 1 || requets.Month > 12)
             {
                 throw new ArgumentException("Invalid year or month");
             }
 
-            // Get the first and last day of the month
             var firstDayOfMonth = new DateTime(requets.Year, requets.Month, 1);
             var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
 
-            // Query orders for the specified month
-            // Only include orders with Status = "PAID" and OrderStatus = "COMPLETED"
+            
             var ordersInMonth = await _db.Orders
                 .Where(o => o.CreatedAt >= firstDayOfMonth
                     && o.CreatedAt <= lastDayOfMonth.AddDays(1)
@@ -40,7 +38,7 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
                 .AsNoTracking()
                 .ToListAsync();
 
-            // Group orders by day and sum the FinalAmount (profit/revenue)
+          
             var profitByDay = ordersInMonth
                 .GroupBy(o => o.CreatedAt.Day)
                 .OrderBy(g => g.Key)
@@ -51,7 +49,7 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
                 })
                 .ToList();
 
-            // Create the response with all days of the month (including days with 0 profit)
+          
             var allDaysInMonth = GetAllDaysInMonth(requets.Year, requets.Month);
             var result = new GetPreFitOfMonthDTO
             {
