@@ -53,7 +53,7 @@ namespace search_service.SearchService.Infastructure.ImplementServices
                 });
             }
 
-            var bulkRequest = new BulkRequest("products")
+            var bulkRequest = new BulkRequest("menu")
             {
                 Operations = operations
             };

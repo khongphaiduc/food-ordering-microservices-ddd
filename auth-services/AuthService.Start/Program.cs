@@ -35,7 +35,7 @@ namespace auth_services.AuthService.Start
             {
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer("AccessToken", option => 
+            .AddJwtBearer("AccessToken", option =>
             {
                 option.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -76,7 +76,6 @@ namespace auth_services.AuthService.Start
                             AutoReplenishment = true
                         }));
             });
-
 
 
             builder.Services.AddGrpcClient<UserInfoGrpc.UserInfoGrpcClient>(s =>

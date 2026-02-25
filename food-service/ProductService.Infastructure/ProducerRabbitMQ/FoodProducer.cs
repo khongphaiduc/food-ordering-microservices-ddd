@@ -45,7 +45,7 @@ namespace food_service.ProductService.Infastructure.ProducerRabbitMQ
             );
 
 
-
+            // map queue với exchange
             await _channel.QueueBindAsync(
                 queue: _iconfig["RabbitMQ_Side_ProductService:Queue:UpdateProduct:QueueName"]!,
                 exchange: _iconfig["RabbitMQ_Side_ProductService:Exchange"]!,

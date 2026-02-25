@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using order_service.OrderService.Appilcation.DTOs;
 using order_service.OrderService.Appilcation.Services;
 
 namespace order_service.OrderService.API.OrderControllers
 {
+    [Authorize(AuthenticationSchemes = "AccessToken")]
+    [Authorize(Roles ="Admin")]
     [Route("api/orders")]
     [ApiController]
     public class StatisticController : ControllerBase

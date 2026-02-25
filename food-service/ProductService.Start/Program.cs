@@ -120,8 +120,8 @@ namespace food_service.ProductService.Start
 
             builder.Services.AddGrpc();
 
-            //backgroundSerivce
-            //builder.Services.AddHostedService<OutboxMessageProcessor>();
+
+            builder.Services.AddHostedService<OutboxMessageProcessor>();
 
             builder.Services.AddControllers();
 

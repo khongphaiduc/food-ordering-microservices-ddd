@@ -9,6 +9,7 @@ using food_service.ProductService.Domain.Interface;
 using food_service.ProductService.Domain.ValueOject;
 using food_service.ProductService.Infastructure.Models;
 using food_service.ProductService.Infastructure.ProducerRabbitMQ;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using System.Text.Json;
@@ -18,13 +19,15 @@ namespace food_service.ProductService.Infastructure.Repositories
 {
     public class ProductRepository : IProductRepository
     {
+        private readonly IMinIOFood _minIo;
         private readonly FoodProductsDbContext _db;
         private readonly FoodProducer _workerFood;
         private readonly IOutBoxPatternProduct _outBoxpattern;
         private readonly ILogger<ProductRepository> _logger;
 
-        public ProductRepository(FoodProductsDbContext foodProductsDbContext, FoodProducer foodProducer, IOutBoxPatternProduct outBoxPatternProduct, ILogger<ProductRepository> logger)
+        public ProductRepository(IMinIOFood minIOFood, FoodProductsDbContext foodProductsDbContext, FoodProducer foodProducer, IOutBoxPatternProduct outBoxPatternProduct, ILogger<ProductRepository> logger)
         {
+            _minIo = minIOFood;
             _db = foodProductsDbContext;
             _workerFood = foodProducer;
             _outBoxpattern = outBoxPatternProduct;
@@ -260,14 +263,80 @@ namespace food_service.ProductService.Infastructure.Repositories
                 if (listVariantRemove.Any()) _db.RemoveRange(listVariantRemove);
 
 
-                var result = await _db.SaveChangesAsync() > 0;
-                if (result)
+
+                var transaction = await _db.Database.BeginTransactionAsync();
+                try
                 {
-                    _logger.LogInformation($"update productRequest id  {productRequest.Id} Successful");
+
+
+                    var productDTP = new ProductInternalDTO
+                    {
+                        Id = productRequest.Id,
+                        Description = productRequest.Description,
+                        IdCategory = productRequest.CategoryId,
+                        Name = productRequest.NameProduct.Value,
+                        Price = productRequest.PriceProduct.Value,
+                        UpdateAt = productRequest.UpdatedAt,
+                        CreateAt = productRequest.CreatedAt,
+
+                        productImageInternalDTOs = productRequest.ProductImagesEntities.Select(s => new ProductImageInternalDTO
+                        {
+                            Id = s.Id,
+                            IsMain = s.IsMain,
+                            URLImage = s.ImageUrl,
+                        }).ToList(),
+
+
+                        productVarientInternalDTOs = productRequest.ProductVariantEntities.Select(f => new ProductVarientInternalDTO
+                        {
+                            CreateAt = f.CreateAt,
+                            Extra_Price = f.ExtraPrice.Value,
+                            Name = f.VariantName.Value,
+                            IdProduct = f.ProductId,
+                            UpdateAt = f.UpdateAt,
+
+                        }).ToList(),
+                    };
+
+
+                    if (productDTP.productImageInternalDTOs?.Any() == true)
+                    {
+                        var tasks = productDTP.productImageInternalDTOs
+                            .Select(async image =>
+                            {
+                                image.URLImage = await _minIo.GetUrlImage("images", image.URLImage);
+                            });
+
+                        await Task.WhenAll(tasks);
+                    }
+
+
+                    var outboxTable = _outBoxpattern.CreateNewMessage(new Application.DTOs.Internals.OutboxMessageDTO
+                    {
+                        Id = Guid.NewGuid(),
+                        CreateAt = DateTime.Now,
+                        IsProcesced = false,
+                        PayLoad = JsonSerializer.Serialize(productDTP),
+                        Type = "ProductCreated"
+                    });
+
+                    var result = await _db.SaveChangesAsync() > 0;
+
+                    await transaction.CommitAsync();
+                    if (result)
+                    {
+                        _logger.LogInformation($"update productRequest id  {productRequest.Id} Successful");
+                    }
+                    else
+                    {
+                        _logger.LogInformation($"update productRequest id  {productRequest.Id} fail");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    _logger.LogInformation($"update productRequest id  {productRequest.Id} fail");
+                    await transaction.RollbackAsync();
+                    _logger.LogError(ex, "Error while updating product");
+                    throw;
                 }
 
             }
