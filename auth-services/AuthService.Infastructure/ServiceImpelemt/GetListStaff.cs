@@ -18,7 +18,7 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
         }
 
 
-        public async Task<List<ViewListStaffDTO>> Excute()
+        public async Task<List<ViewListStaffDTO>> Execute()
         {
             var listStaff = await _db.Users.Where(s => !s.Roles.Any(r => r.Name == "Admin" || r.Name == "Customer")).Select(s => new ViewListStaffDTO
             {

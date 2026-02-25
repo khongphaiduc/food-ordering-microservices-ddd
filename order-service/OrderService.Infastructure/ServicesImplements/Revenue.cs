@@ -15,7 +15,7 @@ public class Revenue : IRevenue
         _db = foodOrderContext;
     }
 
-    public async Task<RevenueDashboardResponse> Excute(GetRevenueDashboardRequest request)
+    public async Task<RevenueDashboardResponse> Execute(GetRevenueDashboardRequest request)
     {
         
         if (request.FromDate > request.ToDate)

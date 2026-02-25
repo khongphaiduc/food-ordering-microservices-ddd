@@ -18,7 +18,7 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
             _db = foodOrderContext;
         }
 
-        public async Task<GetPreFitOfMonthDTO> Excute(RequestGetPrefitOfMonthDTO requets)
+        public async Task<GetPreFitOfMonthDTO> Execute(RequestGetPrefitOfMonthDTO requets)
         {
            
             if (requets.Year < 1 || requets.Month < 1 || requets.Month > 12)

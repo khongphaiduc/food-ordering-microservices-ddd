@@ -37,7 +37,7 @@ namespace auth_services.AuthService.API.AuthControllers
         [HttpGet("admin/staff")]
         public async Task<IActionResult> ViewListStaff()
         {
-            var list = await _listStaff.Excute();
+            var list = await _listStaff.Execute();
             return Ok(list);
         }
 

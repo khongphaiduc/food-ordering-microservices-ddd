@@ -4,7 +4,7 @@ namespace auth_services.AuthService.Application.Service
 {
     public interface IGetListStaff
     {
-        Task<List<ViewListStaffDTO>> Excute();
+        Task<List<ViewListStaffDTO>> Execute();
 
         Task<List<RoleDTO>> GetListRole();
     }

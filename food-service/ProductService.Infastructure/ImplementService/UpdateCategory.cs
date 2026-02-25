@@ -13,7 +13,7 @@ namespace food_service.ProductService.Infastructure.ImplementService
             _iCategoryRepo = categoryRepository;
         }
 
-        public async Task<bool> ExcuteAsync(UpdateCategoryDTO updateCategoryDTO)
+        public async Task<bool> ExecuteAsync(UpdateCategoryDTO updateCategoryDTO)
         {
 
             var categoryAggregate = await _iCategoryRepo.GetCategoryById(updateCategoryDTO.Id);

@@ -17,7 +17,7 @@ namespace cart_service.CartService.Infastructure.ImplementServices
             _logger = logger;
         }
 
-        public async Task<Guid> Excute(RequestCreateNewCartUser request)
+        public async Task<Guid> Execute(RequestCreateNewCartUser request)
         {
 
             var cartAggregate = CartAggregate.CreateNewCart(request.UserId);

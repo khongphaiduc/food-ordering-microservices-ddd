@@ -4,6 +4,6 @@ namespace food_service.ProductService.Application.Service
 {
     public interface ICreateNewCategory
     {
-        Task<bool> ExcuteAsync(CreateNewCategoryDTO createNewCategoryDTO);
+        Task<bool> ExecuteAsync(CreateNewCategoryDTO createNewCategoryDTO);
     }
 }

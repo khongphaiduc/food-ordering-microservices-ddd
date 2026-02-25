@@ -4,6 +4,6 @@ namespace user_service.UserService.Application.Services
 {
     public interface IGetInformationUser
     {
-        Task<InformationUserDTO> Excute(Guid IdUser);
+        Task<InformationUserDTO> Execute(Guid IdUser);
     }
 }

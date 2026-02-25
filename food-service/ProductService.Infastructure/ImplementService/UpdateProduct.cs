@@ -31,7 +31,7 @@ namespace food_service.ProductService.Infastructure.ImplementService
 
 
         // update image product 
-        public async Task Excute(UpdateProductDTO productRequest)
+        public async Task Execute(UpdateProductDTO productRequest)
         {
 
             var product = await _db.Products.Include(s => s.ProductVariants).Include(s => s.ProductImages).Where(s => s.Id == productRequest.IdProduct).FirstOrDefaultAsync();

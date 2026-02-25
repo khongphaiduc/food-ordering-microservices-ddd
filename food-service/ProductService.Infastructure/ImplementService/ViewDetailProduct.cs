@@ -26,7 +26,7 @@ namespace food_service.ProductService.Infastructure.ImplementService
             _configuration = configuration;
         }
 
-        public async Task<ProductDetailDTO?> ExcuteAsync(Guid idProduct)
+        public async Task<ProductDetailDTO?> ExecuteAsync(Guid idProduct)
         {
             //var cache = await _redis.GetStringAsync(idProduct.ToString());
 

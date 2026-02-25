@@ -30,7 +30,7 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
             _orderHub = hubContext;
         }
 
-        public async Task<string> Excute(Guid IdCart, PaymentMethod paymentMethod, Guid IdAddress)
+        public async Task<string> Execute(Guid IdCart, PaymentMethod paymentMethod, Guid IdAddress)
         {
             // yet retry
             var cart = await _cartClientGRPC.Excute(IdCart);  // data cart service 

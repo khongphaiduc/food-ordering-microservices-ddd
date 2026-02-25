@@ -51,7 +51,7 @@ namespace food_service.ProductService.API.Controllers
         [HttpGet("{idProduct}")]
         public async Task<IActionResult> ViewDetailProduct([FromRoute] Guid idProduct)
         {
-            var detailProduct = await _iViewDetailProduct.ExcuteAsync(idProduct);
+            var detailProduct = await _iViewDetailProduct.ExecuteAsync(idProduct);
 
             if (detailProduct != null)
             {

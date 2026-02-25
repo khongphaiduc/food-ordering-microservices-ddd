@@ -15,7 +15,7 @@ namespace food_service.ProductService.Infastructure.ImplementService
             _iCategoryRepo = categoryRepository;
         }
 
-        public async Task<bool> ExcuteAsync(CreateNewCategoryDTO createNewCategoryDTO)
+        public async Task<bool> ExecuteAsync(CreateNewCategoryDTO createNewCategoryDTO)
         {
             var categoryAggregate = CategoryAggregate.CreateNewCategory(new Name(createNewCategoryDTO.Name), createNewCategoryDTO.Description);
             return await _iCategoryRepo.AddNewCategory(categoryAggregate);

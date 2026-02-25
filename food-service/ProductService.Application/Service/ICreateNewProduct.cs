@@ -4,6 +4,6 @@ namespace food_service.ProductService.Application.Service
 {
     public interface ICreateNewProduct
     {
-        Task<bool> ExcuteAsync(CreateNewProducDTO request);
+        Task<bool> ExecuteAsync(CreateNewProducDTO request);
     }
 }

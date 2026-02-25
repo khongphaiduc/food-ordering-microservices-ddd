@@ -16,7 +16,7 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
             _db = foodOrderContext;
         }
 
-        public async Task<ViewManagementOrder> Excute(RequestGetListOrder request)
+        public async Task<ViewManagementOrder> Execute(RequestGetListOrder request)
         {
             var skipnumber = (request.CurrentPage - 1) * request.PageSize;
 

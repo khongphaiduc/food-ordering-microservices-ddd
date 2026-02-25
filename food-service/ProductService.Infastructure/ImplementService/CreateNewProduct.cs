@@ -21,7 +21,7 @@ namespace food_service.ProductService.Infastructure.ImplementService
             _clientMinIOFood = minIOFood;
         }
 
-        public async Task<bool> ExcuteAsync(CreateNewProducDTO request)
+        public async Task<bool> ExecuteAsync(CreateNewProducDTO request)
         {
 
             var productAggregate = ProductAggregate.CreateNewProduct(request.IdCategory, new Name(request.Name), new Price(request.Price), request.Description);

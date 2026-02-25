@@ -35,7 +35,7 @@ namespace user_service.UserService.API.UserServiceControllers
         [HttpGet("{IdUser}")]
         public async Task<IActionResult> GetInformationUser([FromRoute] Guid IdUser)
         {
-            var infor = await _infor.Excute(IdUser);
+            var infor = await _infor.Execute(IdUser);
             return Ok(infor);
         }
 
@@ -43,7 +43,7 @@ namespace user_service.UserService.API.UserServiceControllers
         [HttpPost("address")]
         public async Task<IActionResult> AddAddress([FromBody] RequestCreateNewAddressUser request)
         {
-            await _addAddress.Excute(request);
+            await _addAddress.Execute(request);
             return Ok();
         }
 

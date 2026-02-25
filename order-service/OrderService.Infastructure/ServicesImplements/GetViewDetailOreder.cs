@@ -16,7 +16,7 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
             _db = foodOrderContext;
         }
 
-        public async Task<ResponseViewDetailOrderDTO> Excute(RequestViewOrderDetail request)
+        public async Task<ResponseViewDetailOrderDTO> Execute(RequestViewOrderDetail request)
         {
             var order = await _db.Orders.Include(s => s.OrderItems).Include(s => s.OrderDelivery).FirstOrDefaultAsync(s => s.Id == request.IdOrder && s.UserId == request.IdUser);
 

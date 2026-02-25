@@ -4,6 +4,6 @@ namespace order_service.OrderService.Appilcation.Interface
 {
     public interface IGetListOrders
     {
-        Task<ViewManagementOrder> Excute(RequestGetListOrder request);
+        Task<ViewManagementOrder> Execute(RequestGetListOrder request);
     }
 }

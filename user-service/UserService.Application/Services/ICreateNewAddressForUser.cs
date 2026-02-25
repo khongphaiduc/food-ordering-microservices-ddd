@@ -4,6 +4,6 @@ namespace user_service.UserService.Application.Services
 {
     public interface ICreateNewAddressForUser
     {
-        Task Excute(RequestCreateNewAddressUser request);
+        Task Execute(RequestCreateNewAddressUser request);
     }
 }

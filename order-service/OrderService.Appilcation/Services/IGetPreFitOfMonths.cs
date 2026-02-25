@@ -4,6 +4,6 @@ namespace order_service.OrderService.Appilcation.Services
 {
     public interface IGetPreFitOfMonths
     {
-        Task<GetPreFitOfMonthDTO> Excute(RequestGetPrefitOfMonthDTO requets);
+        Task<GetPreFitOfMonthDTO> Execute(RequestGetPrefitOfMonthDTO requets);
     }
 }

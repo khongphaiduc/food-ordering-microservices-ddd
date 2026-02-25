@@ -15,7 +15,7 @@ namespace user_service.UserService.Infastructure.ServiceImplement
             _db = foodUsersContext;
         }
 
-        public async Task<InformationUserDTO> Excute(Guid IdUser)
+        public async Task<InformationUserDTO> Execute(Guid IdUser)
         {
             var user = await _db.Users.Include(s => s.UserAddresses).FirstOrDefaultAsync(s => s.Id == IdUser);
 

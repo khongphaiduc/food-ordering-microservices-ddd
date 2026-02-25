@@ -4,6 +4,6 @@ namespace food_service.ProductService.Application.Service
 {
     public interface IViewDetailProduct
     {
-        Task<ProductDetailDTO> ExcuteAsync(Guid idProduct);
+        Task<ProductDetailDTO> ExecuteAsync(Guid idProduct);
     }
 }

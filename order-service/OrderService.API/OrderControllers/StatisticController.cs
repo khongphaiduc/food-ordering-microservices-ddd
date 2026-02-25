@@ -26,7 +26,7 @@ namespace order_service.OrderService.API.OrderControllers
         [HttpGet("statistic")]
         public async Task<IActionResult> GetStatistic([FromQuery] GetRevenueDashboardRequest request)
         {
-            var result = await _revenue.Excute(request);
+            var result = await _revenue.Execute(request);
             return Ok(result);
         }
 
@@ -34,14 +34,14 @@ namespace order_service.OrderService.API.OrderControllers
         [HttpGet("statistic/order")]
         public async Task<IActionResult> GetStatisticOrder([FromQuery] GetOrderByMonthRequest request)
         {
-            var result = await _getNumberOrder.Excute(request);
+            var result = await _getNumberOrder.Execute(request);
             return Ok(result);
         }
 
         [HttpGet("statistic/prefit")]
         public async Task<IActionResult> GetStatisticPrefit([FromQuery] RequestGetPrefitOfMonthDTO requets)
         {
-            var result = await _getProfit.Excute(requets);
+            var result = await _getProfit.Execute(requets);
             return Ok(result);
         }
     }

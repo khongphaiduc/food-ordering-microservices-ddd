@@ -33,7 +33,7 @@ namespace order_service.OrderService.API.OrderControllers
         public async Task<IActionResult> CreateNewOrder([FromBody] RequestPaymentCart request)
         {
             PaymentMethod methodPayment = (PaymentMethod)request.PaymentMethod;
-            var QRCodeString = await _order.Excute(request.IdCart, methodPayment, request.IdAddress);
+            var QRCodeString = await _order.Execute(request.IdCart, methodPayment, request.IdAddress);
             return Ok(QRCodeString);
         }
 
@@ -50,7 +50,7 @@ namespace order_service.OrderService.API.OrderControllers
         public async Task<IActionResult> Index([FromBody] RequestViewOrderDetail request)
         {
 
-            var orderDetail = await _viewDetailOrder.Excute(request);
+            var orderDetail = await _viewDetailOrder.Execute(request);
 
             return Ok(orderDetail);
         }

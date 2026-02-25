@@ -4,6 +4,6 @@ namespace cart_service.CartService.Application.Services
 {
     public interface IGetCartForUser
     {
-        Task<ResponseViewCartUser> Excute(Guid idUser);
+        Task<ResponseViewCartUser> Execute(Guid idUser);
     }
 }

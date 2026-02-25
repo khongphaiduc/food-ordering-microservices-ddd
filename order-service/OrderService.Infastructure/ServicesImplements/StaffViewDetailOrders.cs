@@ -16,7 +16,7 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
             _db = foodOrderContext;
         }
 
-        public async Task<StaffViewDetailOrderDTO> Excute(Guid IdOrder)
+        public async Task<StaffViewDetailOrderDTO> Execute(Guid IdOrder)
         {
 
             var orderInfor = await _db.Orders.Where(o => o.Id == IdOrder)

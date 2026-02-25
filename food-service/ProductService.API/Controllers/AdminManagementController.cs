@@ -32,7 +32,7 @@ namespace food_service.ProductService.API.Controllers
         [HttpPost("products")]
         public async Task<ActionResult> CreateNewProduct([FromForm] CreateNewProducDTO request)
         {
-            var result = await _iAddNewProduct.ExcuteAsync(request);
+            var result = await _iAddNewProduct.ExecuteAsync(request);
             if (result)
             {
                 return Ok(new { message = "Create new product successful" });
@@ -47,7 +47,7 @@ namespace food_service.ProductService.API.Controllers
         [HttpPost("categories")]
         public async Task<IActionResult> CreateNewCategory([FromBody] CreateNewCategoryDTO request)
         {
-            var result = await _iAddNewCategory.ExcuteAsync(request);
+            var result = await _iAddNewCategory.ExecuteAsync(request);
             if (result)
             {
                 return Ok(new { message = "Create new category successful" });
@@ -66,7 +66,7 @@ namespace food_service.ProductService.API.Controllers
         [HttpPut("categories")]
         public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryDTO request)
         {
-            var result = await _iUpdateCategory.ExcuteAsync(request);
+            var result = await _iUpdateCategory.ExecuteAsync(request);
 
             if (result)
             {
@@ -81,7 +81,7 @@ namespace food_service.ProductService.API.Controllers
         [HttpPut("products")]
         public async Task<IActionResult> UpdateProduct([FromForm] UpdateProductDTO updateProduct)
         {
-            await _updateProduct.Excute(updateProduct);
+            await _updateProduct.Execute(updateProduct);
             return Ok();
         }
 

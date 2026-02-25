@@ -43,7 +43,7 @@ namespace cart_service.CartService.API.CartControllers
         [HttpPost]
         public async Task<IActionResult> TestCreateCart([FromBody] RequestCreateNewCartUser request)
         {
-            var idCart = await _cart.Excute(request);
+            var idCart = await _cart.Execute(request);
             return Ok(idCart);
         }
 
@@ -62,7 +62,7 @@ namespace cart_service.CartService.API.CartControllers
         public async Task<IActionResult> GetCartUser([FromRoute] Guid idUser)
         {
 
-            var cart = await _viewCart.Excute(idUser);
+            var cart = await _viewCart.Execute(idUser);
             return Ok(cart);
         }
     }

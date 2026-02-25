@@ -4,6 +4,6 @@ namespace food_service.ProductService.Application.Service
 {
     public interface IUpdateProduct
     {
-        Task Excute(UpdateProductDTO product);
+        Task Execute(UpdateProductDTO product);
     }
 }

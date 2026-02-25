@@ -17,7 +17,7 @@ namespace order_service.OrderService.Infastructure.ServicesImplements
             _db = foodOrderContext;
         }
 
-        public async Task<bool> Excute(RequestUpdateStatusOrder request)
+        public async Task<bool> Execute(RequestUpdateStatusOrder request)
         {
             var order = await _db.Orders.FirstOrDefaultAsync(s => s.Id == request.IdOrder);
             //var orderAggregate = new OrdersAggregate(order.Id, order.UserId, order.CartId, Enum.Parse<OrderStatusPayment>(order.Status), new Price(order.TotalAmount), order.ShippingFee, new DiscountValue(order.DiscountAmount), new Price(order.FinalAmount), Enum.Parse<PaymentMethod>(order.PaymentMethod!), order.CreatedAt, order.UpdatedAt ?? order.CreatedAt, null, null, null);

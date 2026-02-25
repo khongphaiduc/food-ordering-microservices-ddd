@@ -32,21 +32,21 @@ namespace order_service.OrderService.API.OrderControllers
         [HttpGet]
         public async Task<IActionResult> GetListOrder([FromQuery] RequestGetListOrder request)
         {
-            var listOrder = await _getListOrder.Excute(request);
+            var listOrder = await _getListOrder.Execute(request);
             return Ok(listOrder);
         }
 
         [HttpPatch]
         public async Task<IActionResult> UpdateOrderStatus([FromBody] RequestUpdateStatusOrder request)
         {
-            var result = await _updateOrderStatus.Excute(request);
+            var result = await _updateOrderStatus.Execute(request);
             return Ok(result);
         }
 
         [HttpGet("{idOrder}")]
         public async Task<IActionResult> ViewOrderDetail([FromRoute] Guid idOrder)
         {
-            var orderDetail = await _staffViewOrderDetail.Excute(idOrder);
+            var orderDetail = await _staffViewOrderDetail.Execute(idOrder);
             return Ok(orderDetail);
         }
 

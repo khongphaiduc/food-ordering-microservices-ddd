@@ -19,7 +19,7 @@ namespace user_service.UserService.Infastructure.ServiceImplement
             _userRepo = userRepository;
         }
 
-        public async Task Excute(RequestCreateNewAddressUser request)
+        public async Task Execute(RequestCreateNewAddressUser request)
         {
             var user = await _db.Users.Include(s => s.UserAddresses).FirstOrDefaultAsync(s => s.Id == request.IdUser);
             if (user == null)
