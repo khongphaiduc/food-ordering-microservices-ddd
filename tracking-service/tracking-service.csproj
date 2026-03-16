@@ -29,7 +29,6 @@
     <Folder Include="Tracking.Application\Services\" />
     <Folder Include="Tracking.Domain\Enums\" />
     <Folder Include="Tracking.Domain\Interface\" />
-    <Folder Include="Tracking.Domain\Repository\" />
     <Folder Include="Tracking.Infastructrure\ImplementServices\" />
   </ItemGroup>
 
