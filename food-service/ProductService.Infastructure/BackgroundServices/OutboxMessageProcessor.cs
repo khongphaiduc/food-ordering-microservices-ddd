@@ -44,7 +44,7 @@ namespace food_service.ProductService.Infastructure.BackgroundServices
                     if (Outbox.Type == "ProductCreated")
                     {
 
-                        
+
                         var content = JsonSerializer.Deserialize<ProductInternalDTO>(Outbox.PayLoad);
 
                         _logger.LogInformation("Message cần handle is :" + content.Name);
@@ -66,8 +66,8 @@ namespace food_service.ProductService.Infastructure.BackgroundServices
                 }
                 _logger.LogInformation("OutBoxBackground is running");
             }
+
+
         }
-
-
     }
 }

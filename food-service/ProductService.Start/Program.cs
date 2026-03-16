@@ -117,6 +117,15 @@ namespace food_service.ProductService.Start
                     .Build();
             });
 
+            //builder.Services.AddSingleton<IMinioClient>(sp =>
+            //{
+            //    return new MinioClient()
+            //        .WithEndpoint("103.161.119.162:9000")
+            //        .WithCredentials("admin", "2hondaicodon")
+            //        .WithSSL(false)
+            //        .Build();
+            //});
+
 
             builder.Services.AddGrpc();
 

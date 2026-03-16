@@ -10,7 +10,7 @@ namespace auth_services.AuthService.API.AuthControllers
 {
     //[EnableRateLimiting()]
     [Authorize(AuthenticationSchemes = "AccessToken")]
-    [Authorize(Roles ="Admin")]
+
     [Route("api/auth")]
     [ApiController]
     public class AccountStaffController : ControllerBase
