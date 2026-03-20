@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Caching.Distributed;
 using System.Threading.Tasks;
 
 namespace food_service.ProductService.API.Controllers
@@ -25,6 +26,7 @@ namespace food_service.ProductService.API.Controllers
             _iViewDetailProduct = viewDetailProduct;
             _recommentionProduct = productRecommendationService;
             _getListCategory = getListCatgory;
+
         }
 
 

@@ -8,6 +8,7 @@ using food_service.ProductService.Domain.Interface;
 using food_service.ProductService.Domain.ValueOject;
 using food_service.ProductService.Infastructure.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Minio;
 using RabbitMQ.Client;
 using static System.Net.Mime.MediaTypeNames;
@@ -20,13 +21,15 @@ namespace food_service.ProductService.Infastructure.ImplementService
         private readonly FoodProductsDbContext _db;
         private readonly IMinIOFood _minIO;
         private readonly ILogger<UpdateProduct> _logger;
+        private readonly IDistributedCache _cache;
 
-        public UpdateProduct(IProductRepository productRepository, FoodProductsDbContext db, IMinIOFood minIOFood, ILogger<UpdateProduct> logger)
+        public UpdateProduct(IDistributedCache distributedCache, IProductRepository productRepository, FoodProductsDbContext db, IMinIOFood minIOFood, ILogger<UpdateProduct> logger)
         {
             _product = productRepository;
             _db = db;
             _minIO = minIOFood;
             _logger = logger;
+            _cache = distributedCache;
         }
 
 
@@ -140,8 +143,6 @@ namespace food_service.ProductService.Infastructure.ImplementService
             }
 
 
-
-
             // remove variant 
             if (productRequest.DeleteVariant != null && productRequest.DeleteVariant.Any())
             {
@@ -153,8 +154,9 @@ namespace food_service.ProductService.Infastructure.ImplementService
                 }
             }
 
-
             await _product.UpdateProductAsync(productAggregate);
+
+            await _cache.RemoveAsync(productAggregate.Id.ToString());
         }
     }
 }

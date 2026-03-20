@@ -28,12 +28,12 @@ namespace food_service.ProductService.Infastructure.ImplementService
 
         public async Task<ProductDetailDTO?> ExecuteAsync(Guid idProduct)
         {
-            //var cache = await _redis.GetStringAsync(idProduct.ToString());
+            var cache = await _redis.GetStringAsync(idProduct.ToString());
 
-            //if (cache != null)
-            //{
-            //    return JsonSerializer.Deserialize<ProductDetailDTO>(cache);
-            //}
+            if (cache != null)
+            {
+                return JsonSerializer.Deserialize<ProductDetailDTO>(cache);
+            }
 
             var product = await _db.Products
                 .Where(s => s.Id == idProduct)
@@ -74,14 +74,14 @@ namespace food_service.ProductService.Infastructure.ImplementService
 
             await Task.WhenAll(tasks);
 
-            //var options = new DistributedCacheEntryOptions()
-            //    .SetSlidingExpiration(TimeSpan.FromMinutes(30))
-            //    .SetAbsoluteExpiration(DateTimeOffset.Now.AddHours(6));
+            var options = new DistributedCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromMinutes(30))
+                .SetAbsoluteExpiration(DateTimeOffset.Now.AddHours(6));
 
-            //await _redis.SetStringAsync(
-            //    idProduct.ToString(),
-            //    JsonSerializer.Serialize(product),
-            //    options);
+            await _redis.SetStringAsync(
+                idProduct.ToString(),
+                JsonSerializer.Serialize(product),
+                options);
 
             return product;
         }
