@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using tracking_service.Tracking.Infastructrure.Models;
@@ -11,9 +12,11 @@ using tracking_service.Tracking.Infastructrure.Models;
 namespace tracking_service.Migrations
 {
     [DbContext(typeof(FoodProductsDbContext))]
-    partial class FoodProductsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260319073956_v2")]
+    partial class v2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

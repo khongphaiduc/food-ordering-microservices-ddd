@@ -14,11 +14,14 @@ namespace tracking_service.Tracking.Domain.Aggregate
 
         private UserSessionAggregate() { }
 
-        public UserSessionAggregate(Guid? userId)
+        public static UserSessionAggregate CreateNewSessoionUser(Guid? userId)
         {
-            Id = Guid.NewGuid();
-            UserId = userId;
-            StartedAt = DateTime.UtcNow;
+            return new UserSessionAggregate
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                StartedAt = DateTime.UtcNow
+            };
         }
 
         public void AddEvent(string eventType, Guid? productId)

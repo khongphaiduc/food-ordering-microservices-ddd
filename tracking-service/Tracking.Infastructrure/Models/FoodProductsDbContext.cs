@@ -19,6 +19,7 @@ public partial class FoodProductsDbContext : DbContext
 
     public virtual DbSet<UserSession> UserSessions { get; set; }
 
+    public virtual DbSet<OutBoxPattern> OutBoxPatterns { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
 

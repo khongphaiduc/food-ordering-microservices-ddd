@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using tracking_service.Tracking.Application.Interface;
+using tracking_service.Tracking.Domain.Repository;
+using tracking_service.Tracking.Infastructrure.ImplementServices;
 using tracking_service.Tracking.Infastructrure.Models;
+using tracking_service.Tracking.Infastructrure.Repo;
 
 namespace tracking_service
 {
@@ -16,20 +20,22 @@ namespace tracking_service
                 options.UseNpgsql(builder.Configuration["SQL_URL"]);
             });
 
-          
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = builder.Configuration["Redis"];
+                options.InstanceName = "FoodUserBehaviorTracking";
+            });
+
+            builder.Services.AddScoped<IUserSessionRepository, UserSessionRepository>();
+            builder.Services.AddScoped<IUserBehaviorTracking, UserBehaviorTracking>();
+            builder.Services.AddScoped<IProducerTracking, ProducerTracking>();
+
             builder.Services.AddControllers();
 
             var app = builder.Build();
-
-          
-
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
-
             app.MapControllers();
-
             app.Run();
         }
     }

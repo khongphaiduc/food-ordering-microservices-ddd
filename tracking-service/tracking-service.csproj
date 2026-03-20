@@ -18,18 +18,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.23" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
     <PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
     <PackageReference Include="StackExchange.Redis" Version="2.12.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Tracking.Application\DTO\" />
-    <Folder Include="Tracking.Application\Interface\" />
-    <Folder Include="Tracking.Application\Services\" />
-    <Folder Include="Tracking.Domain\Enums\" />
     <Folder Include="Tracking.Domain\Interface\" />
-    <Folder Include="Tracking.Infastructrure\ImplementServices\" />
   </ItemGroup>
 
 </Project>
