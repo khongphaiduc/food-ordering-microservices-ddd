@@ -7,41 +7,17 @@ namespace tracking_service.Tracking.Infastructrure.ImplementServices
 {
     public class UserBehaviorTracking : IUserBehaviorTracking
     {
-        private readonly IUserSessionRepository _sessionRepository;
+        private readonly IProducerTracking _producerTracking;
 
-        public UserBehaviorTracking(IUserSessionRepository sessionRepository)
+        public UserBehaviorTracking(IProducerTracking producerTracking)
         {
-            _sessionRepository = sessionRepository;
+
+            _producerTracking = producerTracking;
         }
 
         public async Task Execute(TrackingDTO request)
         {
-           
-            bool sessionExists = await _sessionRepository.SessionExists(request.IdSession);
-
-            if (!sessionExists)  // exists no session, create a new one and add the event
-            {
-               
-                var newSession = UserSessionAggregate.CreateNewSessoionUser(request.IdUser);
-
-                
-                newSession.AddEvent(request.EventType.ToString(), request.IdProduct);
-
-                
-                await _sessionRepository.AddNewUserSession(newSession);
-            }
-            else
-            {
-               
-                var existingEvent = new Domain.Entities.TrackingEvent(
-                    request.IdUser,
-                    request.IdSession,
-                    request.EventType.ToString(),
-                    request.IdProduct
-                );
-
-                await _sessionRepository.AddEvent(existingEvent);
-            }
+            await _producerTracking.SendMessage(request);
         }
     }
 }

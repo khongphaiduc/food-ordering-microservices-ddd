@@ -7,9 +7,16 @@ namespace tracking_service.Tracking.Application.DTO
         public Guid IdSession { get; set; }
 
         public Guid IdUser { get; set; }
+        public List<TrackingPayload>? PayLoad { get; set; }
+    }
 
-        public EventType EventType { get; set; } 
+
+    public class TrackingPayload
+    {
+        public EventType EventType { get; set; }
 
         public Guid? IdProduct { get; set; }
+
+        public DateTime CreatedAt { get; set; }
     }
 }

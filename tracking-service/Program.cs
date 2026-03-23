@@ -4,6 +4,7 @@ using tracking_service.Tracking.Domain.Repository;
 using tracking_service.Tracking.Infastructrure.ImplementServices;
 using tracking_service.Tracking.Infastructrure.Models;
 using tracking_service.Tracking.Infastructrure.Repo;
+using tracking_service.Tracking.Infastructrure.Worker;
 
 namespace tracking_service
 {
@@ -29,6 +30,10 @@ namespace tracking_service
             builder.Services.AddScoped<IUserSessionRepository, UserSessionRepository>();
             builder.Services.AddScoped<IUserBehaviorTracking, UserBehaviorTracking>();
             builder.Services.AddScoped<IProducerTracking, ProducerTracking>();
+            builder.Services.AddScoped<IServiceAI, ServiceAI>();
+            builder.Services.AddHostedService<TrakingComsumer>();
+
+
 
             builder.Services.AddControllers();
 

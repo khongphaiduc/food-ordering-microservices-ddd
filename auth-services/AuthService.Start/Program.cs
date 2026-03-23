@@ -85,6 +85,15 @@ namespace auth_services.AuthService.Start
             {
                 s.Address = new Uri("https://localhost:7199");
             });
+
+
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = builder.Configuration["Redis:Host"];
+                options.InstanceName = "Foodly";
+            });
+
+
             builder.Services.AddHttpContextAccessor();
 
 

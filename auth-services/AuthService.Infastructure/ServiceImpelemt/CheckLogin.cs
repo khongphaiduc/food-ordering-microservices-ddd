@@ -6,7 +6,9 @@ using auth_services.AuthService.Domain.Interface;
 using auth_services.AuthService.Infastructure.DbContextAuth;
 using auth_services.AuthService.Infastructure.Tokens;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using System.Linq;
+using System.Text.Json;
 
 namespace auth_services.AuthService.Infastructure.ServiceImpelemt
 {
@@ -17,14 +19,16 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
         private readonly IEnumerable<IGanarateTokenJWT> _iGenarateToken;
         private readonly IRefreshTokenRepository _iRefreshToken;
         private readonly ILogger<CheckLogin> _logger;
+        private readonly IDistributedCache _cache;
 
-        public CheckLogin(FoodAuthContext foodAuthContext, IHashPassword hashPassword, IEnumerable<IGanarateTokenJWT> ganarateTokenJWTs, IRefreshTokenRepository refreshTokenRepository, ILogger<CheckLogin> logger)
+        public CheckLogin(IDistributedCache distributedCache, FoodAuthContext foodAuthContext, IHashPassword hashPassword, IEnumerable<IGanarateTokenJWT> ganarateTokenJWTs, IRefreshTokenRepository refreshTokenRepository, ILogger<CheckLogin> logger)
         {
             _db = foodAuthContext;
             _IhashPassword = hashPassword;
             _iGenarateToken = ganarateTokenJWTs;
             _iRefreshToken = refreshTokenRepository;
             _logger = logger;
+            _cache = distributedCache;
         }
 
         public async Task<ResponseLoginUser> IsUserLoginAsync(RequestUserLogin user)
@@ -52,6 +56,14 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
             if (PasswordFromUserSend == realUserInDataBase.passwordHash)
             {
 
+                var sessionID = Guid.NewGuid();
+
+                var option = new DistributedCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(30))
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(10));
+
+                await _cache.SetStringAsync("SessionLogin", JsonSerializer.Serialize(sessionID), option);
+
                 var access = _iGenarateToken.OfType<GanarateAccessTokenJWT>().First().HandleGenarateJWT(realUserInDataBase.id, realUserInDataBase.Email, realUserInDataBase.Role);
                 var refresh = _iGenarateToken.OfType<GanarateRefresheTokenJWT>().First().HandleGenarateJWT(realUserInDataBase.id, realUserInDataBase.Email, realUserInDataBase.Role);
 
@@ -65,7 +77,7 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
                     AccessToken = access,
                     RefreshToken = refresh,
                     Message = "Login successful",
-
+                    IdSession = sessionID
                 };
             }
             else

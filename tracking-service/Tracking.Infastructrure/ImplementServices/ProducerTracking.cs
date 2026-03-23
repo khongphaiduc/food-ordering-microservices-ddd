@@ -22,7 +22,7 @@ namespace tracking_service.Tracking.Infastructrure.ImplementServices
 
             var factory = new ConnectionFactory
             {
-                HostName = _config["RabbitMQ:Account"]!,
+                HostName = _config["RabbitMQ:Host"]!,
                 UserName = _config["RabbitMQ:UserName"]!,
                 Password = _config["RabbitMQ:Password"]!
             };
@@ -38,7 +38,7 @@ namespace tracking_service.Tracking.Infastructrure.ImplementServices
                durable: true,
                exclusive: false,
                autoDelete: false
-           );
+            );
 
             await _channel.QueueBindAsync(
                  queue: _config["RabbitMQ:Queue:Name"]!,

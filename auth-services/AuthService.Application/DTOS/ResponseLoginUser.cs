@@ -11,6 +11,7 @@
 
         public TokenResponse? RefreshToken { get; set; }
 
+        public Guid IdSession { get; set; }
         public string? Message { get; set; }
     }
 }

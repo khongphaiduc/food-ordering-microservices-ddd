@@ -1,29 +1,49 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using tracking_service.Tracking.Application.DTO;
 using tracking_service.Tracking.Application.Interface;
 
 namespace tracking_service.Tracking.API.ControllerServices
 {
     [Route("api/tracking")]
-    [Authorize(AuthenticationSchemes ="AccessToken")]
     [ApiController]
     public class TrackingController : ControllerBase
     {
-        public IUserBehaviorTracking tracking_service { get; }
-        public TrackingController(IUserBehaviorTracking userBehaviorTracking)
+        private readonly IUserBehaviorTracking _trackingService;
+        private readonly IServiceAI _aiService; // Inject Service AI vào đây
+
+        public TrackingController(IUserBehaviorTracking userBehaviorTracking, IServiceAI aiService)
         {
-            tracking_service = userBehaviorTracking;
+            _trackingService = userBehaviorTracking;
+            _aiService = aiService;
         }
 
+        [HttpGet("gemini-chat")]
+        public async Task<IActionResult> GeminiChat([FromQuery] string prompt = "Xin chào")
+        {
+            // Gọi qua service đã tách
+            var result = await _aiService.Prompt(prompt);
+            return Ok(result);
+        }
+
+        // --- GIỮ NGUYÊN CÁC HÀM CŨ ---
         [HttpPost]
         public async Task<IActionResult> RecordBehaviorUserTracking([FromBody] TrackingDTO request)
         {
-            await tracking_service.Execute(request);
+            await _trackingService.Execute(request);
             return Ok();
         }
 
+        [HttpGet]
+        public IActionResult racking()
+        {
+            return Ok();
+        }
 
+        [HttpGet("test-api")]
+        public IActionResult TestAPI()
+        {
+            var content = "Xin chào tôi là Đức";
+            return Ok(content);
+        }
     }
 }

@@ -2,30 +2,19 @@
 {
     public enum EventType
     {
-        ViewHomePage = 1,      // User click home page 
 
-        ViewProduct = 2,       // User view detail product  
+        ViewProduct = 1,       // User view detail product  
 
-        ViewCategory = 3,      // User view category page
+        SearchProduct = 2,     // User search product
 
-        SearchProduct = 4,     // User search product
+        AddToCart = 3,         // User add to cart 
 
-        ClickProduct = 5,      // User click vào một sản phẩm từ danh sách
+        RemoveFromCart = 4,    // User abandon cart 
 
-        AddToCart = 6,         // User add to cart 
+        CompleteCheckout = 5, // User purchase successfully
 
-        RemoveFromCart = 7,    // User abandon cart 
+        Login = 6,            // User login 
 
-        ViewCart = 8,          // User open cart page
-
-        StartCheckout = 9,     // User start purchase process
-
-        CompleteCheckout = 10, // User purchase successfully
-
-        Login = 11,            // User login 
-
-        Logout = 12,           // User  logout
-
-        Register = 13          // User register account
+        Logout = 7,           // User  logout
     }
 }
