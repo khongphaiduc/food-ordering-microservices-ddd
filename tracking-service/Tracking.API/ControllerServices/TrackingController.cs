@@ -9,7 +9,7 @@ namespace tracking_service.Tracking.API.ControllerServices
     public class TrackingController : ControllerBase
     {
         private readonly IUserBehaviorTracking _trackingService;
-        private readonly IServiceAI _aiService; // Inject Service AI vào đây
+        private readonly IServiceAI _aiService; 
 
         public TrackingController(IUserBehaviorTracking userBehaviorTracking, IServiceAI aiService)
         {
@@ -20,30 +20,17 @@ namespace tracking_service.Tracking.API.ControllerServices
         [HttpGet("gemini-chat")]
         public async Task<IActionResult> GeminiChat([FromQuery] string prompt = "Xin chào")
         {
-            // Gọi qua service đã tách
+            
             var result = await _aiService.Prompt(prompt);
             return Ok(result);
         }
 
-        // --- GIỮ NGUYÊN CÁC HÀM CŨ ---
+       
         [HttpPost]
         public async Task<IActionResult> RecordBehaviorUserTracking([FromBody] TrackingDTO request)
         {
             await _trackingService.Execute(request);
             return Ok();
-        }
-
-        [HttpGet]
-        public IActionResult racking()
-        {
-            return Ok();
-        }
-
-        [HttpGet("test-api")]
-        public IActionResult TestAPI()
-        {
-            var content = "Xin chào tôi là Đức";
-            return Ok(content);
         }
     }
 }

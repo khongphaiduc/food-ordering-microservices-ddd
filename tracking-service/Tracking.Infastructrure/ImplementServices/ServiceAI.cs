@@ -11,7 +11,7 @@ namespace tracking_service.Tracking.Infastructrure.ImplementServices
 
         public ServiceAI(IConfiguration configuration)
         {
-       
+
             var apiKey = configuration["GeminiKey"];
 
             if (string.IsNullOrEmpty(apiKey))
@@ -31,7 +31,7 @@ namespace tracking_service.Tracking.Infastructrure.ImplementServices
                     new Content { Role = "user", Parts = new List<Part> { new Part { Text = prompt } } }
                 };
 
-      
+
                 var response = await _geminiClient.Models.GenerateContentAsync(_modelName, contents);
 
                 return response.Text ?? "Không có phản hồi từ AI.";

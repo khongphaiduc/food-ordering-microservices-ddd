@@ -54,7 +54,7 @@ namespace tracking_service.Tracking.Infastructrure.Worker
 
                 var consumer = new AsyncEventingBasicConsumer(_channel);
 
-                var batchLock = new BatchBlock<TrackingDTO>(5);  // gom message lại thành 1 batch gồm 5 message khi đủ thì đẩy ra 1 mảng message
+                var batchLock = new BatchBlock<TrackingDTO>(1);  // gom message lại thành 1 batch gồm 5 message khi đủ thì đẩy ra 1 mảng message
 
                 var actionLock = new ActionBlock<TrackingDTO[]>(async batch =>
                 {
@@ -90,6 +90,7 @@ namespace tracking_service.Tracking.Infastructrure.Worker
                         // 4. Ánh xạ các Event từ DTO sang Entity
                         var trackingEvents = batch.SelectMany(x => x.PayLoad.Select(p => new TrackingEvent
                         {
+                         
                             UserId = x.IdUser,
                             SessionId = x.IdSession,
                             EventType = p.EventType.ToString(),
@@ -99,7 +100,7 @@ namespace tracking_service.Tracking.Infastructrure.Worker
 
                         db.TrackingEvents.AddRange(trackingEvents);
 
-                        // 5. Lưu thay đổi một lần duy nhất cho cả batch
+                       
                         try
                         {
                             await db.SaveChangesAsync();
@@ -119,7 +120,10 @@ namespace tracking_service.Tracking.Infastructrure.Worker
                     try
                     {
 
-                        var content = JsonSerializer.Deserialize<TrackingDTO>(message);
+                        var content = JsonSerializer.Deserialize<TrackingDTO>(message, new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        });
 
                         await batchLock.SendAsync(content);
 
