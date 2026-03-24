@@ -138,6 +138,8 @@ namespace food_service.ProductService.Start
 
             app.MapGrpcService<ProductInformationsServices>();
 
+            app.MapGrpcService<LoadFullProduct>();
+
             app.UseRateLimiter();
 
             app.UseMiddleware<CustomGlobalException>();

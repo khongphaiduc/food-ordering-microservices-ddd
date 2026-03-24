@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Minio;
 using System.Net.WebSockets;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace food_service.ProductService.Infastructure.ImplementService
 {
@@ -16,13 +18,15 @@ namespace food_service.ProductService.Infastructure.ImplementService
         private readonly IDistributedCache _redisCatch;
         private readonly IConfiguration _config;
         private readonly IMinIOFood _minio;
+        private readonly IDistributedCache _cache;
 
-        public GetListProduct(FoodProductsDbContext foodProductsDbContext, IDistributedCache _RedisCache, IConfiguration config, IMinIOFood minioClient)
+        public GetListProduct(IDistributedCache distributedCache, FoodProductsDbContext foodProductsDbContext, IDistributedCache _RedisCache, IConfiguration config, IMinIOFood minioClient)
         {
             _db = foodProductsDbContext;
             _redisCatch = _RedisCache;
             _config = config;
             _minio = minioClient;
+            _cache = distributedCache;
         }
 
         // search và phân trang
@@ -76,5 +80,15 @@ namespace food_service.ProductService.Infastructure.ImplementService
         {
             return await _db.Products.CountAsync();
         }
+
+
+        //var listAllProduct = await _db.Products.Select(s => new { s.Id, s.Name }).ToListAsync();
+
+        //var content = JsonSerializer.Serialize(listAllProduct);
+
+        //await _cache.SetStringAsync("ALLPRODUCT", content, new DistributedCacheEntryOptions
+        //    {
+        //        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+        //    });
     }
 }

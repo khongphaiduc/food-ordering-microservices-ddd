@@ -49,6 +49,6 @@
 
 	<ItemGroup>
 		<Protobuf Include="ProductService.API\Proto\Products.proto" GrpcServices="Server" />
+		<Protobuf Include="ProductService.API\Proto\LoadAllProduct.proto" GrpcServices="Server" />
 	</ItemGroup>
-
 </Project>
