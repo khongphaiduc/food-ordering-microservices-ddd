@@ -19,6 +19,7 @@ using Microsoft.IdentityModel.Tokens;
 using Minio;
 using Serilog;
 using StackExchange.Redis;
+using trackingtService.API.Protos;
 
 namespace food_service.ProductService.Start
 {
@@ -99,7 +100,7 @@ namespace food_service.ProductService.Start
             builder.Services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = builder.Configuration["Redis:RedisAddress"];
-                options.InstanceName = "FoodTrungDuc";
+                options.InstanceName = "FoodAppShared_";
             });
 
             // Redis lock
@@ -115,6 +116,14 @@ namespace food_service.ProductService.Start
                     .WithCredentials(builder.Configuration["Minio:AccessKey"], builder.Configuration["Minio:SecretKey"])
                     .WithSSL(false)
                     .Build();
+            });
+
+
+
+            builder.Services.AddScoped<IRecommenPersonalFood, RecommenPersonalFood>();
+            builder.Services.AddGrpcClient<GeminiFoodlyGrpc.GeminiFoodlyGrpcClient>(options =>
+            {
+                options.Address = new Uri("https://localhost:7139");
             });
 
             //builder.Services.AddSingleton<IMinioClient>(sp =>

@@ -1,0 +1,22 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "productService.API.Protos";
+
+package productservice;
+
+service ProductListGrpc {
+  rpc GetListProductsFood (none) returns (ResponseProductList);
+}
+
+message ResponseProductList {
+   repeated Product payload = 1;
+}
+
+message Product {
+    string id_product = 1;
+    string name_product = 2;
+}
+
+message none {}
+
+

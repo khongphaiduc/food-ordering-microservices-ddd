@@ -19,13 +19,15 @@ namespace food_service.ProductService.API.Controllers
         private readonly IViewDetailProduct _iViewDetailProduct;
         private readonly IProductRecommendationService _recommentionProduct;
         private readonly IGetListCatgory _getListCategory;
+        private readonly IRecommenPersonalFood _recommentionAI;
 
-        public ProductsController(IGetListCatgory getListCatgory, IGetListProduct listProduct, IViewDetailProduct viewDetailProduct, IProductRecommendationService productRecommendationService)
+        public ProductsController(IGetListCatgory getListCatgory, IGetListProduct listProduct, IViewDetailProduct viewDetailProduct, IProductRecommendationService productRecommendationService, IRecommenPersonalFood recommenPersonalFood)
         {
             _iListProduct = listProduct;
             _iViewDetailProduct = viewDetailProduct;
             _recommentionProduct = productRecommendationService;
             _getListCategory = getListCatgory;
+            _recommentionAI = recommenPersonalFood;
 
         }
 
@@ -40,6 +42,15 @@ namespace food_service.ProductService.API.Controllers
             var totalProduct = await _iListProduct.TotalProdut();
             return Ok(new { list = listProduct, totalProduct = totalProduct });
         }
+
+
+        [HttpGet("ai/{request}")]
+        public async Task<IActionResult> GetListProductRecommendByAI([FromRoute] Guid request)
+        {
+            var listProduct = await _recommentionAI.Execute(request);
+            return Ok(new { list = listProduct, totalProduct = listProduct.Count });
+        }
+
 
         [HttpGet("category")]
         public async Task<IActionResult> GetListCategory()
@@ -74,5 +85,9 @@ namespace food_service.ProductService.API.Controllers
             return Ok(listProductRecommendation);
 
         }
+
+
+
+
     }
 }
