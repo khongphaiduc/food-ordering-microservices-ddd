@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Caching.Distributed;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace food_service.ProductService.API.Controllers
 {
     //[EnableRateLimiting("rateFix")]
+    [Authorize(AuthenticationSchemes = "AccessToken")]
     [Route("api/products")]
     [ApiController]
     public class ProductsController : ControllerBase
@@ -21,19 +23,22 @@ namespace food_service.ProductService.API.Controllers
         private readonly IProductRecommendationService _recommentionProduct;
         private readonly IGetListCatgory _getListCategory;
         private readonly IRecommenPersonalFood _recommentionAI;
+        private readonly IDistributedCache _cache;
 
-        public ProductsController(IGetListCatgory getListCatgory, IGetListProduct listProduct, IViewDetailProduct viewDetailProduct, IProductRecommendationService productRecommendationService, IRecommenPersonalFood recommenPersonalFood)
+        public ProductsController(IGetListCatgory getListCatgory, IGetListProduct listProduct, IViewDetailProduct viewDetailProduct, IProductRecommendationService productRecommendationService, IRecommenPersonalFood recommenPersonalFood, IDistributedCache distributedCache)
         {
             _iListProduct = listProduct;
             _iViewDetailProduct = viewDetailProduct;
             _recommentionProduct = productRecommendationService;
             _getListCategory = getListCatgory;
             _recommentionAI = recommenPersonalFood;
+            _cache = distributedCache;
 
         }
 
 
         // đã test
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetListProduct([FromQuery] RequestGetListProduct request)
         {
@@ -43,15 +48,39 @@ namespace food_service.ProductService.API.Controllers
         }
 
 
-        [HttpGet("ai/{IdUser}")]
-        public async Task<IActionResult> GetListProductRecommendByAI([FromRoute] Guid IdUser)
+        // AI Agent recommend food 
+        [AllowAnonymous]
+        [HttpGet("ai")]
+        public async Task<IActionResult> GetListProductRecommendByAI()
         {
+            var idUserClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var listProduct = await _recommentionAI.Execute(IdUser);
+            Guid userId;
+            bool isLogin = Guid.TryParse(idUserClaim, out userId);
+
+
+            if (!isLogin)
+            {
+                var sampleProduct = await _iListProduct.ExecuteAsync(new RequestGetListProduct());
+                return Ok(new { list = sampleProduct, totalProduct = sampleProduct.Count });
+            }
+
+
+            var cacheKey = userId.ToString() + "PersonalFoods";
+            var cacheData = await _cache.GetStringAsync(cacheKey);
+
+            if (cacheData != null)
+            {
+                var product = await _recommentionAI.Execute1(userId);
+                return Ok(new { list = product, totalProduct = product.Count });
+            }
+
+
+            var listProduct = await _recommentionAI.Execute(userId);
             return Ok(new { list = listProduct, totalProduct = listProduct.Count });
         }
 
-
+        [AllowAnonymous]
         [HttpGet("category")]
         public async Task<IActionResult> GetListCategory()
         {
@@ -63,7 +92,9 @@ namespace food_service.ProductService.API.Controllers
 
 
         // đã test 
+        [AllowAnonymous]
         [HttpGet("{idProduct}")]
+
         public async Task<IActionResult> ViewDetailProduct([FromRoute] Guid idProduct)
         {
             var detailProduct = await _iViewDetailProduct.ExecuteAsync(idProduct);
@@ -78,6 +109,8 @@ namespace food_service.ProductService.API.Controllers
             }
         }
 
+
+        [AllowAnonymous]
         [HttpGet("recommendation/{idCategory}")]
         public async Task<IActionResult> GetProductRecommendation([FromRoute] Guid idCategory)
         {
@@ -85,9 +118,5 @@ namespace food_service.ProductService.API.Controllers
             return Ok(listProductRecommendation);
 
         }
-
-
-
-
     }
 }

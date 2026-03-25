@@ -155,6 +155,7 @@ namespace food_service.ProductService.Start
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
