@@ -38,7 +38,7 @@ namespace food_service.ProductService.Infastructure.ImplementService
             var tasks = listProductRecommendation.SelectMany(p => p.ImageFoods ?? new List<ImageFood>()).Where(img => !string.IsNullOrEmpty(img.UrlImage))
              .Select(async img =>
              {
-                 img.UrlImage = await _minio.GetUrlImage("bucket", img.UrlImage);
+                 img.UrlImage = await _minio.GetUrlImage("images", img.UrlImage);
              });
 
             await Task.WhenAll(tasks);

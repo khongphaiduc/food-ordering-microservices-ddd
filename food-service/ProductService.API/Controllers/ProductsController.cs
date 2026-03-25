@@ -1,4 +1,5 @@
-﻿using food_service.ProductService.Application.DTOs.Request;
+﻿using Elastic.Clients.Elasticsearch.Requests;
+using food_service.ProductService.Application.DTOs.Request;
 using food_service.ProductService.Application.Interface;
 using food_service.ProductService.Application.Service;
 using Microsoft.AspNetCore.Authorization;
@@ -32,8 +33,6 @@ namespace food_service.ProductService.API.Controllers
         }
 
 
-
-
         // đã test
         [HttpGet]
         public async Task<IActionResult> GetListProduct([FromQuery] RequestGetListProduct request)
@@ -44,10 +43,11 @@ namespace food_service.ProductService.API.Controllers
         }
 
 
-        [HttpGet("ai/{request}")]
-        public async Task<IActionResult> GetListProductRecommendByAI([FromRoute] Guid request)
+        [HttpGet("ai/{IdUser}")]
+        public async Task<IActionResult> GetListProductRecommendByAI([FromRoute] Guid IdUser)
         {
-            var listProduct = await _recommentionAI.Execute(request);
+
+            var listProduct = await _recommentionAI.Execute(IdUser);
             return Ok(new { list = listProduct, totalProduct = listProduct.Count });
         }
 

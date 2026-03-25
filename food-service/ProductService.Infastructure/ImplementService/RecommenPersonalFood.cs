@@ -13,12 +13,16 @@ namespace food_service.ProductService.Infastructure.ImplementService
         private readonly FoodProductsDbContext _db;
         private readonly IDistributedCache _cache;
         private readonly GeminiFoodlyGrpc.GeminiFoodlyGrpcClient _GetListProductRecommendByAI;
+        private readonly IMinIOFood _minio;
+        private readonly ILogger<RecommenPersonalFood> _logger;
 
-        public RecommenPersonalFood(FoodProductsDbContext foodProductsDbContext, IDistributedCache distributedCache, GeminiFoodlyGrpc.GeminiFoodlyGrpcClient geminiFoodlyGrpcClient)
+        public RecommenPersonalFood(ILogger<RecommenPersonalFood> logger,FoodProductsDbContext foodProductsDbContext, IDistributedCache distributedCache, GeminiFoodlyGrpc.GeminiFoodlyGrpcClient geminiFoodlyGrpcClient, IMinIOFood minio)
         {
             _db = foodProductsDbContext;
             _cache = distributedCache;
             _GetListProductRecommendByAI = geminiFoodlyGrpcClient;
+            _minio = minio;
+            _logger = logger;
         }
 
         public async Task<List<ProductDTO>> Execute(Guid IdUser)
@@ -29,9 +33,26 @@ namespace food_service.ProductService.Infastructure.ImplementService
             string KeyPersonal = IdUser.ToString() + "PersonalFoods";      // chưa danh sách các món ăn được truy vẫn sẫn 
 
             var cachedDTOs = await _cache.GetStringAsync(KeyPersonal);
-            if (!string.IsNullOrEmpty(cachedDTOs))   // nếu có cache thì trả về luôn, không cần gọi AI nữa
+
+            if (!string.IsNullOrEmpty(cachedDTOs))   // nếu có cache thì trả về luôn
             {
-                return JsonSerializer.Deserialize<List<ProductDTO>>(cachedDTOs) ?? new List<ProductDTO>();
+                var ListProduct = JsonSerializer.Deserialize<List<ProductDTO>>(cachedDTOs)
+                                  ?? new List<ProductDTO>();
+
+                var tasks = ListProduct
+                    .SelectMany(s => s.ImageFoods ?? new List<ImageFood>())
+                    .Where(s => !string.IsNullOrEmpty(s.UrlImage))
+                    .Select(async s =>
+                    {
+                        s.UrlImage = await _minio.GetUrlImage("images", s.UrlImage);
+                    })
+                    .ToList();
+
+                await Task.WhenAll(tasks);
+
+                _logger.LogInformation("Cache hit - return products");
+
+                return ListProduct;
             }
             else
             {
@@ -44,25 +65,24 @@ namespace food_service.ProductService.Infastructure.ImplementService
 
                 var content = JsonSerializer.Deserialize<List<string>>(IdProducts) ?? new List<string>();
 
-
                 // các món  được gọi ý 
-                var inforProductRecommend = _db.Products.Where(s => content.Contains(s.Id.ToString())).Select(t => new ProductDTO
-                {
-                    Id = t.Id.ToString(),
-                    Name = t.Name,
-                    Price = t.Price,
-                    Decriptions = t.Description,
-                    IdCategory = t.CategoryId,
-                    ImageFoods = t.ProductImages.Select(i => new ImageFood
+                var inforProductRecommend = _db.Products
+                    .Where(s => content.Contains(s.Id.ToString()))
+                    .Select(t => new ProductDTO
                     {
-                        ImageId = i.Id,
-                        UrlImage = i.ImageUrl,
-                        IsMain = i.IsMain
-                    }).ToList(),
-                    IsAvailable = t.IsAvailable
-
-
-                }).ToList();
+                        Id = t.Id.ToString(),
+                        Name = t.Name,
+                        Price = t.Price,
+                        Decriptions = t.Description,
+                        IdCategory = t.CategoryId,
+                        ImageFoods = t.ProductImages.Select(i => new ImageFood
+                        {
+                            ImageId = i.Id,
+                            UrlImage = i.ImageUrl,
+                            IsMain = i.IsMain
+                        }).ToList(),
+                        IsAvailable = t.IsAvailable
+                    }).ToList();
 
 
                 await _cache.SetStringAsync(KeyPersonal, JsonSerializer.Serialize(inforProductRecommend),
@@ -70,6 +90,7 @@ namespace food_service.ProductService.Infastructure.ImplementService
                           {
                               AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(8)
                           });
+
                 return inforProductRecommend;
 
             }
