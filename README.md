@@ -1,4 +1,4 @@
-# 🍔 Foodly - Food Ordering Microservices Ecosystem
+#  Foodly - Food Ordering Microservices Ecosystem
 
 [![Microservices](https://img.shields.io/badge/Architecture-Microservices-red)](https://microservices.io/)
 [![DDD](https://img.shields.io/badge/Design-DDD-blue)](https://en.wikipedia.org/wiki/Domain-driven_design)
@@ -10,7 +10,7 @@
 
 ---
 
-## 🎬 Project Demonstrations
+##  Project Demonstrations
 
 * **Main Business Flow:** [Watch Demo Video](https://drive.google.com/file/d/1wa2lRapwf5uGK1VuBtZM_LTCbnHfdtef/view?usp=sharing)
 * **Sub-system Workflows:** [Watch Demo Video](https://drive.google.com/file/d/1wa2lRapwf5uGK1VuBtZM_LTCbnHfdtef/view?usp=sharing)
@@ -55,47 +55,47 @@ The system uses a **Polyglot Persistence strategy** and a **Message Broker** to 
 
 ---
 
-## 🚀 Technical Highlights
+##  Technical Highlights
 
-### 🤖 AI-Powered Logistics
-The **Tracking Service** integrates Machine Learning models (such as Regression/LSTM) to accurately predict delivery time (ETA) based on historical data, weather conditions, and real-time GPS coordinates.
+###  AI-Powered Logistics
+The **Tracking Service**  uses AI to deliver personalized food recommendations by analyzing user behavior such as browsing history, add-to-cart actions, and purchase patterns. Based on this data, Machine Learning models identify user preferences and suggest relevant dishes tailored to each individual.
 
-### 📡 Event-Driven Architecture
+###  Event-Driven Architecture
 Uses **RabbitMQ** for asynchronous communication between services.  
 
 *Example: When an order is successfully paid, an event is published so that the Notification Service sends emails and the Tracking Service starts route processing.*
 
-### ⚡ High-Performance Communication
+###  High-Performance Communication
 The system uses **gRPC (Protocol Buffers)** for inter-service communication, significantly reducing payload size and improving performance compared to traditional JSON/HTTP.
 
-### 🧠 Domain-Driven Design (DDD)
+###  Domain-Driven Design (DDD)
 The source code is organized using **Bounded Contexts**, helping isolate complex business logic and making the system easier to maintain and scale.
 
-### 🔍 Optimized Search
+###  Optimized Search
 Uses **Elasticsearch** to index data from the Food Service, enabling extremely fast search performance even with large datasets.
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 * **Backend:** .NET 8, ASP.NET Core Web API, gRPC  
-* **Frontend:** React (Admin/User Dashboard)  
+* **Frontend:** ReactJS (Admin/User Dashboard)  
 * **Database:** PostgreSQL, SQL Server, MySQL, Redis, Elasticsearch  
 * **DevOps:** Docker, Docker Compose, IIS  
 * **Messaging:** RabbitMQ (MassTransit)  
-* **AI/ML:** Python / Scikit-learn (integrated in Tracking Service)  
-* **Storage:** MinIO (S3-compatible)  
+* **AI : **GEMINI AI 
+* **Storage:** MinIO 
 
 ---
 
-## 📌 Author
+##  Author
 
 **Pham Trung Duc**  
-📅 2026  
+ 2026  
 
 ---
 
-## 📄 License
+##  License
 
 This project is for learning and demonstration purposes.
 
