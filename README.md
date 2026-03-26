@@ -7,7 +7,7 @@
 [![.NET 8](https://img.shields.io/badge/.NET-8.0-512bd4)](https://dotnet.microsoft.com/)
 
 **Foodly** là một hệ thống đặt đồ ăn trực tuyến (F&B) toàn diện, được thiết kế theo kiến trúc **Microservices** hiện đại. Dự án tập trung vào khả năng mở rộng (scalability), hiệu suất cao thông qua **gRPC** và tích hợp trí tuệ nhân tạo (**AI**) để tối ưu hóa quy trình vận chuyển.
-
+<img width="1522" height="739" alt="structures" src="https://github.com/user-attachments/assets/008c7549-f719-4170-ae3e-fbb6c9b6be21" />
 ---
 
 ##  Project Demonstrations
