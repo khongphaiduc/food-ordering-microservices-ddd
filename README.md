@@ -21,7 +21,7 @@
 
 ---
 
-## 🧩 Core Microservices Architecture
+##  Core Microservices Architecture
 
 The system consists of independent services communicating via **REST (HTTPS)** for client interactions and **gRPC** for internal communication to achieve minimal latency.
 
@@ -83,7 +83,7 @@ Uses **Elasticsearch** to index data from the Food Service, enabling extremely f
 * **Database:** PostgreSQL, SQL Server, MySQL, Redis, Elasticsearch  
 * **DevOps:** Docker, Docker Compose, IIS  
 * **Messaging:** RabbitMQ (MassTransit)  
-* **AI : **GEMINI AI 
+* ** AI: **GEMINI AI 
 * **Storage:** MinIO 
 
 ---
