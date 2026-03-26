@@ -1,4 +1,4 @@
-#  Foodly - Food Ordering Microservices Ecosystem
+# 🍔 Foodly - Food Ordering Microservices Ecosystem
 
 [![Microservices](https://img.shields.io/badge/Architecture-Microservices-red)](https://microservices.io/)
 [![DDD](https://img.shields.io/badge/Design-DDD-blue)](https://en.wikipedia.org/wiki/Domain-driven_design)
@@ -6,84 +6,97 @@
 [![Docker](https://img.shields.io/badge/Deployment-Docker-blueviolet)](https://www.docker.com/)
 [![.NET 8](https://img.shields.io/badge/.NET-8.0-512bd4)](https://dotnet.microsoft.com/)
 
-**Foodly** là một hệ thống đặt đồ ăn trực tuyến (F&B) toàn diện, được thiết kế theo kiến trúc **Microservices** hiện đại. Dự án tập trung vào khả năng mở rộng (scalability), hiệu suất cao thông qua **gRPC** và tích hợp trí tuệ nhân tạo (**AI**) để tối ưu hóa quy trình vận chuyển.
+**Foodly** is a comprehensive online food ordering system (F&B), designed using a modern **Microservices architecture**. The project focuses on scalability, high performance through **gRPC**, and integrates **AI** to optimize delivery processes.
+
 ---
 
-##  Project Demonstrations
+## 🎬 Project Demonstrations
 
-*   **Main Business Flow:** [Xem Video Demo](https://drive.google.com/file/d/1wa2lRapwf5uGK1VuBtZM_LTCbnHfdtef/view?usp=sharing)
-*   **Sub-system Workflows:** [Xem Video Demo](https://drive.google.com/file/d/1wa2lRapwf5uGK1VuBtZM_LTCbnHfdtef/view?usp=sharing)
+* **Main Business Flow:** [Watch Demo Video](https://drive.google.com/file/d/1wa2lRapwf5uGK1VuBtZM_LTCbnHfdtef/view?usp=sharing)
+* **Sub-system Workflows:** [Watch Demo Video](https://drive.google.com/file/d/1wa2lRapwf5uGK1VuBtZM_LTCbnHfdtef/view?usp=sharing)
 
 ---
 
 <img width="1522" height="739" alt="structures" src="https://github.com/user-attachments/assets/008c7549-f719-4170-ae3e-fbb6c9b6be21" />
 
+---
 
-##  Core Microservices Architecture
+## 🧩 Core Microservices Architecture
 
-Hệ thống bao gồm các dịch vụ độc lập, giao tiếp thông qua **REST (HTTPS)** cho Client và **gRPC** cho giao tiếp nội bộ để đạt độ trễ thấp nhất.
+The system consists of independent services communicating via **REST (HTTPS)** for client interactions and **gRPC** for internal communication to achieve minimal latency.
 
 | Service | Port (HTTPS) | gRPC Port | Data Persistence | Responsibility |
 | :--- | :---: | :---: | :--- | :--- |
 | ** ApiGateWay** | `7150` | `6001` | - | Reverse proxy, request routing & rate limiting. |
-| ** Auth Service** | `7223` | - | **SQL Server** | Identity management, JWT-based Auth & RBAC. |
+| ** Auth Service** | `7223` | - | **SQL Server** | Identity management, JWT-based authentication & RBAC. |
 | ** User Service** | `7199` | - | **SQL Server** | User profiles and account management. |
 | ** Food Service** | `7081` | `6002` | **MySQL** | Product catalog, menu & category management. |
 | ** Cart Service** | `7185` | `6005` | **PostgreSQL** | High-concurrency cart & session persistence. |
 | ** Order Service** | `7264` | `6007` | **PostgreSQL** | Order lifecycle & complex business logic (DDD). |
 | ** Search Service** | `7060` | - | **Elasticsearch** | Full-text search & advanced filtering engine. |
-| ** Payment Service** | `7251` | - | **PostgreSQL** | Transactions & 3rd-party payment gateways. |
-| ** Notification** | `5003` | `6003` | **PostgreSQL** | Multi-channel alerts (Email, SMS, Push). |
-| ** Tracking (AI)** | `7139` | - | **PostgreSQL** | **AI-Powered:** Route optimization & Smart ETA. |
+| ** Payment Service** | `7251` | - | **PostgreSQL** | Transactions & third-party payment gateway integration. |
+| ** Notification Service** | `5003` | `6003` | **PostgreSQL** | Multi-channel notifications (Email, SMS, Push). |
+| ** Tracking Service (AI)** | `7139` | - | **PostgreSQL** | AI-powered route optimization & smart ETA prediction. |
 
 ---
 
 ## ⚙️ Infrastructure & External Services
 
-Sử dụng chiến lược **Polyglot Persistence** (đa cơ sở dữ liệu) và **Message Broker** để xử lý các tác vụ bất đồng bộ.
+The system uses a **Polyglot Persistence strategy** and a **Message Broker** to handle asynchronous processing.
 
 | Component | Port(s) | Role | Management URL |
 | :--- | :---: | :--- | :--- |
-| ** PostgreSQL** | `5433` | Primary Relational DB | `localhost:5433` |
-| ** SQL Server** | `1434` | Enterprise Data Storage | `localhost:1434` |
-| ** MySQL** | `3307` | Catalog Data | `localhost:3307` |
-| ** Redis** | `6380` | Distributed Cache | `localhost:6380` |
-| ** RabbitMQ** | `15673` | Event-Driven Broker | [RabbitMQ Console](http://localhost:15673) |
-| ** MinIO** | `9001` | Object Storage (S3) | [MinIO Dashboard](http://localhost:9001) |
-| ** Elasticsearch** | `9200` | Analytics & Search | [Elastic API](http://localhost:9200) |
+| ** PostgreSQL** | `5433` | Primary relational database | `localhost:5433` |
+| ** SQL Server** | `1434` | Enterprise data storage | `localhost:1434` |
+| ** Redis** | `6380` | Distributed caching system | `localhost:6380` |
+| ** RabbitMQ** | `15673` | Event-driven message broker | http://localhost:15673 |
+| ** MinIO** | `9001` | Object storage (S3-compatible) | http://localhost:9001 |
+| ** Elasticsearch** | `9200` | Search & analytics engine | http://localhost:9200 |
 
 ---
 
-##  Technical Highlights
+## 🚀 Technical Highlights
 
-###  AI-Powered Logistics
-**Tracking Service** tích hợp các mô hình Machine Learning (như Regression/LSTM) để dự đoán chính xác thời gian giao hàng (ETA) dựa trên dữ liệu lịch sử, thời tiết và tọa độ GPS thời gian thực.
+### 🤖 AI-Powered Logistics
+The **Tracking Service** integrates Machine Learning models (such as Regression/LSTM) to accurately predict delivery time (ETA) based on historical data, weather conditions, and real-time GPS coordinates.
 
-###  Event-Driven Architecture
-Sử dụng **RabbitMQ** để thực hiện giao tiếp bất đồng bộ giữa các Service. 
-*Ví dụ: Khi một Order được thanh toán thành công, một Event sẽ được phát đi để Notification Service gửi Email và Tracking Service bắt đầu lộ trình.*
+### 📡 Event-Driven Architecture
+Uses **RabbitMQ** for asynchronous communication between services.  
 
-###  High-Performance Communication
-Hệ thống sử dụng **gRPC** (Protocol Buffers) cho các giao tiếp liên dịch vụ (Inter-service), giúp giảm đáng kể kích thước gói tin và tăng tốc độ xử lý so với JSON/HTTP thông thường.
+*Example: When an order is successfully paid, an event is published so that the Notification Service sends emails and the Tracking Service starts route processing.*
 
-### Domain-Driven Design (DDD)
-Cấu trúc Source Code được tổ chức chặt chẽ theo các Bounded Context, giúp tách biệt logic nghiệp vụ phức tạp và dễ dàng bảo trì, mở rộng trong tương lai.
+### ⚡ High-Performance Communication
+The system uses **gRPC (Protocol Buffers)** for inter-service communication, significantly reducing payload size and improving performance compared to traditional JSON/HTTP.
 
-###  Optimized Search
-Sử dụng **Elasticsearch** để Index dữ liệu từ Food Service, cho phép người dùng tìm kiếm món ăn với tốc độ cực nhanh ngay cả khi tập dữ liệu lớn.
+### 🧠 Domain-Driven Design (DDD)
+The source code is organized using **Bounded Contexts**, helping isolate complex business logic and making the system easier to maintain and scale.
 
----
-
-##  Tech Stack
-
-*   **Backend:** .NET 8, ASP.NET Core Web API, gRPC.
-*   **Frontend:** React (for Admin/User Dashboard).
-*   **Database:** PostgreSQL, SQL Server, MySQL, Redis, Elasticsearch.
-*   **DevOps:** Docker, Docker Compose, IIS.
-*   **Messaging:** RabbitMQ (MassTransit).
-*   **AI/ML:** Python/Scikit-learn (integrated within Tracking Service).
-*   **Storage:** MinIO (S3 Compatible).
+### 🔍 Optimized Search
+Uses **Elasticsearch** to index data from the Food Service, enabling extremely fast search performance even with large datasets.
 
 ---
 
-© 2026 Pham Trung Duc. All rights reserved.
+## 🛠️ Tech Stack
+
+* **Backend:** .NET 8, ASP.NET Core Web API, gRPC  
+* **Frontend:** React (Admin/User Dashboard)  
+* **Database:** PostgreSQL, SQL Server, MySQL, Redis, Elasticsearch  
+* **DevOps:** Docker, Docker Compose, IIS  
+* **Messaging:** RabbitMQ (MassTransit)  
+* **AI/ML:** Python / Scikit-learn (integrated in Tracking Service)  
+* **Storage:** MinIO (S3-compatible)  
+
+---
+
+## 📌 Author
+
+**Pham Trung Duc**  
+📅 2026  
+
+---
+
+## 📄 License
+
+This project is for learning and demonstration purposes.
+
+---
