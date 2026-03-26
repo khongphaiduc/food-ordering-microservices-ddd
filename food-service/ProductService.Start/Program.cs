@@ -1,15 +1,18 @@
-using food_service.ProductService.API.gRPC;
+﻿using food_service.ProductService.API.gRPC;
 using food_service.ProductService.API.Middlwares;
 using food_service.ProductService.Application.Interface;
 using food_service.ProductService.Application.Service;
 using food_service.ProductService.Domain.Interface;
 using food_service.ProductService.Infastructure.BackgroundServices;
 using food_service.ProductService.Infastructure.ImplementService;
+using food_service.ProductService.Infastructure.MasstransitProducerRabbitMQ.Consumers;
+using food_service.ProductService.Infastructure.MasstransitProducerRabbitMQ.Producer;
 using food_service.ProductService.Infastructure.MinIO;
 using food_service.ProductService.Infastructure.Models;
 using food_service.ProductService.Infastructure.ProducerRabbitMQ;
 using food_service.ProductService.Infastructure.RedisService.RedisInterface;
 using food_service.ProductService.Infastructure.Repositories;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
@@ -75,6 +78,37 @@ namespace food_service.ProductService.Start
                 });
             });
 
+
+            builder.Services.AddMassTransit(x =>
+            {
+                // register consumer 
+
+                x.AddConsumer<RecommendFoodConsumer>();
+
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host(builder.Configuration["RabbitMQ_Side_ProductService:Host"], h =>
+                    {
+                        h.Username(builder.Configuration["RabbitMQ_Side_ProductService:Username"]!);
+                        h.Password(builder.Configuration["RabbitMQ_Side_ProductService:Password"]!);
+                    });
+
+
+                    // khai báo queue và liên kết với consumer RecommendFoodConsumer
+                    cfg.ReceiveEndpoint("RecommendationFoodByAI_Queue", e =>              // tên queue 
+                    {
+                        e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
+                        e.ConfigureConsumer<RecommendFoodConsumer>(context);               // map consumer với queuen
+
+                    });
+
+
+                });
+
+            });
+
+
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<IGetListProduct, GetListProduct>();
             builder.Services.AddScoped<IViewDetailProduct, ViewDetailProduct>();
@@ -92,7 +126,7 @@ namespace food_service.ProductService.Start
             builder.Services.AddScoped<IProductRecommendationService, ProductRecommendationService>();
             builder.Services.AddScoped<IGetListCatgory, GetListCatgory>();
 
-
+            builder.Services.AddScoped<GeminiModelFoodlyProducer>();
             //redis 
 
             builder.Services.AddTransient<IRedisLockService, RedisLockService>();

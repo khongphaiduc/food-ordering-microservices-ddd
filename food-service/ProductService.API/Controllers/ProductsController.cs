@@ -2,6 +2,7 @@
 using food_service.ProductService.Application.DTOs.Request;
 using food_service.ProductService.Application.Interface;
 using food_service.ProductService.Application.Service;
+using food_service.ProductService.Infastructure.MasstransitProducerRabbitMQ.Producer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,8 +25,9 @@ namespace food_service.ProductService.API.Controllers
         private readonly IGetListCatgory _getListCategory;
         private readonly IRecommenPersonalFood _recommentionAI;
         private readonly IDistributedCache _cache;
+        private readonly GeminiModelFoodlyProducer _recommendProducer;
 
-        public ProductsController(IGetListCatgory getListCatgory, IGetListProduct listProduct, IViewDetailProduct viewDetailProduct, IProductRecommendationService productRecommendationService, IRecommenPersonalFood recommenPersonalFood, IDistributedCache distributedCache)
+        public ProductsController(GeminiModelFoodlyProducer geminiModelFoodlyProducer, IGetListCatgory getListCatgory, IGetListProduct listProduct, IViewDetailProduct viewDetailProduct, IProductRecommendationService productRecommendationService, IRecommenPersonalFood recommenPersonalFood, IDistributedCache distributedCache)
         {
             _iListProduct = listProduct;
             _iViewDetailProduct = viewDetailProduct;
@@ -33,6 +35,7 @@ namespace food_service.ProductService.API.Controllers
             _getListCategory = getListCatgory;
             _recommentionAI = recommenPersonalFood;
             _cache = distributedCache;
+            _recommendProducer = geminiModelFoodlyProducer;
 
         }
 
@@ -74,10 +77,13 @@ namespace food_service.ProductService.API.Controllers
                 var product = await _recommentionAI.Execute1(userId);
                 return Ok(new { list = product, totalProduct = product.Count });
             }
+            else
+            {
+                await _recommendProducer.SendMessage(new Infastructure.MasstransitProducerRabbitMQ.MessageContract.ReconmendationAI { IdUser = userId });
+                var sampleProduct = await _iListProduct.ExecuteAsync(new RequestGetListProduct());
+                return Ok(new { list = sampleProduct, totalProduct = sampleProduct.Count });
+            }
 
-
-            var listProduct = await _recommentionAI.Execute(userId);
-            return Ok(new { list = listProduct, totalProduct = listProduct.Count });
         }
 
         [AllowAnonymous]

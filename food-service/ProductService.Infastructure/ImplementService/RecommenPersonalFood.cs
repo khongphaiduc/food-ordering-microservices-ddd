@@ -25,15 +25,13 @@ namespace food_service.ProductService.Infastructure.ImplementService
             _logger = logger;
         }
 
-        public async Task<List<ProductDTO>> Execute(Guid IdUser)
+        public async Task Execute(Guid IdUser)
         {
             string KeyPersonal = IdUser.ToString() + "PersonalFoods";      // chưa danh sách các món ăn được truy vẫn sẫn 
 
             await _GetListProductRecommendByAI.SetListFoodRecommendAsync(new RequestRecommendUser { IdUser = IdUser.ToString() });  // gọi AI để lấy danh sách các món ăn được gợi ý cho user đó
 
-            var IdProducts = await _cache.GetStringAsync(IdUser.ToString() + "ListPersonalIDFood");  // lấy danh sách các món đượce gợi ý bởi AI
-
-            if (IdProducts == null) return new List<ProductDTO>();  // flag
+            var IdProducts = await _cache.GetStringAsync(IdUser.ToString() + "ListPersonalIDFood");  // ListProduct was recommend by AI
 
             var content = JsonSerializer.Deserialize<List<string>>(IdProducts) ?? new List<string>();
 
@@ -62,9 +60,6 @@ namespace food_service.ProductService.Infastructure.ImplementService
                       {
                           AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(2)
                       });
-
-            return inforProductRecommend;
-
 
         }
 
