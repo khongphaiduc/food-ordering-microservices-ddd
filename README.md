@@ -39,7 +39,14 @@ The system consists of independent services communicating via **REST (HTTPS)** f
 | ** Tracking Service (AI)** | `7139` | - | **PostgreSQL** | AI-powered route optimization & smart ETA prediction. |
 
 ---
+##  Web UI Screenshots
+App.Home
+<img width="1844" height="942" alt="Screenshot 2026-03-27 101221" src="https://github.com/user-attachments/assets/42a4ae24-9847-40d5-a416-cca6354cb1fb" />
 
+App.Admin
+<img width="1858" height="949" alt="image" src="https://github.com/user-attachments/assets/1cd96de6-c866-4a92-b184-b76c47024548" />
+
+---
 ## ⚙️ Infrastructure & External Services
 
 The system uses a **Polyglot Persistence strategy** and a **Message Broker** to handle asynchronous processing.
