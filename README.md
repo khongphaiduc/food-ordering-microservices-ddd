@@ -27,16 +27,16 @@ The system consists of independent services communicating via **REST (HTTPS)** f
 
 | Service | Port (HTTPS) | gRPC Port | Data Persistence | Responsibility |
 | :--- | :---: | :---: | :--- | :--- |
-| **ApiGateWay** | `7150` | `6001` | - | Reverse proxy, request routing & rate limiting. |
+| **ApiGateWay** | `7150` | `-` | - | Reverse proxy, request routing & rate limiting. |
 | **Auth Service** | `7223` | - | **SQL Server** | Identity management, JWT-based authentication & RBAC. |
-| **User Service** | `7199` | - | **SQL Server** | User profiles and account management. |
-| **Food Service** | `7081` | `6002` | **MySQL** | Product catalog, menu & category management. |
-| **Cart Service** | `7185` | `6005` | **PostgreSQL** | High-concurrency cart & session persistence. |
-| **Order Service** | `7264` | `6007` | **PostgreSQL** | Order lifecycle & complex business logic (DDD). |
+| **User Service** | `7199` | `5001` | **SQL Server** | User profiles and account management. |
+| **Food Service** | `7081` | `5002` | **MySQL** | Product catalog, menu & category management. |
+| **Cart Service** | `7185` | `5005` | **PostgreSQL** | High-concurrency cart & session persistence. |
+| **Order Service** | `7264` | `5007` | **PostgreSQL** | Order lifecycle & complex business logic (DDD). |
 | **Search Service** | `7060` | - | **Elasticsearch** | Full-text search & advanced filtering engine. |
-| **Payment Service** | `7251` | - | **PostgreSQL** | Transactions & third-party payment gateway integration. |
-| **Notification Service** | `5003` | `6003` | **PostgreSQL** | Multi-channel notifications (Email, SMS, Push). |
-| **Tracking Service (AI)** | `7139` | - | **PostgreSQL** | AI-powered route optimization & smart ETA prediction. |
+| **Payment Service** | `7251` | `5006` | **PostgreSQL** | Transactions & third-party payment gateway integration. |
+| **Notification Service** | `5003` | `-` | **PostgreSQL** | Multi-channel notifications (Email, SMS, Push). |
+| **Tracking Service (AI)** | `7139` | `5003` | **PostgreSQL** | AI-powered route optimization & smart ETA prediction. |
 
 ---
 ##  Web UI Screenshots
@@ -92,16 +92,14 @@ Uses **Elasticsearch** to index data from the Food Service, enabling extremely f
 * **Database:** PostgreSQL, SQL Server, MySQL, Redis, Elasticsearch  
 * **DevOps:** Docker, Docker Compose, IIS  
 * **Messaging:** RabbitMQ (MassTransit)  
-* **AI: **GEMINI AI 
+* **AI:** **GEMINI_AI** 
 * **Storage:** MinIO 
 
 ---
 
 ##  Author
 
-**Pham Trung Duc**  
- 2026  
-
+**Pham Trung Duc**  2026   
 ---
 
 ##  License
@@ -109,3 +107,6 @@ Uses **Elasticsearch** to index data from the Food Service, enabling extremely f
 This project is for learning and demonstration purposes.
 
 ---
+### Thank you for checking out this project!  
+**Phạm Trung Đức (PhamTrungDuc)**  
+**Email:** ptrungduc1011@gmail.com
