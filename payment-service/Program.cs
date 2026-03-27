@@ -92,10 +92,10 @@ namespace payment_service
                 });
             });
 
-         
+          // order 
             builder.Services.AddGrpcClient<OrderServiceUpdateStatusGrpc.OrderServiceUpdateStatusGrpcClient>(options =>
             {
-                options.Address = new Uri("https://localhost:7264");
+                options.Address = new Uri("https://localhost:5007");
             });
 
             builder.Services.AddGrpc();

@@ -56,7 +56,7 @@ namespace cart_service
 
             builder.Services.AddGrpcClient<ProductInfoGrpc.ProductInfoGrpcClient>(s =>
             {
-                s.Address = new Uri("https://localhost:7081");
+                s.Address = new Uri("https://localhost:5002");
             });
 
             builder.Services.AddGrpc();

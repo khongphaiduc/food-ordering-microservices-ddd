@@ -74,9 +74,9 @@ namespace order_service
             });
 
 
-            builder.Services.AddGrpcClient<CartInforGrpc.CartInforGrpcClient>(o => o.Address = new Uri("https://localhost:7185"));
-            builder.Services.AddGrpcClient<PaymentInforGrpc.PaymentInforGrpcClient>(o => o.Address = new Uri("https://localhost:7251"));
-            builder.Services.AddGrpcClient<UserAddressInfoGrpc.UserAddressInfoGrpcClient>(o => o.Address = new Uri("https://localhost:7199"));
+            builder.Services.AddGrpcClient<CartInforGrpc.CartInforGrpcClient>(o => o.Address = new Uri("https://localhost:5005"));   // cart 
+            builder.Services.AddGrpcClient<PaymentInforGrpc.PaymentInforGrpcClient>(o => o.Address = new Uri("https://localhost:5006"));    // payment
+            builder.Services.AddGrpcClient<UserAddressInfoGrpc.UserAddressInfoGrpcClient>(o => o.Address = new Uri("https://localhost:5001"));  // user 
 
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<ICreateNewOrder, CreateNewOrder>();

@@ -2,7 +2,6 @@
 {
     public record ReconmendationAI      // MassTransit sẽ sử dụng tên của clas này làm tên của Exchange
     {
-
         public Guid IdUser { get; init; }
     }
 

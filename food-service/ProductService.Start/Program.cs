@@ -104,7 +104,7 @@ namespace food_service.ProductService.Start
                     });
 
 
-                });
+            });
 
             });
 
@@ -157,7 +157,7 @@ namespace food_service.ProductService.Start
             builder.Services.AddScoped<IRecommenPersonalFood, RecommenPersonalFood>();
             builder.Services.AddGrpcClient<GeminiFoodlyGrpc.GeminiFoodlyGrpcClient>(options =>
             {
-                options.Address = new Uri("https://localhost:7139");
+                options.Address = new Uri("https://localhost:5003");
             });
 
             //builder.Services.AddSingleton<IMinioClient>(sp =>

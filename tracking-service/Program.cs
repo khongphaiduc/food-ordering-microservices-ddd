@@ -32,7 +32,7 @@ namespace tracking_service
 
             builder.Services.AddGrpcClient<ProductListGrpc.ProductListGrpcClient>(options =>
             {
-                options.Address = new Uri("https://localhost:7081");
+                options.Address = new Uri("https://localhost:5002");
             });
 
 
