@@ -6,7 +6,7 @@
 [![Docker](https://img.shields.io/badge/Deployment-Docker-blueviolet)](https://www.docker.com/)
 [![.NET 8](https://img.shields.io/badge/.NET-8.0-512bd4)](https://dotnet.microsoft.com/)
 
-**Foodly** is a comprehensive online food ordering system (F&B), designed using a modern **Microservices architecture**. The project focuses on scalability, high performance through **gRPC**, and integrates **AI** to optimize delivery processes.
+**Foodly** is a comprehensive online food ordering system (F&B), designed using a modern **Microservices architecture**. The project focuses on scalability, high performance through **gRPC**, and integratesIntegrates **AI** to develop personalized food recommendations based on user preferences and behavior
 
 ---
 
@@ -27,31 +27,40 @@ The system consists of independent services communicating via **REST (HTTPS)** f
 
 | Service | Port (HTTPS) | gRPC Port | Data Persistence | Responsibility |
 | :--- | :---: | :---: | :--- | :--- |
-| ** ApiGateWay** | `7150` | `6001` | - | Reverse proxy, request routing & rate limiting. |
-| ** Auth Service** | `7223` | - | **SQL Server** | Identity management, JWT-based authentication & RBAC. |
-| ** User Service** | `7199` | - | **SQL Server** | User profiles and account management. |
-| ** Food Service** | `7081` | `6002` | **MySQL** | Product catalog, menu & category management. |
-| ** Cart Service** | `7185` | `6005` | **PostgreSQL** | High-concurrency cart & session persistence. |
-| ** Order Service** | `7264` | `6007` | **PostgreSQL** | Order lifecycle & complex business logic (DDD). |
-| ** Search Service** | `7060` | - | **Elasticsearch** | Full-text search & advanced filtering engine. |
-| ** Payment Service** | `7251` | - | **PostgreSQL** | Transactions & third-party payment gateway integration. |
-| ** Notification Service** | `5003` | `6003` | **PostgreSQL** | Multi-channel notifications (Email, SMS, Push). |
-| ** Tracking Service (AI)** | `7139` | - | **PostgreSQL** | AI-powered route optimization & smart ETA prediction. |
+| **ApiGateWay** | `7150` | `6001` | - | Reverse proxy, request routing & rate limiting. |
+| **Auth Service** | `7223` | - | **SQL Server** | Identity management, JWT-based authentication & RBAC. |
+| **User Service** | `7199` | - | **SQL Server** | User profiles and account management. |
+| **Food Service** | `7081` | `6002` | **MySQL** | Product catalog, menu & category management. |
+| **Cart Service** | `7185` | `6005` | **PostgreSQL** | High-concurrency cart & session persistence. |
+| **Order Service** | `7264` | `6007` | **PostgreSQL** | Order lifecycle & complex business logic (DDD). |
+| **Search Service** | `7060` | - | **Elasticsearch** | Full-text search & advanced filtering engine. |
+| **Payment Service** | `7251` | - | **PostgreSQL** | Transactions & third-party payment gateway integration. |
+| **Notification Service** | `5003` | `6003` | **PostgreSQL** | Multi-channel notifications (Email, SMS, Push). |
+| **Tracking Service (AI)** | `7139` | - | **PostgreSQL** | AI-powered route optimization & smart ETA prediction. |
 
 ---
+##  Web UI Screenshots
+App.Home
+<img width="1844" height="942" alt="Screenshot 2026-03-27 101221" src="https://github.com/user-attachments/assets/42a4ae24-9847-40d5-a416-cca6354cb1fb" />
 
+App.Admin
+<img width="1858" height="949" alt="image" src="https://github.com/user-attachments/assets/1cd96de6-c866-4a92-b184-b76c47024548" />
+
+## Frontend Source
+[Food Ordering Microservices Frontend](https://github.com/khongphaiduc/food-ordering-microservices-frontend)
+---
 ## ⚙️ Infrastructure & External Services
 
 The system uses a **Polyglot Persistence strategy** and a **Message Broker** to handle asynchronous processing.
 
 | Component | Port(s) | Role | Management URL |
 | :--- | :---: | :--- | :--- |
-| ** PostgreSQL** | `5433` | Primary relational database | `localhost:5433` |
-| ** SQL Server** | `1434` | Enterprise data storage | `localhost:1434` |
-| ** Redis** | `6380` | Distributed caching system | `localhost:6380` |
-| ** RabbitMQ** | `15673` | Event-driven message broker | http://localhost:15673 |
-| ** MinIO** | `9001` | Object storage (S3-compatible) | http://localhost:9001 |
-| ** Elasticsearch** | `9200` | Search & analytics engine | http://localhost:9200 |
+| **PostgreSQL** | `5433` | Primary relational database | `localhost:5433` |
+| **SQLServer** | `1434` | Enterprise data storage | `localhost:1434` |
+| **Redis** | `6380` | Distributed caching system | `localhost:6380` |
+| **RabbitMQ** | `15673` | Event-driven message broker | http://localhost:15673 |
+| **MinIO** | `9001` | Object storage (S3-compatible) | http://localhost:9001 |
+| **Elasticsearch** | `9200` | Search & analytics engine | http://localhost:9200 |
 
 ---
 
@@ -83,7 +92,7 @@ Uses **Elasticsearch** to index data from the Food Service, enabling extremely f
 * **Database:** PostgreSQL, SQL Server, MySQL, Redis, Elasticsearch  
 * **DevOps:** Docker, Docker Compose, IIS  
 * **Messaging:** RabbitMQ (MassTransit)  
-* ** AI: **GEMINI AI 
+* **AI: **GEMINI AI 
 * **Storage:** MinIO 
 
 ---
