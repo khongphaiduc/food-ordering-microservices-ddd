@@ -6,7 +6,7 @@
 [![Docker](https://img.shields.io/badge/Deployment-Docker-blueviolet)](https://www.docker.com/)
 [![.NET 8](https://img.shields.io/badge/.NET-8.0-512bd4)](https://dotnet.microsoft.com/)
 
-**Foodly** is a comprehensive online food ordering system (F&B), designed using a modern **Microservices architecture**. The project focuses on scalability, high performance through **gRPC**, and integrates **AI** to optimize delivery processes.
+**Foodly** is a comprehensive online food ordering system (F&B), designed using a modern **Microservices architecture**. The project focuses on scalability, high performance through **gRPC**, and integratesIntegrates **AI** to develop personalized food recommendations based on user preferences and behavior
 
 ---
 
@@ -46,6 +46,8 @@ App.Home
 App.Admin
 <img width="1858" height="949" alt="image" src="https://github.com/user-attachments/assets/1cd96de6-c866-4a92-b184-b76c47024548" />
 
+## Frontend Source
+[Food Ordering Microservices Frontend](https://github.com/khongphaiduc/food-ordering-microservices-frontend)
 ---
 ## ⚙️ Infrastructure & External Services
 
