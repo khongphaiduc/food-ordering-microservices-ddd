@@ -88,9 +88,9 @@ Uses **Elasticsearch** to index data from the Food Service, enabling extremely f
 ##  Tech Stack
 
 * **Backend:** .NET 8, ASP.NET Core Web API, gRPC  
-* **Frontend:** ReactJS (Admin/User Dashboard)  
-* **Database:** PostgreSQL, SQL Server, MySQL, Redis, Elasticsearch  
-* **DevOps:** Docker, Docker Compose, IIS  
+* **Frontend:** ReactJS (Admin/User/Staff Dashboard)  
+* **Database:** PostgreSQL, SQL Server, Redis, Elasticsearch  
+* **DevOps:** Docker, Docker Compose, Kestrel ,IIS  
 * **Messaging:** RabbitMQ (MassTransit)  
 * **AI:** **GEMINI_AI** 
 * **Storage:** MinIO 
