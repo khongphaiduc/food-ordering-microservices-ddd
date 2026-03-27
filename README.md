@@ -17,7 +17,8 @@
 
 ---
 
-<img width="1522" height="739" alt="structures" src="https://github.com/user-attachments/assets/008c7549-f719-4170-ae3e-fbb6c9b6be21" />
+<img width="1502" height="779" alt="image" src="https://github.com/user-attachments/assets/b87e00a3-c015-45f7-8379-0f92be3e8403" />
+
 
 ---
 
