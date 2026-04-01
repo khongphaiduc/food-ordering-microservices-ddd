@@ -12,8 +12,8 @@
 
 ##  Project Demonstrations
 
-* **Main Business Flow:** [Watch Demo Video](https://drive.google.com/file/d/1wa2lRapwf5uGK1VuBtZM_LTCbnHfdtef/view?usp=sharing)
-* **Sub-system Workflows:** [Watch Demo Video](https://drive.google.com/file/d/1wa2lRapwf5uGK1VuBtZM_LTCbnHfdtef/view?usp=sharing)
+* **Main Business Flow:** (Coming soon)
+* **Sub-system Workflows:** (Coming soon)
 
 ---
 
