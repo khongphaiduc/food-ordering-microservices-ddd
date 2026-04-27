@@ -31,24 +31,7 @@ namespace auth_services.AuthService.API.AuthControllers
         }
 
 
-        [HttpPost("signup")]
-        public async Task<IActionResult> SignUp(RequestCreateNewUser user)
-        {
-            var result = await _iUserSignUp.Execute(user);
-
-            if (result)
-            {
-             
-                return Created(" ", new { message = "Create New User Successful" });
-            }
-            else
-            {
-                return BadRequest("The account already exists");
-            }
-
-        }
-
-
+     
         [HttpPost("login")]
         public async Task<IActionResult> Login(RequestUserLogin user)
         {
@@ -77,5 +60,27 @@ namespace auth_services.AuthService.API.AuthControllers
                 return BadRequest(new { message = "Logout failed" });
             }
         }
+
+
+
+
+        [HttpPost("signup")]
+        public async Task<IActionResult> SignUp(RequestCreateNewUser user)
+        {
+            var result = await _iUserSignUp.Execute(user);
+
+            if (result)
+            {
+
+                return Created(" ", new { message = "Create New User Successful" });
+            }
+            else
+            {
+                return BadRequest("The account already exists");
+            }
+
+        }
+
+
     }
 }

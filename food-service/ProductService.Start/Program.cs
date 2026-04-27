@@ -85,7 +85,8 @@ namespace food_service.ProductService.Start
 
                 x.AddConsumer<RecommendFoodConsumer>();
 
-
+                // tham số đầu tiên (context):giúp MassTransit truy cấp vào các Service trong DI để khởi tạo các Contructor hoặc các phụ thuộc
+                // tham số thứ 2 (cfg): cấu hình của MassTransit
                 x.UsingRabbitMq((context, cfg) =>
                 {
                     cfg.Host(builder.Configuration["RabbitMQ_Side_ProductService:Host"], h =>
@@ -100,11 +101,11 @@ namespace food_service.ProductService.Start
                     {
                         e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
                         e.ConfigureConsumer<RecommendFoodConsumer>(context);               // map consumer với queuen
-
+                        // Khi chạy lệnh ConfigureConsumer nó sẽ soi xem class implement xem nó đang chiển khai cái exchange nào , vào sau  đấy nó sẽ map queue này với exchange đó
                     });
 
 
-            });
+                });
 
             });
 
@@ -178,6 +179,24 @@ namespace food_service.ProductService.Start
             builder.Services.AddControllers();
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var context = services.GetRequiredService<FoodProductsDbContext>();
+                    context.Database.Migrate();
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogInformation("Running my migration is success");
+                }
+                catch (Exception ex)
+                {
+
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "The Product Food Service has a conflict when initializing the migration");
+                }
+            }
 
             app.MapGrpcService<ProductInformationsServices>();
 

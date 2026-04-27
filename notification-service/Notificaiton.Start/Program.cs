@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using notification_service.Models;
@@ -51,6 +51,25 @@ namespace notification_service.Notificaiton.Start
             builder.Services.AddHostedService<EmailConsumer>();
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var context = services.GetRequiredService<FoodNotificationDbContext>();
+                    context.Database.Migrate();
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogInformation("Đã chạy Migration cho database thành công.");
+                }
+                catch (Exception ex)
+                {
+
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "Đã xảy ra lỗi trong quá trình tự động migrate database.");
+                }
+            }
+
             app.UseHttpsRedirection();
             app.UseAuthorization();
             app.MapControllers();

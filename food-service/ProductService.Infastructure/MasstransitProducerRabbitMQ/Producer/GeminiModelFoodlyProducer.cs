@@ -21,7 +21,7 @@ namespace food_service.ProductService.Infastructure.MasstransitProducerRabbitMQ.
             {
 
                 await _publishEndPoint.Publish(reconmendationMessage);
-                _logger.LogInformation(" Đã gửi yêu cầu gợi ý món ăn cho UserId: {UserId}", reconmendationMessage.IdUser);
+                _logger.LogInformation("The system sends food recommendations to users. : {UserId}", reconmendationMessage.IdUser);
                 return true;
             }
             catch (Exception ex)
