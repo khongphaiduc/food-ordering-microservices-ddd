@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "search-service", "search-se
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tracking-service", "tracking-service\tracking-service.csproj", "{A770929E-879C-4352-80BF-C0AA51D180AD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foodly.Tests", "Foodly.Tests\Foodly.Tests.csproj", "{DF27E72E-B724-4573-B6BC-8F120772D237}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{A770929E-879C-4352-80BF-C0AA51D180AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A770929E-879C-4352-80BF-C0AA51D180AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A770929E-879C-4352-80BF-C0AA51D180AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF27E72E-B724-4573-B6BC-8F120772D237}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF27E72E-B724-4573-B6BC-8F120772D237}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF27E72E-B724-4573-B6BC-8F120772D237}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF27E72E-B724-4573-B6BC-8F120772D237}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
