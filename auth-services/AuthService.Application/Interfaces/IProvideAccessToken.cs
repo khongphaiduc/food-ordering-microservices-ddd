@@ -4,6 +4,6 @@ namespace auth_services.AuthService.Application.Interfaces
 {
     public interface IProvideAccessToken
     {
-       Task< ResponseAccessToken> Handle(RequestProvideAccessToken request);
+        Task<ResponseAccessToken> Handle(RequestProvideAccessToken request, CancellationToken token = default);
     }
 }

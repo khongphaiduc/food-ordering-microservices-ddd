@@ -24,9 +24,9 @@ namespace auth_services.AuthService.API.AuthControllers
         }
 
         [HttpPost("accesstoken")]
-        public async Task<IActionResult> AccessToken([FromBody] RequestProvideAccessToken request)
+        public async Task<IActionResult> AccessToken([FromBody] RequestProvideAccessToken request, CancellationToken tokens = default)
         {
-            var token = await _iProvideToken.Handle(request);
+            var token = await _iProvideToken.Handle(request, tokens);
             if (!token.IsSuccess)
             {
                 return BadRequest(new

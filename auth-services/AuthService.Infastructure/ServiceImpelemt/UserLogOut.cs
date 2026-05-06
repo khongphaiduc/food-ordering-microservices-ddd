@@ -12,7 +12,7 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
             _iRefreshToken = refreshTokenRepository;
         }
 
-        public Task<bool> Execute(Guid userId)
+        public Task<bool> Execute(Guid userId, CancellationToken token = default)
         {
             var result = _iRefreshToken.RevokedToken(userId);
 

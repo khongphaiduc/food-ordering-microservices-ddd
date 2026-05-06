@@ -47,7 +47,7 @@ namespace auth_services.AuthService.API.AuthControllers
 
 
         [HttpGet("logout")]
-        public async Task<IActionResult> Logout(Guid id)
+        public async Task<IActionResult> Logout(Guid id, CancellationToken token = default)
         {
             var result = await _iUserLogOut.Execute(id);
 

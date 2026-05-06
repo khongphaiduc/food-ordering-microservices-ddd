@@ -25,7 +25,7 @@ namespace auth_services.AuthService.Infastructure.Security
             _iRefreshTokenRepository = refreshTokenRepository;
         }
 
-        public async Task<ResponseAccessToken> Handle(RequestProvideAccessToken request)
+        public async Task<ResponseAccessToken> Handle(RequestProvideAccessToken request, CancellationToken tokens = default)
         {
 
             var tokenUser = _httcontext.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Replace("Bearer ", "");
@@ -41,7 +41,7 @@ namespace auth_services.AuthService.Infastructure.Security
                 };
             }
 
-            var user = await _db.Users.Where(s => s.Id == request.Id && s.Email == request.Email && s.Roles.Any(s => s.Name == request.Role)).FirstOrDefaultAsync();
+            var user = await _db.Users.Where(s => s.Id == request.Id && s.Email == request.Email && s.Roles.Any(s => s.Name == request.Role)).FirstOrDefaultAsync(tokens);
 
             if (user == null)
             {

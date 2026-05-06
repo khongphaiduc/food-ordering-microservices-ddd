@@ -2,6 +2,6 @@
 {
     public interface IUserLogOut
     {
-        Task<bool> Execute(Guid userId);
+        Task<bool> Execute(Guid userId, CancellationToken token = default);
     }
 }

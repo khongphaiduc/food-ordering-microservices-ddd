@@ -18,7 +18,7 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
         }
 
 
-        public async Task<List<ViewListStaffDTO>> Execute()
+        public async Task<List<ViewListStaffDTO>> Execute(CancellationToken token = default)
         {
             var listStaff = await _db.Users.Where(s => !s.Roles.Any(r => r.Name == "Admin" || r.Name == "Customer")).Select(s => new ViewListStaffDTO
             {
@@ -31,10 +31,10 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
             return listStaff;
         }
 
-        public async Task<List<RoleDTO>> GetListRole()
+        public async Task<List<RoleDTO>> GetListRole(CancellationToken token = default)
         {
 
-            var listRole = await _db.Roles.Where(s=>s.Name!="Admin" && s.Name!="Customer").Select(s => new RoleDTO
+            var listRole = await _db.Roles.Where(s => s.Name != "Admin" && s.Name != "Customer").Select(s => new RoleDTO
             {
 
                 IdRole = s.Id,

@@ -23,9 +23,9 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
             _addStaff = addSafttRepository;
         }
 
-        public async Task<bool> AddAccountStaffsAsync(AddAccountStaffDTO accountStaffs)
+        public async Task<bool> AddAccountStaffsAsync(AddAccountStaffDTO accountStaffs, CancellationToken token = default)
         {
-            if (await _userRepo.IsExitUser(accountStaffs.Email)) return false;
+            if (await _userRepo.IsExitUser(accountStaffs.Email, token)) return false;
 
             var salt = _Salt.GenarateSalt();
 

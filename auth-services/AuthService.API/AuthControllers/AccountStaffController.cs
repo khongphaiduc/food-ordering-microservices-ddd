@@ -25,26 +25,26 @@ namespace auth_services.AuthService.API.AuthControllers
 
 
         [HttpPost("admin/staff")]
-        public async Task<ActionResult> AddStaff([FromBody] AddAccountStaffDTO request)
+        public async Task<ActionResult> AddStaff([FromBody] AddAccountStaffDTO request, CancellationToken token = default)
         {
-            var result = await _addStaff.AddAccountStaffsAsync(request);
+            var result = await _addStaff.AddAccountStaffsAsync(request, token);
             if (!result) { return BadRequest(new { status = "Add Staff Failed or Staff already exists" }); }
 
             return Ok(new { status = "Add Staff Successful" });
         }
 
         [HttpGet("admin/staff")]
-        public async Task<IActionResult> ViewListStaff()
+        public async Task<IActionResult> ViewListStaff(CancellationToken token = default)
         {
-            var list = await _listStaff.Execute();
+            var list = await _listStaff.Execute(token);
             return Ok(list);
         }
 
 
         [HttpGet("admin/roles")]
-        public async Task<IActionResult> ViewListRole()
+        public async Task<IActionResult> ViewListRole(CancellationToken token = default)
         {
-            var list = await _listStaff.GetListRole();
+            var list = await _listStaff.GetListRole(token);
             return Ok(list);
         }
 

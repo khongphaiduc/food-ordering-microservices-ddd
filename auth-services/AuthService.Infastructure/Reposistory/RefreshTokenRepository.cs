@@ -18,9 +18,9 @@ namespace auth_services.AuthService.Infastructure.Reposistory
         }
 
         // thêm mới refresh token
-        public async Task<bool> AddNewRefreshToken(Guid userId, string refreshToken, DateTime expiryDate)
+        public async Task<bool> AddNewRefreshToken(Guid userId, string refreshToken, DateTime expiryDate, CancellationToken token = default)
         {
-            var userAggregate = await _iUserRepositoty.GetUserById(userId);     // lấy map sang aggregate
+            var userAggregate = await _iUserRepositoty.GetUserById(userId,token);     // lấy map sang aggregate
 
             userAggregate.AddReFreshToken(RefreshTokenEntity.CreateNewRefreshToken(refreshToken, expiryDate));   // thêm mới refresh token vào aggregate
 
@@ -29,16 +29,16 @@ namespace auth_services.AuthService.Infastructure.Reposistory
             return result;
         }
 
-        public async Task<bool> IsRevokedToken(string token)
+        public async Task<bool> IsRevokedToken(string token, CancellationToken cancellationToken = default)
         {
-            var tokens = await _db.RefreshTokens.Where(s => s.Token == token && s.RevokedAt != null).FirstOrDefaultAsync();
+            var tokens = await _db.RefreshTokens.Where(s => s.Token == token && s.RevokedAt != null).FirstOrDefaultAsync(cancellationToken);
             return tokens != null ? true : false;
         }
 
         // thu hồi token
-        public async Task<bool> RevokedToken(Guid id)
+        public async Task<bool> RevokedToken(Guid id, CancellationToken token = default)
         {
-            var refreshToken = await _db.RefreshTokens.Where(s => s.UserId == id && s.RevokedAt == null).FirstOrDefaultAsync();
+            var refreshToken = await _db.RefreshTokens.Where(s => s.UserId == id && s.RevokedAt == null).FirstOrDefaultAsync(token);
 
             if (refreshToken != null)
             {
