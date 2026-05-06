@@ -4,9 +4,9 @@ namespace auth_services.AuthService.Domain.Interface
 {
     public interface IUserRepository
     {
-        Task  AddNewUser(UserAggregate userAggregate);
-        Task<bool> UpdateUserRefreshToken(UserAggregate userAggregate);
-        Task<bool> IsExitUser(string email);
-        Task<UserAggregate> GetUserById(Guid id);
+        Task AddNewUser(UserAggregate userAggregate, CancellationToken token = default);
+        Task<bool> UpdateUserRefreshToken(UserAggregate userAggregate, CancellationToken token = default);
+        Task<bool> IsExitUser(string email, CancellationToken token = default);
+        Task<UserAggregate> GetUserById(Guid id, CancellationToken token = default);
     }
 }

@@ -24,7 +24,7 @@ namespace auth_services.AuthService.Infastructure.Reposistory
 
             userAggregate.AddReFreshToken(RefreshTokenEntity.CreateNewRefreshToken(refreshToken, expiryDate));   // thêm mới refresh token vào aggregate
 
-            var result = await _iUserRepositoty.UpdateUserRefreshToken(userAggregate);   // cập nhật user
+            var result = await _iUserRepositoty.UpdateUserRefreshToken(userAggregate);   
 
             return result;
         }

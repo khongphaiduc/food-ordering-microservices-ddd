@@ -67,7 +67,7 @@ namespace food_service.ProductService.Infastructure.Persistence
 
             services.AddMassTransit(x =>
             {
-                x.AddConsumer<RecommendFoodConsumer>();
+                x.AddConsumer<RecommendFoodConsumer>();  // register consumer 
 
                 x.UsingRabbitMq((context, cfg) =>
                 {
@@ -77,11 +77,12 @@ namespace food_service.ProductService.Infastructure.Persistence
                         h.Password(config["RabbitMQ_Side_ProductService:Password"]!);
                     });
 
-                    cfg.ReceiveEndpoint("RecommendationFoodByAI_Queue", e =>
+                    cfg.ReceiveEndpoint("RecommendationFoodByAI_Queue", e =>  // name of queue
                     {
                         e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
-                        e.ConfigureConsumer<RecommendFoodConsumer>(context);
+                        e.ConfigureConsumer<RecommendFoodConsumer>(context);       // map consumer với queue
                     });
+                    // khi run thì nó sẽ bind exchange và queue dựa trên các type message của consumer đang map tới queue
                 });
             });
 

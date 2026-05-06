@@ -20,22 +20,22 @@ namespace auth_services.AuthService.API.AuthControllers
         private readonly ISignUpUser _iUserSignUp;
         private readonly ICheckLogin _iUserLogIn;
         private readonly IUserLogOut _iUserLogOut;
-    
+
 
         public UsersController(ISignUpUser signUpUser, ICheckLogin checkLogin, IUserLogOut userLogOut)
         {
             _iUserSignUp = signUpUser;
             _iUserLogIn = checkLogin;
             _iUserLogOut = userLogOut;
-           
+
         }
 
 
-     
+
         [HttpPost("login")]
-        public async Task<IActionResult> Login(RequestUserLogin user)
+        public async Task<IActionResult> Login(RequestUserLogin user, CancellationToken token = default)
         {
-            var result = await _iUserLogIn.IsUserLoginAsync(user);
+            var result = await _iUserLogIn.IsUserLoginAsync(user, token);
 
             if (!result.IsLoginSuccessful)
             {
@@ -65,9 +65,9 @@ namespace auth_services.AuthService.API.AuthControllers
 
 
         [HttpPost("signup")]
-        public async Task<IActionResult> SignUp(RequestCreateNewUser user)
+        public async Task<IActionResult> SignUp(RequestCreateNewUser user, CancellationToken token = default)
         {
-            var result = await _iUserSignUp.Execute(user);
+            var result = await _iUserSignUp.Execute(user, token);
 
             if (result)
             {

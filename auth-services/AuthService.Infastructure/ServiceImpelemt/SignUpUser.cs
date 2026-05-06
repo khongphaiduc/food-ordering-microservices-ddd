@@ -39,18 +39,18 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
             _logger = logger;
         }
 
-        public async Task<bool> Execute(RequestCreateNewUser user)
+        public async Task<bool> Execute(RequestCreateNewUser user, CancellationToken token = default)
         {
             if (user.Password != user.ConfirmPassword) return false;
 
-            if (await _iUserRepository.IsExitUser(user.Email)) return false;
+            if (await _iUserRepository.IsExitUser(user.Email, token)) return false;
 
             var salt = _iGenarateSalt.GenarateSalt();
             var hashedPassword = _iHashPassword.HandleHashPassword(user.Password, salt);
-         
+
             var userAggregate = UserAggregate.CreateNewUser(new FullNameOfUser(user.UserName), new Email(user.Email), hashedPassword, salt);
 
-           
+
             for (int i = 0; i < 3; i++)
             {
 
@@ -61,7 +61,7 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
                         Id = userAggregate.Id.ToString(),
                         Name = userAggregate.Username.Value,
                         Email = userAggregate.Email.EmailAdress,
-                        Phone = "0000000000"           
+                        Phone = "0000000000"
                     });
 
                     if (resultCallUserClient.IsSuccess)
@@ -74,9 +74,9 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
 
                     if (i == 2)
                     {
-                        throw;  
+                        throw;
                     }
-                    await Task.Delay(200);  
+                    await Task.Delay(200);
                 }
 
             }
@@ -84,7 +84,7 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
             try
             {
 
-                await _iUserRepository.AddNewUser(userAggregate);
+                await _iUserRepository.AddNewUser(userAggregate, token);
 
                 var payload = JsonSerializer.Serialize(new RegisterNotificationMessage
                 {

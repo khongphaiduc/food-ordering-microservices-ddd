@@ -31,7 +31,7 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
             _cache = distributedCache;
         }
 
-        public async Task<ResponseLoginUser> IsUserLoginAsync(RequestUserLogin user)
+        public async Task<ResponseLoginUser> IsUserLoginAsync(RequestUserLogin user, CancellationToken token = default)
         {
             var realUserInDataBase = await _db.Users.Where(s => s.Email == user.Email).Select(s => new
             {
@@ -40,7 +40,7 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
                 id = s.Id,
                 s.Email,
                 Role = s.Roles.Select(s => s.Name).FirstOrDefault() ?? "Customer",
-            }).FirstOrDefaultAsync();
+            }).FirstOrDefaultAsync(token);
 
             if (realUserInDataBase == null)
             {
@@ -62,7 +62,8 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
                     .SetAbsoluteExpiration(TimeSpan.FromMinutes(30))
                     .SetSlidingExpiration(TimeSpan.FromMinutes(10));
 
-                await _cache.SetStringAsync("SessionLogin", JsonSerializer.Serialize(sessionID), option);
+                var cacheKey = $"SessionLogin:{realUserInDataBase.id}";
+                await _cache.SetStringAsync(cacheKey, sessionID.ToString(), option, token);
 
                 var access = _iGenarateToken.OfType<GanarateAccessTokenJWT>().First().HandleGenarateJWT(realUserInDataBase.id, realUserInDataBase.Email, realUserInDataBase.Role);
                 var refresh = _iGenarateToken.OfType<GanarateRefresheTokenJWT>().First().HandleGenarateJWT(realUserInDataBase.id, realUserInDataBase.Email, realUserInDataBase.Role);

@@ -20,9 +20,9 @@ namespace auth_services.AuthService.Infastructure.Reposistory
         }
 
         // thêm user 
-        public async Task AddNewUser(UserAggregate userAggregate)
+        public async Task AddNewUser(UserAggregate userAggregate, CancellationToken token = default)
         {
-            var role = await _db.Roles.FirstOrDefaultAsync(s => s.Name == "Customer") ?? throw new NotfoundExceptions("Not found role User");
+            var role = await _db.Roles.FirstOrDefaultAsync(s => s.Name == "Customer", token) ?? throw new NotfoundExceptions("Not found role User");
 
             // từ UserAggregate chuyển thành User model để lưu vào database
             var users = new User()
@@ -44,9 +44,9 @@ namespace auth_services.AuthService.Infastructure.Reposistory
         }
 
         // lấy user rồi map sang  Aggregate
-        public async Task<UserAggregate> GetUserById(Guid id)
+        public async Task<UserAggregate> GetUserById(Guid id, CancellationToken token = default)
         {
-            var userAggregate = await _db.Users.Include(s => s.RefreshTokens).Where(s => s.Id == id).FirstOrDefaultAsync();
+            var userAggregate = await _db.Users.Include(s => s.RefreshTokens).Where(s => s.Id == id).FirstOrDefaultAsync(token);
 
             if (userAggregate != null)
             {
@@ -75,17 +75,19 @@ namespace auth_services.AuthService.Infastructure.Reposistory
             }
         }
 
-        public Task<bool> IsExitUser(string email)
+        public Task<bool> IsExitUser(string email, CancellationToken token = default)
         {
-            return _db.Users.AnyAsync(u => u.Email == email);
+            return _db.Users.AnyAsync(u => u.Email == email, token);
         }
 
 
         // cập nhật user phần refresh token
-        public async Task<bool> UpdateUserRefreshToken(UserAggregate userAggregate)
+        public async Task<bool> UpdateUserRefreshToken(UserAggregate userAggregate, CancellationToken token = default)
         {
 
-            var user = _db.Users.Include(s => s.RefreshTokens).Where(s => s.Id == userAggregate.Id).FirstOrDefault();
+            var user = await _db.Users
+           .Include(s => s.RefreshTokens)
+           .FirstOrDefaultAsync(s => s.Id == userAggregate.Id, token);
 
             if (user == null) return false;
 
