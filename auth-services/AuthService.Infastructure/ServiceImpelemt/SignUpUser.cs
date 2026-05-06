@@ -19,20 +19,16 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
         private readonly IGenarateSalt _iGenarateSalt;
         private readonly IHashPassword _iHashPassword;
         private readonly IUserRepository _iUserRepository;
-        private readonly RabbitMQProducer _rabbitMQ;
-        private readonly IConfiguration _iConfig;
         private readonly UserServicesClient _userClient;
         private readonly FoodAuthContext _db;
         private readonly IOutBoxMessage _outBox;
         private readonly ILogger<SignUpUser> _logger;
 
-        public SignUpUser(ILogger<SignUpUser> logger, IGenarateSalt genarateSalt, IHashPassword hashPassword, IUserRepository userRepository, RabbitMQProducer rabbitMQProducer, IConfiguration configuration, UserServicesClient userServicesClient, FoodAuthContext context, IOutBoxMessage outBoxMessage)
+        public SignUpUser(ILogger<SignUpUser> logger, IGenarateSalt genarateSalt, IHashPassword hashPassword, IUserRepository userRepository, UserServicesClient userServicesClient, FoodAuthContext context, IOutBoxMessage outBoxMessage)
         {
             _iGenarateSalt = genarateSalt;
             _iHashPassword = hashPassword;
             _iUserRepository = userRepository;
-            _rabbitMQ = rabbitMQProducer;
-            _iConfig = configuration;
             _userClient = userServicesClient;
             _db = context;
             _outBox = outBoxMessage;

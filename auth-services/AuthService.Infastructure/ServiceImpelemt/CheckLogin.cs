@@ -14,33 +14,28 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
 {
     public class CheckLogin : ICheckLogin
     {
-        private readonly FoodAuthContext _db;
         private readonly IHashPassword _IhashPassword;
         private readonly IEnumerable<IGanarateTokenJWT> _iGenarateToken;
         private readonly IRefreshTokenRepository _iRefreshToken;
         private readonly ILogger<CheckLogin> _logger;
         private readonly IDistributedCache _cache;
+        private readonly IUserRepository _userRepo;
 
-        public CheckLogin(IDistributedCache distributedCache, FoodAuthContext foodAuthContext, IHashPassword hashPassword, IEnumerable<IGanarateTokenJWT> ganarateTokenJWTs, IRefreshTokenRepository refreshTokenRepository, ILogger<CheckLogin> logger)
+        public CheckLogin(IUserRepository userRepository, IDistributedCache distributedCache, IHashPassword hashPassword, IEnumerable<IGanarateTokenJWT> ganarateTokenJWTs, IRefreshTokenRepository refreshTokenRepository, ILogger<CheckLogin> logger)
         {
-            _db = foodAuthContext;
+    
             _IhashPassword = hashPassword;
             _iGenarateToken = ganarateTokenJWTs;
             _iRefreshToken = refreshTokenRepository;
             _logger = logger;
             _cache = distributedCache;
+            _userRepo = userRepository;
         }
 
         public async Task<ResponseLoginUser> IsUserLoginAsync(RequestUserLogin user, CancellationToken token = default)
         {
-            var realUserInDataBase = await _db.Users.Where(s => s.Email == user.Email).Select(s => new
-            {
-                passwordHash = s.PasswordHash,
-                paswordSalt = s.PasswordSalt,
-                id = s.Id,
-                s.Email,
-                Role = s.Roles.Select(s => s.Name).FirstOrDefault() ?? "Customer",
-            }).FirstOrDefaultAsync(token);
+
+            var realUserInDataBase = await _userRepo.GetUserByEmail(user.Email, token);
 
             if (realUserInDataBase == null)
             {
@@ -53,7 +48,7 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
 
             var PasswordFromUserSend = _IhashPassword.HandleHashPassword(user.Password, realUserInDataBase.paswordSalt);
 
-            if (PasswordFromUserSend == realUserInDataBase.passwordHash)
+            if (PasswordFromUserSend == realUserInDataBase.PasswordHash)
             {
 
                 var sessionID = Guid.NewGuid();
@@ -62,18 +57,18 @@ namespace auth_services.AuthService.Infastructure.ServiceImpelemt
                     .SetAbsoluteExpiration(TimeSpan.FromMinutes(30))
                     .SetSlidingExpiration(TimeSpan.FromMinutes(10));
 
-                var cacheKey = $"SessionLogin:{realUserInDataBase.id}";
+                var cacheKey = $"SessionLogin:{realUserInDataBase.Id}";
                 await _cache.SetStringAsync(cacheKey, sessionID.ToString(), option, token);
 
-                var access = _iGenarateToken.OfType<GanarateAccessTokenJWT>().First().HandleGenarateJWT(realUserInDataBase.id, realUserInDataBase.Email, realUserInDataBase.Role);
-                var refresh = _iGenarateToken.OfType<GanarateRefresheTokenJWT>().First().HandleGenarateJWT(realUserInDataBase.id, realUserInDataBase.Email, realUserInDataBase.Role);
+                var access = _iGenarateToken.OfType<GanarateAccessTokenJWT>().First().HandleGenarateJWT(realUserInDataBase.Id, realUserInDataBase.Email, realUserInDataBase.Roles.FirstOrDefault() ?? "Customer");
+                var refresh = _iGenarateToken.OfType<GanarateRefresheTokenJWT>().First().HandleGenarateJWT(realUserInDataBase.Id, realUserInDataBase.Email, realUserInDataBase.Roles.FirstOrDefault() ?? "Customer");
 
-                var result = await _iRefreshToken.AddNewRefreshToken(realUserInDataBase.id, refresh.TokenValue, refresh.ExpireAt);
+                var result = await _iRefreshToken.AddNewRefreshToken(realUserInDataBase.Id, refresh.TokenValue, refresh.ExpireAt);
                 _logger.LogInformation($"Create new Refresh Token {result}");
                 return new ResponseLoginUser()
                 {
                     IsLoginSuccessful = true,
-                    Id = realUserInDataBase.id,
+                    Id = realUserInDataBase.Id,
                     Email = realUserInDataBase.Email,
                     AccessToken = access,
                     RefreshToken = refresh,

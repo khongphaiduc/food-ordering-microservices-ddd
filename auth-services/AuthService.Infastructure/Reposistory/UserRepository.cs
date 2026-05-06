@@ -75,6 +75,25 @@ namespace auth_services.AuthService.Infastructure.Reposistory
             }
         }
 
+        public async Task<UserInformation> GetUserByEmail(string email, CancellationToken token = default)
+        {
+            var user = await _db.Users.Include(s => s.Roles).Where(s => s.Email == email).Select(s => new UserInformation()
+            {
+                Id = s.Id,
+                PasswordHash = s.PasswordHash,
+                paswordSalt = s.PasswordSalt,
+                Username = s.Username,
+                Email = s.Email,
+                Roles = s.Roles.Select(s => s.Name).ToList()
+            }).FirstOrDefaultAsync(token);
+
+            if (user == null)
+            {
+                throw new NotfoundExceptions("Not found user");
+            }
+            return user;
+        }
+
         public Task<bool> IsExitUser(string email, CancellationToken token = default)
         {
             return _db.Users.AnyAsync(u => u.Email == email, token);

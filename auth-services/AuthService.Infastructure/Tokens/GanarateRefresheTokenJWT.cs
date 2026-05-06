@@ -12,14 +12,19 @@ namespace auth_services.AuthService.Infastructure.Tokens
         private readonly IConfiguration _iconfig;
         private readonly ILogger<GanarateRefresheTokenJWT> _ilogger;
 
+        public GanarateRefresheTokenJWT()
+        {
+        }
+
         public GanarateRefresheTokenJWT(IConfiguration configuration, ILogger<GanarateRefresheTokenJWT> logger)
         {
             _iconfig = configuration;
             _ilogger = logger;
         }
 
+
         // refreshe token
-        public TokenResponse HandleGenarateJWT(Guid id, string email, string role)
+        public virtual TokenResponse HandleGenarateJWT(Guid id, string email, string role)
         {
             var time = int.Parse(_iconfig["Jwt:Time:RefreshToken"]!);
 

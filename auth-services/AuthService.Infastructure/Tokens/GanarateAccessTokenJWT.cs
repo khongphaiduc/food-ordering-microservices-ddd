@@ -11,12 +11,16 @@ namespace auth_services.AuthService.Infastructure.Tokens
     {
         private readonly IConfiguration _iconfig;
 
+        public GanarateAccessTokenJWT()
+        {
+        }
+
         public GanarateAccessTokenJWT(IConfiguration configuration)
         {
             _iconfig = configuration;
         }
         // access token
-        public TokenResponse HandleGenarateJWT(Guid id, string email, string role)
+        public virtual TokenResponse HandleGenarateJWT(Guid id, string email, string role)
         {
             var time = int.Parse(_iconfig["Jwt:Time:AccessToken"]!);
 
