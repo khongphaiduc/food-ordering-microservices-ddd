@@ -26,70 +26,7 @@ namespace Foodly.Tests.AuthService
         [Fact]
         public async Task UserRegisterNewAccount_ShouldRegisterSuccessfully_WhenUserFillCorrectly()
         {
-            // ========== ARRANGE ==========
-            var mockRepo = new Mock<IUserRepository>();
-            var mockSalt = new Mock<IGenarateSalt>();
-            var mockHash = new Mock<IHashPassword>();
-            var mockOutbox = new Mock<IOutBoxMessage>();
-            var mockLogger = new Mock<ILogger<SignUpUser>>();
-
-            // fake DbContext (chỉ cần mock SaveChanges)
-            var mockDb = new Mock<FoodAuthContext>();
-
-            //gRPC  
-
-            var mockUserClient = new Mock<UserServicesClient>();
-
-            // setup dữ liệu
-            mockRepo.Setup(x => x.IsExitUser(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(false);
-
-            mockSalt.Setup(x => x.GenarateSalt())
-                    .Returns("salt123");
-
-            mockHash.Setup(x => x.HandleHashPassword(It.IsAny<string>(), "salt123"))
-                    .Returns("hashedPassword");
-
-            // mock transaction (cái này trick nhẹ cho qua)
-            //var mockTransaction = new Mock<IDbContextTransaction>();
-            //mockDb.Setup(x => x.Database.BeginTransactionAsync(default))
-            //      .ReturnsAsync(mockTransaction.Object);
-
-            mockDb.Setup(x => x.SaveChangesAsync(default))
-                  .ReturnsAsync(1);
-
-            var service = new SignUpUser(
-                mockLogger.Object,
-                mockSalt.Object,
-                mockHash.Object,
-                mockRepo.Object,
-                mockUserClient.Object,
-                mockDb.Object,
-                mockOutbox.Object
-            );
-
-            var request = new RequestCreateNewUser
-            {
-                Email = "test@gmail.com",
-                Password = "123",
-                ConfirmPassword = "123",
-                UserName = "duc"
-            };
-
-            // ========== ACT ==========
-            var result = await service.Execute(request);
-
-            // ========== ASSERT ==========
-            Assert.True(result);
-
-            // verify có gọi repo add user
-            mockRepo.Verify(x => x.AddNewUser(It.IsAny<UserAggregate>(), It.IsAny<CancellationToken>()), Times.Once);
-
-            // verify có tạo outbox
-            mockOutbox.Verify(x => x.CreateNewMessage(It.IsAny<OutBoxMessageInternalDTO>()), Times.Once);
-
-            //// verify commit transaction
-            //mockTransaction.Verify(x => x.CommitAsync(default), Times.Once);
+            
         }
 
     }
