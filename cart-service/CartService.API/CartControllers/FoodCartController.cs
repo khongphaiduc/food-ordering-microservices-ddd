@@ -41,9 +41,9 @@ namespace cart_service.CartService.API.CartControllers
 
         // tạo cart
         [HttpPost]
-        public async Task<IActionResult> TestCreateCart([FromBody] RequestCreateNewCartUser request)
+        public async Task<IActionResult> TestCreateCart([FromBody] RequestCreateNewCartUser request, CancellationToken cancellationToken)
         {
-            var idCart = await _cart.Execute(request);
+            var idCart = await _cart.Execute(request, cancellationToken);
             return Ok(idCart);
         }
 
@@ -59,10 +59,10 @@ namespace cart_service.CartService.API.CartControllers
 
         //xem cart 
         [HttpGet("user-cart/{idUser}")]
-        public async Task<IActionResult> GetCartUser([FromRoute] Guid idUser)
+        public async Task<IActionResult> GetCartUser([FromRoute] Guid idUser, CancellationToken cancellationToken)
         {
 
-            var cart = await _viewCart.Execute(idUser);
+            var cart = await _viewCart.Execute(idUser, cancellationToken);
             return Ok(cart);
         }
     }

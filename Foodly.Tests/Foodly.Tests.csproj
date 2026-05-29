@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\auth-services\auth-services.csproj" />
+    <ProjectReference Include="..\cart-service\cart-service.csproj" />
     <ProjectReference Include="..\user-service\user-service.csproj" />
   </ItemGroup>
 

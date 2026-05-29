@@ -1,0 +1,247 @@
+version: '3.8'
+
+services:
+  # --- INFRASTRUCTURE ---
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=123StrongPassword!
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "123StrongPassword!" -C -Q "SELECT 1" || exit 1
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  postgres-db:
+    image: postgres:17-alpine
+    environment:
+      - POSTGRES_PASSWORD=123StrongPassword!
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
+    hostname: elasticsearch 
+    environment:
+      - discovery.type=single-node
+      - network.host=0.0.0.0 
+      - ELASTIC_USERNAME=elastic
+      - ELASTIC_PASSWORD=tRKT9*XFLHZog*Wzmd2v
+      - xpack.security.enabled=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" 
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -u elastic:tRKT9*XFLHZog*Wzmd2v http://localhost:9200 >/dev/null || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+
+  minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=admin123
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- MICROSERVICES ---
+  api-gateway:
+    build: ./ApiGateway
+
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+
+    ports:
+      - "9080:8080"
+    depends_on:
+      - auth-services
+
+  auth-services:
+    build: ./auth-services
+    environment:
+      - URLSQLFOOD_ORDRING_AUTH_SERVICE=Data Source=sql-server;Initial Catalog=food_auth;Persist Security Info=True;User ID=sa;Password=123StrongPassword!;Trust Server Certificate=True
+      - ClientID=none
+      - Clientsecret=none
+    depends_on:
+      sql-server:
+        condition: service_healthy
+
+  user-service:
+    build: ./user-service
+    environment:
+      - URL_SQL_USER_SERVICE=Data Source=sql-server;Initial Catalog=food_users;Persist Security Info=True;User ID=sa;Password=123StrongPassword!;Trust Server Certificate=True
+    depends_on:
+      sql-server:
+        condition: service_healthy
+
+  food-service:
+    build: ./food-service
+    environment:
+      - SQLFOOD_PRODUCTS=Host=postgres-db;Port=5432;Database=food_products;Username=postgres;Password=123StrongPassword!
+      - RedisAddress=redis:6379
+      - MinIOEndpoint=minio:9000
+      - MinIOAccessKey=admin
+      - MinIOSecretKey=admin123
+      - gRPCPort_TrackingService=http://tracking-service:5003
+      - RabbitMQHost=rabbitmq
+      - RabbitMQPort=5672
+      - RabbitMQUsername=guest
+      - RabbitMQPassword=guest
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+
+  order-service:
+    build: ./order-service
+    environment:
+      - gRPC_PORT_CartService=http://cart-service:5005
+      - gRPC_PORT_PaymentService=http://payment-service:5006
+      - gRPC_PORT_UserService=http://user-service:5001
+      - URLORDER=Data Source=sql-server;Initial Catalog=food_order;Persist Security Info=True;User ID=sa;Password=123StrongPassword!;Trust Server Certificate=True
+    depends_on:
+      sql-server:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  cart-service:
+    build: ./cart-service
+    environment:
+      - gRPC_FoodService_URL=http://food-service:5002
+      - URLCARTSQL=Host=postgres-db;Port=5432;Database=food_cart;Username=postgres;Password=123StrongPassword!
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  payment-service:
+    build: ./payment-service
+    environment:
+      - PortFrontEnd=http://localhost:5173
+      - gRPCPort_OrderService=http://order-service:5007
+      - SQL=Data Source=sql-server;Initial Catalog=food_payment;Persist Security Info=True;User ID=sa;Password=123StrongPassword!;Trust Server Certificate=True
+      - ClientIDPayOS=none
+      - ApiKeytPayOS=none
+      - ChecksumKeyPOS=none
+    depends_on:
+      sql-server:
+        condition: service_healthy
+
+  notification-service:
+    build: ./notification-service
+    environment:
+      - RabbitMQHost=rabbitmq
+      - RabbitMQPort=5672
+      - RabbitMQUsername=guest
+      - RabbitMQPassword=guest
+      - URLSQL_NOTIFICATIONS=Host=postgres-db;Port=5432;Database=food-notification;Username=postgres;Password=123StrongPassword!
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  search-service:
+    build: ./search-service
+    environment:
+      - RabbitMQHost=rabbitmq
+      - RabbitMQPort=5672
+      - RabbitMQUsername=guest
+      - RabbitMQPassword=guest
+      - HostRedis=redis:6379
+      - ElasticSearchHost=http://elasticsearch:9200
+      - ElasticSearchUsername=elastic
+      - ElasticSearchPassword=tRKT9*XFLHZog*Wzmd2v
+      - SQLPRODUCT=Host=postgres-db;Port=5432;Database=food_products;Username=postgres;Password=123StrongPassword!
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      postgres-db:
+        condition: service_healthy
+
+  tracking-service:
+    build: ./tracking-service
+    environment:
+      - gRPCAddress_FoodService=http://food-service:5002
+      - RabbitMQHost=rabbitmq
+      - RabbitMQPort=5672
+      - RabbitMQUsername=guest
+      - RabbitMQPassword=guest
+      - SQL_URL=Host=postgres-db;Port=5432;Database=food_tracking_db;Username=postgres;Password=123StrongPassword!
+      - Redis=redis:6379
+      - GeminiKey=none
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+# --- VOLUMES ---
+volumes:
+  sqlserver_data:
+  postgres_data:
+  rabbitmq_data:
+  redis_data:
+  es_data:
+  minio_data:

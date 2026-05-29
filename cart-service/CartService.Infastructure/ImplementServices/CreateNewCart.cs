@@ -17,12 +17,12 @@ namespace cart_service.CartService.Infastructure.ImplementServices
             _logger = logger;
         }
 
-        public async Task<Guid> Execute(RequestCreateNewCartUser request)
+        public async Task<Guid> Execute(RequestCreateNewCartUser request, CancellationToken cancellationToken)
         {
 
             var cartAggregate = CartAggregate.CreateNewCart(request.UserId);
 
-            var idCart = await _cartRepo.CreateCartAsync(cartAggregate);
+            var idCart = await _cartRepo.CreateCartAsync(cartAggregate, cancellationToken);
 
             return idCart;
         }

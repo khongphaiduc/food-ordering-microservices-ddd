@@ -16,7 +16,7 @@ namespace cart_service.CartService.Infastructure.Repository
             _map = mapModel;
         }
 
-        public async Task<Guid> CreateCartAsync(CartAggregate cartAggregate)
+        public async Task<Guid> CreateCartAsync(CartAggregate cartAggregate,CancellationToken cancellationToken)
         {
             var cart = _map.MapAggregateToCartModel(cartAggregate);
 
@@ -26,6 +26,7 @@ namespace cart_service.CartService.Infastructure.Repository
 
             return result > 0 ? cart.Id : Guid.Empty;
         }
+
 
         public Task<CartAggregate?> GetCartByUserIdAsync(Guid userId)
         {

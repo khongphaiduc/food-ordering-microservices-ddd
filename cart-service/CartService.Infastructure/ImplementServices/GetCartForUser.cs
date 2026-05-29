@@ -23,7 +23,7 @@ namespace cart_service.CartService.Infastructure.ImplementServices
             _logger = logger;
         }
         #region get cart if not exist create new cart
-        public async Task<ResponseViewCartUser> Execute(Guid idUser)
+        public async Task<ResponseViewCartUser> Execute(Guid idUser, CancellationToken cancellationToken)
         {
 
             var cartUser = await _db.Carts.Include(s => s.CartItems).Where(s => s.Status == "ACTIVE").FirstOrDefaultAsync(c => c.UserId == idUser);
@@ -34,7 +34,7 @@ namespace cart_service.CartService.Infastructure.ImplementServices
                 var idcart = await _createCart.Execute(new RequestCreateNewCartUser
                 {
                     UserId = idUser,
-                });
+                }, cancellationToken);
 
                 _logger.LogInformation($"Creat new cart for user {idUser}");
 
@@ -86,6 +86,7 @@ namespace cart_service.CartService.Infastructure.ImplementServices
             return cart;
 
         }
-        #endregion 
+
+        #endregion
     }
 }

@@ -4,7 +4,7 @@ namespace cart_service.CartService.Application.Services
 {
     public interface ICreateNewCart
     {
-        Task<Guid> Execute(RequestCreateNewCartUser request); // id cart
+        Task<Guid> Execute(RequestCreateNewCartUser request, CancellationToken cancellationToken); // id cart
 
     }
 }
