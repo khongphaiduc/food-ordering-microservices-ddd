@@ -1,4 +1,4 @@
-﻿using food_service.ProductService.Application.DTOs.Request;
+using food_service.ProductService.Application.DTOs.Request;
 using food_service.ProductService.Application.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -28,9 +28,9 @@ namespace food_service.ProductService.API.Controllers
         }
 
 
-        // đã test
+        // d� test
         [HttpPost("products")]
-        public async Task<ActionResult> CreateNewProduct([FromForm] CreateNewProducDTO request)
+        public async Task<ActionResult> CreateNewProduct([FromForm] CreateNewProductDTO request)
         {
             var result = await _iAddNewProduct.ExecuteAsync(request);
             if (result)

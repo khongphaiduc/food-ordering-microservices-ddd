@@ -1,16 +1,16 @@
-Ôªøusing CartService.API.Protos;
+using CartService.API.Protos;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using order_service.OrderService.API.gRPC;
-using order_service.OrderService.Appilcation.Interface;
-using order_service.OrderService.Appilcation.Services;
+using order_service.OrderService.Application.Interface;
+using order_service.OrderService.Application.Services;
 using order_service.OrderService.Domain.Interface;
-using order_service.OrderService.Infastructure.Models;
-using order_service.OrderService.Infastructure.OrderRealTime;
-using order_service.OrderService.Infastructure.Persistence;
-using order_service.OrderService.Infastructure.Repository;
-using order_service.OrderService.Infastructure.ServicesImplements;
+using order_service.OrderService.Infrastructure.Models;
+using order_service.OrderService.Infrastructure.OrderRealTime;
+using order_service.OrderService.Infrastructure.Persistence;
+using order_service.OrderService.Infrastructure.Repository;
+using order_service.OrderService.Infrastructure.ServicesImplements;
 using PaymentService.API.Proto;
 using UserService.API.Protos;
 
@@ -35,13 +35,13 @@ namespace order_service
                     var context = services.GetRequiredService<FoodOrderContext>();
                     context.Database.Migrate();
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogInformation("ƒê√£ ch·∫°y Migration cho database th√†nh c√¥ng.");
+                    logger.LogInformation("–„ ch?y Migration cho database th‡nh cÙng.");
                 }
                 catch (Exception ex)
                 {
 
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "ƒê√£ x·∫£y ra l·ªói trong qu√° tr√¨nh t·ª± ƒë·ªông migrate database.");
+                    logger.LogError(ex, "–„ x?y ra l?i trong qu· trÏnh t? d?ng migrate database.");
                 }
             }
 

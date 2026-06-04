@@ -1,12 +1,12 @@
-Ôªøusing Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OrderService.API.Proto;
 using payment_service.PaymentService.API.gRPC;
 using payment_service.PaymentService.Application.Services;
-using payment_service.PaymentService.Infastructure.Models;
-using payment_service.PaymentService.Infastructure.NotificationRealTimeSignalR;
-using payment_service.PaymentService.Infastructure.Persistence;
+using payment_service.PaymentService.Infrastructure.Models;
+using payment_service.PaymentService.Infrastructure.NotificationRealTimeSignalR;
+using payment_service.PaymentService.Infrastructure.Persistence;
 
 
 namespace payment_service
@@ -30,13 +30,13 @@ namespace payment_service
                     var context = services.GetRequiredService<FoodPaymentContext>();
                     context.Database.Migrate();
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogInformation("ƒê√£ ch·∫°y Migration cho database th√†nh c√¥ng.");
+                    logger.LogInformation("–„ ch?y Migration cho database th‡nh cÙng.");
                 }
                 catch (Exception ex)
                 {
 
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "ƒê√£ x·∫£y ra l·ªói trong qu√° tr√¨nh t·ª± ƒë·ªông migrate database.");
+                    logger.LogError(ex, "–„ x?y ra l?i trong qu· trÏnh t? d?ng migrate database.");
                 }
             }
 
@@ -54,7 +54,7 @@ namespace payment_service
 
             app.MapGrpcService<CreatePaymentServers>();
 
-            app.MapHub<NotificationPaidSusscessfully>("/notificationPayOS")
+            app.MapHub<NotificationPaidSuccessfully>("/notificationPayOS")
      .RequireCors("AllowFrontend");
 
             app.MapControllers();

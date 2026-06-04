@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using user_service.userservice.infastructure.DBcontextService;
 using user_service.userservice.infastructure.Models;
-using user_service.UserService.API.Middlwares;
-using user_service.UserService.Infastructure.ServiceImplement;
+using user_service.UserService.API.Middlewares;
+using user_service.UserService.Infrastructure.ServiceImplement;
 
 namespace Foodly.Tests.UserService;
 

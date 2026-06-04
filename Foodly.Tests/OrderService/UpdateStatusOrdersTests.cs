@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using order_service.OrderService.Appilcation.DTOs;
+using order_service.OrderService.Application.DTOs;
 using order_service.OrderService.Domain.Enums;
-using order_service.OrderService.Infastructure.Models;
-using order_service.OrderService.Infastructure.ServicesImplements;
+using order_service.OrderService.Infrastructure.Models;
+using order_service.OrderService.Infrastructure.ServicesImplements;
 
 namespace Foodly.Tests.OrderService;
 

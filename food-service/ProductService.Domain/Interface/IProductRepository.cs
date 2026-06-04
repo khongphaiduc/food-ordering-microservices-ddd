@@ -1,4 +1,4 @@
-﻿using food_service.ProductService.Domain.Aggragate;
+using food_service.ProductService.Domain.Aggregate;
 
 namespace food_service.ProductService.Domain.Interface
 {

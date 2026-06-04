@@ -1,4 +1,4 @@
-﻿using order_service.OrderService.Appilcation.DTOs;
+using order_service.OrderService.Application.DTOs;
 using order_service.OrderService.Domain.Aggregate;
 
 namespace order_service.OrderService.Domain.Interface

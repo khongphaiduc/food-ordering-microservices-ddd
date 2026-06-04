@@ -2,7 +2,7 @@ using Moq;
 using tracking_service.Tracking.Application.DTO;
 using tracking_service.Tracking.Application.Interface;
 using tracking_service.Tracking.Domain.Enums;
-using tracking_service.Tracking.Infastructrure.ImplementServices;
+using tracking_service.Tracking.Infrastructure.ImplementServices;
 
 namespace Foodly.Tests.TrackingService;
 

@@ -1,13 +1,13 @@
-Ôªøusing Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using productService.API.Protos;
 using tracking_service.Tracking.API.gRPCimplement;
 using tracking_service.Tracking.Application.Interface;
 using tracking_service.Tracking.Domain.Repository;
-using tracking_service.Tracking.Infastructrure.ImplementServices;
-using tracking_service.Tracking.Infastructrure.Models;
-using tracking_service.Tracking.Infastructrure.Persistence;
-using tracking_service.Tracking.Infastructrure.Repo;
-using tracking_service.Tracking.Infastructrure.Worker;
+using tracking_service.Tracking.Infrastructure.ImplementServices;
+using tracking_service.Tracking.Infrastructure.Models;
+using tracking_service.Tracking.Infrastructure.Persistence;
+using tracking_service.Tracking.Infrastructure.Repo;
+using tracking_service.Tracking.Infrastructure.Worker;
 
 namespace tracking_service
 {
@@ -30,17 +30,17 @@ namespace tracking_service
                     var context = services.GetRequiredService<FoodProductsDbContext>();
                     context.Database.Migrate();
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogInformation("ƒê√£ ch·∫°y Migration cho database th√†nh c√¥ng.");
+                    logger.LogInformation("–„ ch?y Migration cho database th‡nh cÙng.");
                 }
                 catch (Exception ex)
                 {
 
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "ƒê√£ x·∫£y ra l·ªói trong qu√° tr√¨nh t·ª± ƒë·ªông migrate database.");
+                    logger.LogError(ex, "–„ x?y ra l?i trong qu· trÏnh t? d?ng migrate database.");
                 }
             }
 
-            app.MapGrpcService<GetResultCommendFoodService>();
+            app.MapGrpcService<GetResultRecommendFoodService>();
 
             app.UseHttpsRedirection();
             app.UseAuthorization();

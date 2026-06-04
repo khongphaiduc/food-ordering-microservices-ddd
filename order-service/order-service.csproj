@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
@@ -41,7 +41,7 @@
 
 
 	<ItemGroup>
-		<Protobuf Include="OrderService.API\Proto\CreatePaymetForOrder.proto" GrpcServices="Client" />
+		<Protobuf Include="OrderService.API\Proto\CreatePaymentForOrder.proto" GrpcServices="Client" />
 		<Protobuf Include="OrderService.API\Proto\InformationCart.proto" GrpcServices="Client" />
 		<Protobuf Include="OrderService.API\Proto\UpdateStatusOrderPaid.proto" GrpcServices="Server" />
 

@@ -1,7 +1,7 @@
-﻿using Grpc.Core;
+using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
 using order_service.OrderService.Domain.Enums;
-using order_service.OrderService.Infastructure.Models;
+using order_service.OrderService.Infrastructure.Models;
 using OrderService.API.Proto;
 
 namespace order_service.OrderService.API.gRPC

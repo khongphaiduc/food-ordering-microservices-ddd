@@ -1,7 +1,7 @@
-Ôªøusing Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using user_service.userservice.infastructure.DBcontextService;
 using user_service.UserService.API.gRPC;
-using user_service.UserService.Infastructure.Persistence;
+using user_service.UserService.Infrastructure.Persistence;
 
 
 namespace user_service.userservice.start
@@ -24,13 +24,13 @@ namespace user_service.userservice.start
                     var context = services.GetRequiredService<FoodUsersContext>();
                     context.Database.Migrate();
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogInformation("ƒê√£ ch·∫°y Migration cho database th√†nh c√¥ng.");
+                    logger.LogInformation("–„ ch?y Migration cho database th‡nh cÙng.");
                 }
                 catch (Exception ex)
                 {
 
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "ƒê√£ x·∫£y ra l·ªói trong qu√° tr√¨nh t·ª± ƒë·ªông migrate database.");
+                    logger.LogError(ex, "–„ x?y ra l?i trong qu· trÏnh t? d?ng migrate database.");
                 }
             }
 

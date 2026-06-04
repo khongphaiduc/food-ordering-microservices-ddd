@@ -1,17 +1,17 @@
-Ôªøusing auth_services.AuthService.API.gRPCs;
-using auth_services.AuthService.API.Middlwares;
+using auth_services.AuthService.API.gRPCs;
+using auth_services.AuthService.API.Middlewares;
 using auth_services.AuthService.Application.DTOS;
 using auth_services.AuthService.Application.Interfaces;
 using auth_services.AuthService.Application.Service;
 using auth_services.AuthService.Domain.Interface;
-using auth_services.AuthService.Infastructure.BackgroundServices;
-using auth_services.AuthService.Infastructure.DbContextAuth;
-using auth_services.AuthService.Infastructure.Persistence;
-using auth_services.AuthService.Infastructure.RabbitMQs.Producer;
-using auth_services.AuthService.Infastructure.Reposistory;
-using auth_services.AuthService.Infastructure.Security;
-using auth_services.AuthService.Infastructure.ServiceImpelemt;
-using auth_services.AuthService.Infastructure.Tokens;
+using auth_services.AuthService.Infrastructure.BackgroundServices;
+using auth_services.AuthService.Infrastructure.DbContextAuth;
+using auth_services.AuthService.Infrastructure.Persistence;
+using auth_services.AuthService.Infrastructure.RabbitMQs.Producer;
+using auth_services.AuthService.Infrastructure.Repository;
+using auth_services.AuthService.Infrastructure.Security;
+using auth_services.AuthService.Infrastructure.ServiceImplement;
+using auth_services.AuthService.Infrastructure.Tokens;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
@@ -45,13 +45,13 @@ namespace auth_services.AuthService.Start
                     var context = services.GetRequiredService<FoodAuthContext>();
                     context.Database.Migrate();
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogInformation("ƒê√£ ch·∫°y Migration cho database th√†nh c√¥ng.");
+                    logger.LogInformation("–„ ch?y Migration cho database th‡nh cÙng.");
                 }
                 catch (Exception ex)
                 {
 
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "ƒê√£ x·∫£y ra l·ªói trong qu√° tr√¨nh t·ª± ƒë·ªông migrate database.");
+                    logger.LogError(ex, "–„ x?y ra l?i trong qu· trÏnh t? d?ng migrate database.");
                 }
             }
             app.UseRateLimiter();

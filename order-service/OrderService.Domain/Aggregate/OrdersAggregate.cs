@@ -1,7 +1,7 @@
-﻿using order_service.OrderService.Domain.Entities;
+using order_service.OrderService.Domain.Entities;
 using order_service.OrderService.Domain.Enums;
-using order_service.OrderService.Domain.OjectValue;
-using order_service.OrderService.Infastructure.ServicesImplements;
+using order_service.OrderService.Domain.ObjectValue;
+using order_service.OrderService.Infrastructure.ServicesImplements;
 
 namespace order_service.OrderService.Domain.Aggregate
 {
@@ -15,8 +15,8 @@ namespace order_service.OrderService.Domain.Aggregate
         public OrderStatusPayment StatusOrderPayment { get; private set; }
 
         public Price TotalAmount { get; private set; }
-        public decimal ShippingFee { get; private set; }      // phí giao hàng
-        public DiscountValue Discount { get; private set; }   // giảm giá
+        public decimal ShippingFee { get; private set; }      // ph� giao h�ng
+        public DiscountValue Discount { get; private set; }   // gi?m gi�
         public Price FinalAmount { get; private set; }
 
         public PaymentMethod PaymentMethod { get; private set; }
@@ -88,14 +88,14 @@ namespace order_service.OrderService.Domain.Aggregate
 
         public void AddOrderItem(OrderItemsEntity orderItem)
         {
-            if (StatusOrderPayment != OrderStatusPayment.PENDING) throw new InvalidOperationException("Không thể thêm item khi order không ở trạng thái Pending");
+            if (StatusOrderPayment != OrderStatusPayment.PENDING) throw new InvalidOperationException("Kh�ng th? th�m item khi order kh�ng ? tr?ng th�i Pending");
             orderItemsEntities.Add(orderItem);
             RecalculateAmount();
         }
 
         public void AddOrderPayment(OrderPaymentsEntity orderPayment)
         {
-            if (StatusOrderPayment == OrderStatusPayment.CANCELLED) throw new InvalidOperationException("Order đã bị hủy, không thể thanh toán");
+            if (StatusOrderPayment == OrderStatusPayment.CANCELLED) throw new InvalidOperationException("Order d� b? h?y, kh�ng th? thanh to�n");
             orderPaymentsEntities.Add(orderPayment);
         }
 
@@ -114,7 +114,7 @@ namespace order_service.OrderService.Domain.Aggregate
 
         public void SetDiscount(decimal discount)
         {
-            if (StatusOrderPayment != OrderStatusPayment.PENDING) throw new InvalidOperationException("Không thể cập nhật giảm giá khi order không ở trạng thái Pending");
+            if (StatusOrderPayment != OrderStatusPayment.PENDING) throw new InvalidOperationException("Kh�ng th? c?p nh?t gi?m gi� khi order kh�ng ? tr?ng th�i Pending");
             Discount = new DiscountValue(discount);
             RecalculateAmount();
         }
@@ -137,7 +137,7 @@ namespace order_service.OrderService.Domain.Aggregate
 
         public void AddDelivery(OrderDeliveryEntity delivery)
         {
-            if (StatusOrderPayment == OrderStatusPayment.CANCELLED) throw new InvalidOperationException("Order đã bị hủy, không thể thêm thông tin giao hàng");
+            if (StatusOrderPayment == OrderStatusPayment.CANCELLED) throw new InvalidOperationException("Order d� b? h?y, kh�ng th? th�m th�ng tin giao h�ng");
             Delivery = delivery;
             UpdatedAt = DateTime.UtcNow;
         }

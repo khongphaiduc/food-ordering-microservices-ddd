@@ -1,8 +1,8 @@
-﻿using Elastic.Clients.Elasticsearch.Requests;
+using Elastic.Clients.Elasticsearch.Requests;
 using food_service.ProductService.Application.DTOs.Request;
 using food_service.ProductService.Application.Interface;
 using food_service.ProductService.Application.Service;
-using food_service.ProductService.Infastructure.MasstransitProducerRabbitMQ.Producer;
+using food_service.ProductService.Infrastructure.MasstransitProducerRabbitMQ.Producer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,26 +21,26 @@ namespace food_service.ProductService.API.Controllers
     {
         private readonly IGetListProduct _iListProduct;
         private readonly IViewDetailProduct _iViewDetailProduct;
-        private readonly IProductRecommendationService _recommentionProduct;
-        private readonly IGetListCatgory _getListCategory;
-        private readonly IRecommenPersonalFood _recommentionAI;
+        private readonly IProductRecommendationService _recommendationProduct;
+        private readonly IGetListCategory _getListCategory;
+        private readonly IRecommendPersonalFood _recommendationAI;
         private readonly IDistributedCache _cache;
         private readonly GeminiModelFoodlyProducer _recommendProducer;
 
-        public ProductsController(GeminiModelFoodlyProducer geminiModelFoodlyProducer, IGetListCatgory getListCatgory, IGetListProduct listProduct, IViewDetailProduct viewDetailProduct, IProductRecommendationService productRecommendationService, IRecommenPersonalFood recommenPersonalFood, IDistributedCache distributedCache)
+        public ProductsController(GeminiModelFoodlyProducer geminiModelFoodlyProducer, IGetListCategory getListCategory, IGetListProduct listProduct, IViewDetailProduct viewDetailProduct, IProductRecommendationService productRecommendationService, IRecommendPersonalFood recommendPersonalFood, IDistributedCache distributedCache)
         {
             _iListProduct = listProduct;
             _iViewDetailProduct = viewDetailProduct;
-            _recommentionProduct = productRecommendationService;
-            _getListCategory = getListCatgory;
-            _recommentionAI = recommenPersonalFood;
+            _recommendationProduct = productRecommendationService;
+            _getListCategory = getListCategory;
+            _recommendationAI = recommendPersonalFood;
             _cache = distributedCache;
             _recommendProducer = geminiModelFoodlyProducer;
 
         }
 
 
-        // đã test
+        // d� test
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetListProduct([FromQuery] RequestGetListProduct request)
@@ -74,12 +74,12 @@ namespace food_service.ProductService.API.Controllers
 
             if (cacheData != null)
             {
-                var product = await _recommentionAI.Execute1(userId);
+                var product = await _recommendationAI.Execute1(userId);
                 return Ok(new { list = product, totalProduct = product.Count });
             }
             else
             {
-                await _recommendProducer.SendMessage(new Infastructure.MasstransitProducerRabbitMQ.MessageContract.ReconmendationAI { IdUser = userId });
+                await _recommendProducer.SendMessage(new Infrastructure.MasstransitProducerRabbitMQ.MessageContract.RecommendationAI { IdUser = userId });
                 var sampleProduct = await _iListProduct.ExecuteAsync(new RequestGetListProduct());
                 return Ok(new { list = sampleProduct, totalProduct = sampleProduct.Count });
             }
@@ -97,7 +97,7 @@ namespace food_service.ProductService.API.Controllers
 
 
 
-        // đã test 
+        // d� test 
         [AllowAnonymous]
         [HttpGet("{idProduct}")]
 
@@ -120,7 +120,7 @@ namespace food_service.ProductService.API.Controllers
         [HttpGet("recommendation/{idCategory}")]
         public async Task<IActionResult> GetProductRecommendation([FromRoute] Guid idCategory)
         {
-            var listProductRecommendation = await _recommentionProduct.ExecuteAsync(idCategory);
+            var listProductRecommendation = await _recommendationProduct.ExecuteAsync(idCategory);
             return Ok(listProductRecommendation);
 
         }

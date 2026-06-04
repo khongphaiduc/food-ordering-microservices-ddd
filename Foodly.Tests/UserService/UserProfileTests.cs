@@ -6,7 +6,7 @@ using user_service.userservice.infastructure.Models;
 using user_service.UserService.Application.DTOS;
 using user_service.UserService.Domain.Aggregates;
 using user_service.UserService.Domain.Interfaces;
-using user_service.UserService.Infastructure.ServiceImplement;
+using user_service.UserService.Infrastructure.ServiceImplement;
 
 namespace Foodly.Tests.UserService;
 

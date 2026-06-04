@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using order_service.OrderService.Appilcation.DTOs;
-using order_service.OrderService.Appilcation.Services;
+using order_service.OrderService.Application.DTOs;
+using order_service.OrderService.Application.Services;
 
 namespace order_service.OrderService.API.OrderControllers
 {

@@ -1,4 +1,4 @@
-﻿using notification_service.Notification.Infastructure.Repositories;
+using notification_service.Notification.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 

@@ -1,4 +1,4 @@
-﻿using cart_service.CartService.Infastructure.Models;
+using cart_service.CartService.Infrastructure.Models;
 
 namespace cart_service.CartService.Application.DTOs
 {
@@ -17,7 +17,7 @@ namespace cart_service.CartService.Application.DTOs
 
         public Guid? VariantId { get; set; }
 
-        public int Quantity { get; set; }   // quantity  0 => xóa     , quantity > 0 => add / update
+        public int Quantity { get; set; }   // quantity  0 => x�a     , quantity > 0 => add / update
     }
 
 }

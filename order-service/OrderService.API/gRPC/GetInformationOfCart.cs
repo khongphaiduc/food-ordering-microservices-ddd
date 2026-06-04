@@ -1,7 +1,7 @@
-﻿using CartService.API.Protos;
+using CartService.API.Protos;
 using Grpc.Core;
 using Microsoft.IdentityModel.Tokens;
-using order_service.OrderService.Appilcation.DTOs.DTOsInternal;
+using order_service.OrderService.Application.DTOs.DTOsInternal;
 using order_service.OrderService.Domain.Enums;
 using System.Threading.Tasks;
 

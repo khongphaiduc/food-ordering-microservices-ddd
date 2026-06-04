@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using tracking_service.Tracking.Application.Interface;
-using tracking_service.Tracking.Infastructrure.ImplementServices;
-using tracking_service.Tracking.Infastructrure.Models;
+using tracking_service.Tracking.Infrastructure.ImplementServices;
+using tracking_service.Tracking.Infrastructure.Models;
 
 namespace Foodly.Tests.TrackingService;
 

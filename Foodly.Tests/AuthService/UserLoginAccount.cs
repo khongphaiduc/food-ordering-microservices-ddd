@@ -1,8 +1,8 @@
-﻿using auth_services.AuthService.Application.DTOS;
+using auth_services.AuthService.Application.DTOS;
 using auth_services.AuthService.Application.Interfaces;
 using auth_services.AuthService.Domain.Interface;
-using auth_services.AuthService.Infastructure.ServiceImpelemt;
-using auth_services.AuthService.Infastructure.Tokens;
+using auth_services.AuthService.Infrastructure.ServiceImplement;
+using auth_services.AuthService.Infrastructure.Tokens;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -63,8 +63,8 @@ namespace Foodly.Tests.AuthService
                 .ReturnsAsync(true);
 
 
-            var mockAccessTokenGen = new Mock<GanarateAccessTokenJWT>();
-            mockAccessTokenGen.Setup(x => x.HandleGenarateJWT(fakeUserId, testEmail, "Customer"))
+            var mockAccessTokenGen = new Mock<GenerateAccessTokenJWT>();
+            mockAccessTokenGen.Setup(x => x.HandleGenerateJWT(fakeUserId, testEmail, "Customer"))
                 .Returns(new TokenResponse
                 {
                     CreateAt = DateTime.Now,
@@ -73,8 +73,8 @@ namespace Foodly.Tests.AuthService
                     TokenValue = "fake_access_token",
                 });
 
-            var mockRefreshTokenGen = new Mock<GanarateRefresheTokenJWT>();
-            mockRefreshTokenGen.Setup(x => x.HandleGenarateJWT(fakeUserId, testEmail, "Customer"))
+            var mockRefreshTokenGen = new Mock<GenerateRefreshTokenJWT>();
+            mockRefreshTokenGen.Setup(x => x.HandleGenerateJWT(fakeUserId, testEmail, "Customer"))
                 .Returns(new TokenResponse
                 {
                     CreateAt = DateTime.Now,
@@ -84,7 +84,7 @@ namespace Foodly.Tests.AuthService
                 });
 
 
-            var tokenGenerators = new List<IGanarateTokenJWT>
+            var tokenGenerators = new List<IGenerateTokenJWT>
             {
                 mockAccessTokenGen.Object,
                 mockRefreshTokenGen.Object
@@ -116,7 +116,7 @@ namespace Foodly.Tests.AuthService
             Assert.Equal(testEmail, response.Email);
             Assert.Equal("fake_access_token", response.AccessToken.TokenValue);
             Assert.Equal("fake_refresh_token", response.RefreshToken.TokenValue);
-            Assert.NotEqual(Guid.Empty, response.IdSession); // Đảm bảo SessionID đã được tạo
+            Assert.NotEqual(Guid.Empty, response.IdSession); // �?m b?o SessionID d� du?c t?o
         }
 
         [Fact]
@@ -125,18 +125,18 @@ namespace Foodly.Tests.AuthService
             // 1. ARRANGE
             var mockUserRepo = new Mock<IUserRepository>();
             var mockHash = new Mock<IHashPassword>();
-            // Các mock khác không được gọi tới trong case này nên không cần setup rườm rà
+            // C�c mock kh�c kh�ng du?c g?i t?i trong case n�y n�n kh�ng c?n setup ru?m r�
             var mockDistributedCache = new Mock<IDistributedCache>();
             var mockRefreshToken = new Mock<IRefreshTokenRepository>();
             var mockLogger = new Mock<ILogger<CheckLogin>>();
 
-            // Giả lập: Repository tìm không thấy user (trả về null)
+            // Gi? l?p: Repository t�m kh�ng th?y user (tr? v? null)
             mockUserRepo.Setup(x => x.GetUserByEmail(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((UserInformation)null);
 
             var checkLoginService = new CheckLogin(
                 mockUserRepo.Object, mockDistributedCache.Object, mockHash.Object,
-                new List<IGanarateTokenJWT>(), mockRefreshToken.Object, mockLogger.Object
+                new List<IGenerateTokenJWT>(), mockRefreshToken.Object, mockLogger.Object
             );
 
             var requestUser = new RequestUserLogin
@@ -167,9 +167,9 @@ namespace Foodly.Tests.AuthService
 
             var testEmail = "ptrungduc1011@gmail.com";
             var dbSalt = "salt123";
-            var dbHashedPassword = "correct_hashed_password"; // Mật khẩu đúng trong DB
+            var dbHashedPassword = "correct_hashed_password"; // M?t kh?u d�ng trong DB
 
-            // Giả lập: User có tồn tại trong DB
+            // Gi? l?p: User c� t?n t?i trong DB
             mockUserRepo.Setup(x => x.GetUserByEmail(testEmail, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new UserInformation
                 {
@@ -178,19 +178,19 @@ namespace Foodly.Tests.AuthService
                     paswordSalt = dbSalt
                 });
 
-            // Giả lập: Khi hash mật khẩu sai mà user gửi lên, nó ra một chuỗi bậy bạ nào đó
+            // Gi? l?p: Khi hash m?t kh?u sai m� user g?i l�n, n� ra m?t chu?i b?y b? n�o d�
             mockHash.Setup(x => x.HandleHashPassword("wrong_password", dbSalt))
                 .Returns("wrong_hashed_password");
 
             var checkLoginService = new CheckLogin(
                 mockUserRepo.Object, mockDistributedCache.Object, mockHash.Object,
-                new List<IGanarateTokenJWT>(), mockRefreshToken.Object, mockLogger.Object
+                new List<IGenerateTokenJWT>(), mockRefreshToken.Object, mockLogger.Object
             );
 
             var requestUser = new RequestUserLogin
             {
                 Email = testEmail,
-                Password = "wrong_password" // User nhập sai pass
+                Password = "wrong_password" // User nh?p sai pass
             };
 
             // 2. ACT
@@ -212,18 +212,18 @@ namespace Foodly.Tests.AuthService
             var mockRefreshToken = new Mock<IRefreshTokenRepository>();
             var mockLogger = new Mock<ILogger<CheckLogin>>();
 
-            // Tạo một CancellationToken đã bị huỷ (Canceled)
+            // T?o m?t CancellationToken d� b? hu? (Canceled)
             var cancellationTokenSource = new CancellationTokenSource();
             cancellationTokenSource.Cancel();
             var cancelledToken = cancellationTokenSource.Token;
 
-            // Giả lập: User Repo nhận được token huỷ và ném lỗi TaskCanceledException
+            // Gi? l?p: User Repo nh?n du?c token hu? v� n�m l?i TaskCanceledException
             mockUserRepo.Setup(x => x.GetUserByEmail(It.IsAny<string>(), cancelledToken))
                 .ThrowsAsync(new TaskCanceledException());
 
             var checkLoginService = new CheckLogin(
                 mockUserRepo.Object, mockDistributedCache.Object, mockHash.Object,
-                new List<IGanarateTokenJWT>(), mockRefreshToken.Object, mockLogger.Object
+                new List<IGenerateTokenJWT>(), mockRefreshToken.Object, mockLogger.Object
             );
 
             var requestUser = new RequestUserLogin { Email = "test@gmail.com", Password = "123" };

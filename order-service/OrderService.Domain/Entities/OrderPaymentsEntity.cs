@@ -1,5 +1,5 @@
-﻿using order_service.OrderService.Domain.Enums;
-using order_service.OrderService.Domain.OjectValue;
+using order_service.OrderService.Domain.Enums;
+using order_service.OrderService.Domain.ObjectValue;
 
 namespace order_service.OrderService.Domain.Entities
 {
@@ -18,10 +18,10 @@ namespace order_service.OrderService.Domain.Entities
         public Price Amount { get; private set; }
 
 
-        public string? TransactionId { get; private set; }  // Mã giao dịch do cổng thanh toán trả về
+        public string? TransactionId { get; private set; }  // M� giao d?ch do c?ng thanh to�n tr? v?
 
 
-        public DateTime? PaidAt { get; private set; }// Thời điểm ngân hàng/cổng thanh toán xác nhận đã thanh toán
+        public DateTime? PaidAt { get; private set; }// Th?i di?m ng�n h�ng/c?ng thanh to�n x�c nh?n d� thanh to�n
 
 
         public DateTime CreatedAt { get; private set; }

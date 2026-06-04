@@ -1,4 +1,4 @@
-﻿using order_service.OrderService.Domain.OjectValue;
+using order_service.OrderService.Domain.ObjectValue;
 
 namespace order_service.OrderService.Domain.Entities
 {

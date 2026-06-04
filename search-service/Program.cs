@@ -1,4 +1,4 @@
-Ôªøusing Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -6,11 +6,11 @@ using Microsoft.IdentityModel.Tokens;
 using search_service.Models;
 using search_service.SearchService.API.Middlware;
 using search_service.SearchService.Application.Interface;
-using search_service.SearchService.Infastructure.ConsumerRabbitMQ;
-using search_service.SearchService.Infastructure.ImplementServices;
-using search_service.SearchService.Infastructure.Persistence;
-using search_service.SearchService.Infastructure.Redis.Interface;
-using search_service.SearchService.Infastructure.Redis.Service;
+using search_service.SearchService.Infrastructure.ConsumerRabbitMQ;
+using search_service.SearchService.Infrastructure.ImplementServices;
+using search_service.SearchService.Infrastructure.Persistence;
+using search_service.SearchService.Infrastructure.Redis.Interface;
+using search_service.SearchService.Infrastructure.Redis.Service;
 using StackExchange.Redis;
 
 namespace search_service
@@ -32,13 +32,13 @@ namespace search_service
                     var context = services.GetRequiredService<FoodProductsDbContext>();
                     context.Database.Migrate();
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogInformation("ƒê√£ ch·∫°y Migration cho database th√†nh c√¥ng.");
+                    logger.LogInformation("–„ ch?y Migration cho database th‡nh cÙng.");
                 }
                 catch (Exception ex)
                 {
 
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "ƒê√£ x·∫£y ra l·ªói trong qu√° tr√¨nh t·ª± ƒë·ªông migrate database.");
+                    logger.LogError(ex, "–„ x?y ra l?i trong qu· trÏnh t? d?ng migrate database.");
                 }
             }
 

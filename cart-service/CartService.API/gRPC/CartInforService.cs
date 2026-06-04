@@ -1,5 +1,5 @@
-﻿using cart_service.CartService.Domain.Enums;
-using cart_service.CartService.Infastructure.Models;
+using cart_service.CartService.Domain.Enums;
+using cart_service.CartService.Infrastructure.Models;
 using CartService.API.Protos;
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
@@ -70,7 +70,7 @@ namespace cart_service.CartService.API.gRPC
             }
             else
             {
-                var allowedNextStatuses = new[] { StatusCart.EXPIRED.ToString(), StatusCart.CHECKED_OUT.ToString() };  //  chỉ cho đổi ở trại thái này 
+                var allowedNextStatuses = new[] { StatusCart.EXPIRED.ToString(), StatusCart.CHECKED_OUT.ToString() };  //  ch? cho d?i ? tr?i th�i n�y 
 
                 if (!allowedNextStatuses.Contains(request.StatusChange))
                 {

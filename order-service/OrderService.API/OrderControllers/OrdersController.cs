@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using order_service.OrderService.Appilcation.DTOs;
-using order_service.OrderService.Appilcation.Services;
+using order_service.OrderService.Application.DTOs;
+using order_service.OrderService.Application.Services;
 using order_service.OrderService.Domain.Enums;
-using order_service.OrderService.Infastructure.Models;
+using order_service.OrderService.Infrastructure.Models;
 using System.Threading.Tasks;
 
 namespace order_service.OrderService.API.OrderControllers
@@ -17,18 +17,18 @@ namespace order_service.OrderService.API.OrderControllers
 
         private readonly ICreateNewOrder _order;
         private readonly IGetListOrderOfUser _getListOrder;
-        private readonly IGetViewDetailOreder _viewDetailOrder;
+        private readonly IGetViewDetailOrder _viewDetailOrder;
 
-        public OrdersController(ICreateNewOrder createNewOrder, IGetListOrderOfUser getListOrderOfUser, IGetViewDetailOreder getViewDetailOreder)
+        public OrdersController(ICreateNewOrder createNewOrder, IGetListOrderOfUser getListOrderOfUser, IGetViewDetailOrder getViewDetailOrder)
         {
 
             _order = createNewOrder;
             _getListOrder = getListOrderOfUser;
-            _viewDetailOrder = getViewDetailOreder;
+            _viewDetailOrder = getViewDetailOrder;
         }
 
 
-        // tạo order 
+        // t?o order 
         [HttpPost]
         public async Task<IActionResult> CreateNewOrder([FromBody] RequestPaymentCart request)
         {
@@ -38,7 +38,7 @@ namespace order_service.OrderService.API.OrderControllers
         }
 
 
-        // xem danh sách order of user 
+        // xem danh s�ch order of user 
         [HttpPost("histories")]
         public async Task<IActionResult> GetListOrders([FromBody] RequestGetListOrderWithPagination request)
         {

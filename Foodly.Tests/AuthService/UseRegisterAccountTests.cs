@@ -1,11 +1,11 @@
-﻿using auth_services.AuthService.API.gRPCs;
+using auth_services.AuthService.API.gRPCs;
 using auth_services.AuthService.Application.DTOS;
 using auth_services.AuthService.Application.Interfaces;
 using auth_services.AuthService.Domain.Aggregate;
 using auth_services.AuthService.Domain.Interface;
-using auth_services.AuthService.Infastructure.DbContextAuth;
-using auth_services.AuthService.Infastructure.RabbitMQs.Producer;
-using auth_services.AuthService.Infastructure.ServiceImpelemt;
+using auth_services.AuthService.Infrastructure.DbContextAuth;
+using auth_services.AuthService.Infrastructure.RabbitMQs.Producer;
+using auth_services.AuthService.Infrastructure.ServiceImplement;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -18,9 +18,9 @@ using UserProto = UserService.API.Protos;
 using Microsoft.Extensions.Configuration;
 namespace Foodly.Tests.AuthService
 {
-    // Fomat : [Tên phương thức muốn test ]_[Kết quả mong đợi]_[Điều kiện thực hiện test(khi tham số là null,khi người dùng tự follow chính mình, khi database bị ngắt kết nối...)] 
-    // SetUp : giả lập dữ liệu mặc định trả về khi gọi 1 method của dependency 
-    // Verify() dùng để xác nhận một method của dependency có được gọi hay không.
+    // Format : [T�n phuong th?c mu?n test ]_[K?t qu? mong d?i]_[�i?u ki?n th?c hi?n test(khi tham s? l� null,khi ngu?i d�ng t? follow ch�nh m�nh, khi database b? ng?t k?t n?i...)] 
+    // SetUp : gi? l?p d? li?u m?c d?nh tr? v? khi g?i 1 method c?a dependency 
+    // Verify() d�ng d? x�c nh?n m?t method c?a dependency c� du?c g?i hay kh�ng.
     public class UseRegisterAccountTests
     {
         [Fact]

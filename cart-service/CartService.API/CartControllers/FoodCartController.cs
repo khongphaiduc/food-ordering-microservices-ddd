@@ -1,7 +1,7 @@
-﻿using cart_service.CartService.API.gRPC;
+using cart_service.CartService.API.gRPC;
 using cart_service.CartService.Application.DTOs;
 using cart_service.CartService.Application.Services;
-using cart_service.CartService.Infastructure.Models;
+using cart_service.CartService.Infrastructure.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +39,7 @@ namespace cart_service.CartService.API.CartControllers
             return Ok(result);
         }
 
-        // tạo cart
+        // t?o cart
         [HttpPost]
         public async Task<IActionResult> TestCreateCart([FromBody] RequestCreateNewCartUser request, CancellationToken cancellationToken)
         {
@@ -47,7 +47,7 @@ namespace cart_service.CartService.API.CartControllers
             return Ok(idCart);
         }
 
-        //cập nhật cart
+        //c?p nh?t cart
         [HttpPost("update-cart")]
         public async Task<IActionResult> TestAddProductIntoCart([FromBody] RequestUpdateCartFood request)
         {

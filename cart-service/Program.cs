@@ -1,6 +1,6 @@
-Ôªøusing cart_service.CartService.API.gRPC;
-using cart_service.CartService.Infastructure.Models;
-using cart_service.CartService.Infastructure.Persistence;
+using cart_service.CartService.API.gRPC;
+using cart_service.CartService.Infrastructure.Models;
+using cart_service.CartService.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace cart_service
@@ -21,13 +21,13 @@ namespace cart_service
                     var context = services.GetRequiredService<FoodProductsDbContext>();
                     context.Database.Migrate();
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogInformation("ƒê√£ ch·∫°y Migration cho database th√†nh c√¥ng.");
+                    logger.LogInformation("–„ ch?y Migration cho database th‡nh cÙng.");
                 }
                 catch (Exception ex)
                 {
 
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "ƒê√£ x·∫£y ra l·ªói trong qu√° tr√¨nh t·ª± ƒë·ªông migrate database.");
+                    logger.LogError(ex, "–„ x?y ra l?i trong qu· trÏnh t? d?ng migrate database.");
                 }
             }
             app.MapGrpcService<CartInforService>();

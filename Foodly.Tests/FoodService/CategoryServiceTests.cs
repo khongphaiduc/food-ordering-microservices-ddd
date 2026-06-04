@@ -1,8 +1,8 @@
 using food_service.ProductService.Application.DTOs.Request;
-using food_service.ProductService.Domain.Aggragate;
+using food_service.ProductService.Domain.Aggregate;
 using food_service.ProductService.Domain.Interface;
-using food_service.ProductService.Domain.ValueOject;
-using food_service.ProductService.Infastructure.ImplementService;
+using food_service.ProductService.Domain.ValueObject;
+using food_service.ProductService.Infrastructure.ImplementService;
 using Moq;
 
 namespace Foodly.Tests.FoodService;

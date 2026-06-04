@@ -1,4 +1,4 @@
-﻿using food_service.ProductService.Infastructure.Models;
+using food_service.ProductService.Infrastructure.Models;
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
 using productService.API.Protos;

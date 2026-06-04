@@ -1,5 +1,5 @@
 using auth_services.AuthService.Domain.Interface;
-using auth_services.AuthService.Infastructure.ServiceImpelemt;
+using auth_services.AuthService.Infrastructure.ServiceImplement;
 using Moq;
 
 namespace Foodly.Tests.AuthService;

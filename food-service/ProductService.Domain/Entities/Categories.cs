@@ -1,5 +1,5 @@
-﻿using food_service.ProductService.Domain.Aggragate;
-using food_service.ProductService.Domain.ValueOject;
+using food_service.ProductService.Domain.Aggregate;
+using food_service.ProductService.Domain.ValueObject;
 
 namespace food_service.ProductService.Domain.Entities
 {

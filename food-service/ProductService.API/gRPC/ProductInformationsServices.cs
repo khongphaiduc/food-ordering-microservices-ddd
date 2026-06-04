@@ -1,5 +1,5 @@
-﻿using food_service.ProductService.Application.Interface;
-using food_service.ProductService.Infastructure.Models;
+using food_service.ProductService.Application.Interface;
+using food_service.ProductService.Infrastructure.Models;
 using Google.Protobuf;
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;

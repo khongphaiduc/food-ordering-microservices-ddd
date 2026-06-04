@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using order_service.OrderService.Appilcation.DTOs;
-using order_service.OrderService.Appilcation.Interface;
-using order_service.OrderService.Appilcation.Services;
+using order_service.OrderService.Application.DTOs;
+using order_service.OrderService.Application.Interface;
+using order_service.OrderService.Application.Services;
 using order_service.OrderService.Domain.Enums;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
