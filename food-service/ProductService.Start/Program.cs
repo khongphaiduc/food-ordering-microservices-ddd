@@ -49,19 +49,19 @@ namespace food_service.ProductService.Start
                     var context = services.GetRequiredService<FoodProductsDbContext>();
                     context.Database.Migrate();
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogInformation("Running my migration is success");
+                    logger.LogInformation("Database migration completed successfully.");
                 }
                 catch (Exception ex)
                 {
 
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "The Product Food Service has a conflict when initializing the migration");
+                    logger.LogError(ex, "An error occurred while applying database migrations.");
                 }
             }
 
             app.MapGrpcService<ProductInformationsServices>();
-
             app.MapGrpcService<LoadFullProduct>();
+            app.MapGrpcService<Inventory>();
 
             app.UseRateLimiter();
 

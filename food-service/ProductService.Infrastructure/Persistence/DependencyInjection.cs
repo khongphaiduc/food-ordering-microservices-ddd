@@ -82,7 +82,7 @@ namespace food_service.ProductService.Infrastructure.Persistence
                         e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
                         e.ConfigureConsumer<RecommendFoodConsumer>(context);       // map consumer v?i queue
                     });
-                    // khi run thÏ nÛ s? bind exchange v‡ queue d?a trÍn c·c type message c?a consumer dang map t?i queue
+                    // khi run thÃÅ n√≥ s? bind exchange v√† queue d?a tr√™n c√°c type message c?a consumer dang map t?i queue
                 });
             });
 
@@ -97,6 +97,8 @@ namespace food_service.ProductService.Infrastructure.Persistence
             services.AddScoped<IUpdateCategory, UpdateCategory>();
             services.AddScoped<ICreateNewCategory, CreateNewCategory>();
             services.AddScoped<IGetListCategory, GetListCategory>();
+            services.AddScoped<IGetProductDailyInventory, GetProductDailyInventory>();
+            services.AddScoped<IReserveProductDailyInventory, ReserveProductDailyInventory>();
 
             services.AddScoped<IMinIOFood, MinIOFood>();
             services.AddScoped<IRecommendPersonalFood, RecommendPersonalFood>();
@@ -134,7 +136,7 @@ namespace food_service.ProductService.Infrastructure.Persistence
            
             services.AddGrpcClient<GeminiFoodlyGrpc.GeminiFoodlyGrpcClient>(options =>
             {
-                options.Address = new Uri("https://localhost:5003");
+                options.Address = new Uri(config["gRPCPort_TrackingService"]!);
             });
 
             services.AddGrpc();

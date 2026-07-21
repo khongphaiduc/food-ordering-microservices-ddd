@@ -79,7 +79,7 @@ namespace auth_services.AuthService.Infrastructure.Persistence
 
             services.AddGrpcClient<UserInfoGrpc.UserInfoGrpcClient>(s =>
             {
-                s.Address = new Uri("https://localhost:5001");
+                s.Address = new Uri(configuration["gRPC_UserService_URL"]!);
             });
 
             services.AddStackExchangeRedisCache(options =>

@@ -7,6 +7,7 @@ namespace ApiGateway
     {
         public async static Task Main(string[] args)
         {
+            DotNetEnv.Env.Load();
             var builder = WebApplication.CreateBuilder(args);
 
 

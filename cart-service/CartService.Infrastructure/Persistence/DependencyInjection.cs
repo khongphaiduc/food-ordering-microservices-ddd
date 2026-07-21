@@ -54,7 +54,7 @@ namespace cart_service.CartService.Infrastructure.Persistence
 
             services.AddGrpcClient<ProductInfoGrpc.ProductInfoGrpcClient>(s =>
             {
-                s.Address = new Uri("https://localhost:5002");
+                s.Address = new Uri(configuration["gRPC_FoodService_URL"]!);
             });
 
             services.AddGrpc();

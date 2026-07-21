@@ -13,6 +13,7 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
 {
     public class CreateNewOrder : ICreateNewOrder
     {
+        private readonly InventoryProduct _inventoryProduct;
         private readonly GetInformationOfCart _cartClientGRPC;
         private readonly IOrderRepository _orderRepository;
         private readonly PaymentInforGrpc.PaymentInforGrpcClient _createPaymentPayOs;
@@ -20,8 +21,9 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
         private readonly GetAddressUserServiceSideClient _AddressUser;
         private readonly IHubContext<NotificationOrderHUB> _orderHub;
 
-        public CreateNewOrder(IHubContext<NotificationOrderHUB> hubContext, GetAddressUserServiceSideClient getAddressUserServiceSideClient, GetInformationOfCart getInformationOfCartClient, IOrderRepository orderRepository, PaymentInforGrpc.PaymentInforGrpcClient paymentInforGrpcClient, ILogger<CreateNewOrder> logger)
+        public CreateNewOrder(InventoryProduct inventoryProduct, IHubContext<NotificationOrderHUB> hubContext, GetAddressUserServiceSideClient getAddressUserServiceSideClient, GetInformationOfCart getInformationOfCartClient, IOrderRepository orderRepository, PaymentInforGrpc.PaymentInforGrpcClient paymentInforGrpcClient, ILogger<CreateNewOrder> logger)
         {
+            _inventoryProduct = inventoryProduct;
             _cartClientGRPC = getInformationOfCartClient;
             _orderRepository = orderRepository;
             _createPaymentPayOs = paymentInforGrpcClient;
@@ -68,7 +70,7 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
             // payment 
             newOrderAggregate.AddOrderPayment(OrderPaymentsEntity.CreateOrderPayment(newOrderAggregate.IdOrder, paymentMethod, PaymentStatus.PENDING, newOrderAggregate.FinalAmount.Value, null, null));
 
-            var resultCreateNewOrder = await _orderRepository.CreateNewOrder(newOrderAggregate);  //   t?o order
+            var resultCreateNewOrder = await _orderRepository.CreateNewOrder(newOrderAggregate);  //   create order
 
             if (resultCreateNewOrder.Status)
             {
@@ -79,7 +81,7 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
 
                 var orderNotificationRealTimeDTO = new ViewOrderDTO
                 {
-                    OrderCode = "Ðon Food M?i",
+                    OrderCode = "Ðon Food Mi",
                     IdOrder = newOrderAggregate.IdOrder,
                     NameCustomer = newOrderAggregate.SnapshotNameCustomer,
                     CreateAt = newOrderAggregate.CreatedAt,
@@ -99,11 +101,14 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
                 {
                     _logger.LogError(ex, "Realtime notification failed");
                 }
-
-
-                // thanh toán ti?n m?t
-                if (paymentMethod != PaymentMethod.PayOS)
+                // Cash orders are paid when the customer receives the delivery.
+                // The order payment remains PENDING until the order reaches COMPLETED.
+                if (paymentMethod == PaymentMethod.Cash)
                 {
+                    var inventoryReserved = await _inventoryProduct.ReduceInventoryProduct(cart.CartItems);
+                    if (!inventoryReserved) return string.Empty;
+
+                    _logger.LogInformation("Cash order {OrderId} was created and is awaiting payment on delivery.", resultCreateNewOrder.IdOrder);
                     return "Success";
                 }
 

@@ -23,16 +23,18 @@ namespace food_service.ProductService.API.Controllers
         private readonly IViewDetailProduct _iViewDetailProduct;
         private readonly IProductRecommendationService _recommendationProduct;
         private readonly IGetListCategory _getListCategory;
+        private readonly IGetProductDailyInventory _getProductDailyInventory;
         private readonly IRecommendPersonalFood _recommendationAI;
         private readonly IDistributedCache _cache;
         private readonly GeminiModelFoodlyProducer _recommendProducer;
 
-        public ProductsController(GeminiModelFoodlyProducer geminiModelFoodlyProducer, IGetListCategory getListCategory, IGetListProduct listProduct, IViewDetailProduct viewDetailProduct, IProductRecommendationService productRecommendationService, IRecommendPersonalFood recommendPersonalFood, IDistributedCache distributedCache)
+        public ProductsController(GeminiModelFoodlyProducer geminiModelFoodlyProducer, IGetListCategory getListCategory, IGetProductDailyInventory getProductDailyInventory, IGetListProduct listProduct, IViewDetailProduct viewDetailProduct, IProductRecommendationService productRecommendationService, IRecommendPersonalFood recommendPersonalFood, IDistributedCache distributedCache)
         {
             _iListProduct = listProduct;
             _iViewDetailProduct = viewDetailProduct;
             _recommendationProduct = productRecommendationService;
             _getListCategory = getListCategory;
+            _getProductDailyInventory = getProductDailyInventory;
             _recommendationAI = recommendPersonalFood;
             _cache = distributedCache;
             _recommendProducer = geminiModelFoodlyProducer;
@@ -40,7 +42,7 @@ namespace food_service.ProductService.API.Controllers
         }
 
 
-        // dã test
+        // tested
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetListProduct([FromQuery] RequestGetListProduct request)
@@ -94,10 +96,24 @@ namespace food_service.ProductService.API.Controllers
             return Ok(new { list = listCategory });
         }
 
+        [AllowAnonymous]
+        [HttpGet("inventory")]
+        public async Task<IActionResult> GetProductDailyInventory([FromQuery] RequestGetProductDailyInventory request)
+        {
+            var result = await _getProductDailyInventory.ExecuteAsync(request);
+            return Ok(new
+            {
+                list = result.Items,
+                totalProduct = result.TotalCount,
+                pageIndex = request.PageIndex < 1 ? 1 : request.PageIndex,
+                pageSize = Math.Clamp(request.PageSize, 1, 100)
+            });
+        }
 
 
 
-        // dã test 
+
+        // tested
         [AllowAnonymous]
         [HttpGet("{idProduct}")]
 

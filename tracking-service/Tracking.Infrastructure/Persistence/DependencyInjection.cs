@@ -29,7 +29,7 @@ namespace tracking_service.Tracking.Infrastructure.Persistence
 
             services.AddGrpcClient<ProductListGrpc.ProductListGrpcClient>(options =>
             {
-                options.Address = new Uri("https://localhost:5002");
+                options.Address = new Uri(config["gRPCAddress_FoodService"]!);
             });
 
             services.AddGrpc();

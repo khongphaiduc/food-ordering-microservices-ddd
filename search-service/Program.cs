@@ -32,13 +32,13 @@ namespace search_service
                     var context = services.GetRequiredService<FoodProductsDbContext>();
                     context.Database.Migrate();
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogInformation("Ðã ch?y Migration cho database thành công.");
+                    logger.LogInformation("Database migration completed successfully.");
                 }
                 catch (Exception ex)
                 {
 
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "Ðã x?y ra l?i trong quá trình t? d?ng migrate database.");
+                    logger.LogError(ex, "An error occurred while applying database migrations.");
                 }
             }
 

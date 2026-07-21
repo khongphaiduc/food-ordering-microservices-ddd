@@ -1,26 +1,22 @@
-# 1. Dùng image SDK để chứa đồ nghề build code
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# 2. Copy file .csproj vào trước để tải thư viện (giúp build nhanh hơn)
 COPY ["payment-service.csproj", "./"]
-RUN dotnet restore "./payment-service.csproj"
+RUN dotnet restore "payment-service.csproj"
 
-# 3. Copy toàn bộ code còn lại vào và tiến hành Build
 COPY . .
-RUN dotnet build "payment-service.csproj" -c Release -o /app/build
+RUN dotnet publish "payment-service.csproj" --configuration Release --output /app/publish --no-restore /p:UseAppHost=false
 
-# 4. Publish code ra file chạy (DLL)
-FROM build AS publish
-RUN dotnet publish "payment-service.csproj" -c Release -o /app/publish /p:UseAppHost=false
-
-# 5. Dùng image ASP.NET Runtime (bản siêu nhẹ chỉ để chạy app)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-EXPOSE 8080
 
-# 6. Copy đống file đã publish ở bước 4 sang đây
-COPY --from=publish /app/publish .
+ENV ASPNETCORE_ENVIRONMENT=Docker \
+    Kestrel__Endpoints__gRPC__Url=http://+:5006 \
+    Kestrel__Endpoints__gRPC__Protocols=Http2 \
+    Kestrel__Endpoints__Http1__Url=http://+:8080 \
+    Kestrel__Endpoints__Http1__Protocols=Http1AndHttp2
 
-# 7. Lệnh khởi động app
+EXPOSE 8080 5006
+
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "payment-service.dll"]

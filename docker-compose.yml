@@ -97,9 +97,7 @@ services:
   # --- MICROSERVICES ---
   api-gateway:
     build: ./ApiGateway
-
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Docker
+    env_file: ./ApiGateway/.env
 
     ports:
       - "9080:8080"
@@ -108,35 +106,21 @@ services:
 
   auth-services:
     build: ./auth-services
-    environment:
-      - URLSQLFOOD_ORDRING_AUTH_SERVICE=Data Source=sql-server;Initial Catalog=food_auth;Persist Security Info=True;User ID=sa;Password=123StrongPassword!;Trust Server Certificate=True
-      - ClientID=none
-      - Clientsecret=none
+    env_file: ./auth-services/.env
     depends_on:
       sql-server:
         condition: service_healthy
 
   user-service:
     build: ./user-service
-    environment:
-      - URL_SQL_USER_SERVICE=Data Source=sql-server;Initial Catalog=food_users;Persist Security Info=True;User ID=sa;Password=123StrongPassword!;Trust Server Certificate=True
+    env_file: ./user-service/.env
     depends_on:
       sql-server:
         condition: service_healthy
 
   food-service:
     build: ./food-service
-    environment:
-      - SQLFOOD_PRODUCTS=Host=postgres-db;Port=5432;Database=food_products;Username=postgres;Password=123StrongPassword!
-      - RedisAddress=redis:6379
-      - MinIOEndpoint=minio:9000
-      - MinIOAccessKey=admin
-      - MinIOSecretKey=admin123
-      - gRPCPort_TrackingService=http://tracking-service:5003
-      - RabbitMQHost=rabbitmq
-      - RabbitMQPort=5672
-      - RabbitMQUsername=guest
-      - RabbitMQPassword=guest
+    env_file: ./food-service/.env
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -147,11 +131,7 @@ services:
 
   order-service:
     build: ./order-service
-    environment:
-      - gRPC_PORT_CartService=http://cart-service:5005
-      - gRPC_PORT_PaymentService=http://payment-service:5006
-      - gRPC_PORT_UserService=http://user-service:5001
-      - URLORDER=Data Source=sql-server;Initial Catalog=food_order;Persist Security Info=True;User ID=sa;Password=123StrongPassword!;Trust Server Certificate=True
+    env_file: ./order-service/.env
     depends_on:
       sql-server:
         condition: service_healthy
@@ -160,9 +140,7 @@ services:
 
   cart-service:
     build: ./cart-service
-    environment:
-      - gRPC_FoodService_URL=http://food-service:5002
-      - URLCARTSQL=Host=postgres-db;Port=5432;Database=food_cart;Username=postgres;Password=123StrongPassword!
+    env_file: ./cart-service/.env
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -171,25 +149,14 @@ services:
 
   payment-service:
     build: ./payment-service
-    environment:
-      - PortFrontEnd=http://localhost:5173
-      - gRPCPort_OrderService=http://order-service:5007
-      - SQL=Data Source=sql-server;Initial Catalog=food_payment;Persist Security Info=True;User ID=sa;Password=123StrongPassword!;Trust Server Certificate=True
-      - ClientIDPayOS=none
-      - ApiKeytPayOS=none
-      - ChecksumKeyPOS=none
+    env_file: ./payment-service/.env
     depends_on:
       sql-server:
         condition: service_healthy
 
   notification-service:
     build: ./notification-service
-    environment:
-      - RabbitMQHost=rabbitmq
-      - RabbitMQPort=5672
-      - RabbitMQUsername=guest
-      - RabbitMQPassword=guest
-      - URLSQL_NOTIFICATIONS=Host=postgres-db;Port=5432;Database=food-notification;Username=postgres;Password=123StrongPassword!
+    env_file: ./notification-service/.env
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -198,16 +165,7 @@ services:
 
   search-service:
     build: ./search-service
-    environment:
-      - RabbitMQHost=rabbitmq
-      - RabbitMQPort=5672
-      - RabbitMQUsername=guest
-      - RabbitMQPassword=guest
-      - HostRedis=redis:6379
-      - ElasticSearchHost=http://elasticsearch:9200
-      - ElasticSearchUsername=elastic
-      - ElasticSearchPassword=tRKT9*XFLHZog*Wzmd2v
-      - SQLPRODUCT=Host=postgres-db;Port=5432;Database=food_products;Username=postgres;Password=123StrongPassword!
+    env_file: ./search-service/.env
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -220,15 +178,7 @@ services:
 
   tracking-service:
     build: ./tracking-service
-    environment:
-      - gRPCAddress_FoodService=http://food-service:5002
-      - RabbitMQHost=rabbitmq
-      - RabbitMQPort=5672
-      - RabbitMQUsername=guest
-      - RabbitMQPassword=guest
-      - SQL_URL=Host=postgres-db;Port=5432;Database=food_tracking_db;Username=postgres;Password=123StrongPassword!
-      - Redis=redis:6379
-      - GeminiKey=none
+    env_file: ./tracking-service/.env
     depends_on:
       postgres-db:
         condition: service_healthy

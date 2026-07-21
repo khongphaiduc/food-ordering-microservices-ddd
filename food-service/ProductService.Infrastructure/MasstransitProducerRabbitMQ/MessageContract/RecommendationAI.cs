@@ -1,9 +1,9 @@
-namespace food_service.ProductService.Infrastructure.MasstransitProducerRabbitMQ.MessageContract
+﻿namespace food_service.ProductService.Infrastructure.MasstransitProducerRabbitMQ.MessageContract
 {
-    public record RecommendationAI      // MassTransit s? s? d?ng t�n c?a clas n�y l�m t�n c?a Exchange
+    public record RecommendationAI      // MassTransit  sử dụng tên của class này để đặt tên Exchange
     {
         public Guid IdUser { get; init; }
     }
 
 }
-// MassTransit m?c d?nh s? s? d?ng lo?i Fanout Exchange  , c� nghia l� m?i h�ng d?i (queue) n�o du?c li�n k?t v?i Exchange n�y s? nh?n du?c t?t c? c�c tin nh?n du?c g?i d?n Exchange.
+// MassTransit mặc định sử dụng loại Fanout Exchange  , có nghia là mọi hàng đợi (queue) nào được liên kết với Exchange này, sẽ nhận được tất cả các message từ exchange này.

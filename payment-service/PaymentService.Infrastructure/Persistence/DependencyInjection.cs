@@ -91,7 +91,7 @@ namespace payment_service.PaymentService.Infrastructure.Persistence
 
             services.AddGrpcClient<OrderServiceUpdateStatusGrpc.OrderServiceUpdateStatusGrpcClient>(options =>
             {
-                options.Address = new Uri("https://localhost:5007");
+                options.Address = new Uri(config["gRPCPort_OrderService"]!);
             });
 
             services.AddGrpc();

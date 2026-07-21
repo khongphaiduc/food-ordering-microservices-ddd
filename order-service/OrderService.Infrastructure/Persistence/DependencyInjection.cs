@@ -10,6 +10,7 @@ using order_service.OrderService.Infrastructure.Models;
 using order_service.OrderService.Infrastructure.Repository;
 using order_service.OrderService.Infrastructure.ServicesImplements;
 using PaymentService.API.Proto;
+using productService.API.Protos;
 using UserService.API.Protos;
 
 namespace order_service.OrderService.Infrastructure.Persistence
@@ -18,13 +19,13 @@ namespace order_service.OrderService.Infrastructure.Persistence
     {
         public static IServiceCollection AddAllServices(this IServiceCollection services, IConfiguration config)
         {
-          
+
             services.AddDbContext<FoodOrderContext>(options =>
             {
                 options.UseSqlServer(config["URLORDER"]);
             });
 
-            
+
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -44,7 +45,7 @@ namespace order_service.OrderService.Infrastructure.Persistence
                     )
                 };
 
-              
+
                 option.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = context =>
@@ -73,17 +74,19 @@ namespace order_service.OrderService.Infrastructure.Persistence
                 });
             });
 
-            
+
             services.AddGrpcClient<CartInforGrpc.CartInforGrpcClient>(o =>
-                o.Address = new Uri("https://localhost:5005"));
+                o.Address = new Uri(config["gRPC_PORT_CartService"]!));
 
             services.AddGrpcClient<PaymentInforGrpc.PaymentInforGrpcClient>(o =>
-                o.Address = new Uri("https://localhost:5006"));
+                o.Address = new Uri(config["gRPC_PORT_PaymentService"]!));
 
             services.AddGrpcClient<UserAddressInfoGrpc.UserAddressInfoGrpcClient>(o =>
-                o.Address = new Uri("https://localhost:5001"));
+                o.Address = new Uri(config["gRPC_PORT_UserService"]!));
 
-          
+            services.AddGrpcClient<ProductInventoryGrpc.ProductInventoryGrpcClient>(s =>
+            s.Address = new Uri(config["gRPC_PORT_FoodService"]!));
+
             services.AddScoped<IOrderRepository, OrderRepository>();
 
             services.AddScoped<ICreateNewOrder, CreateNewOrder>();
@@ -100,8 +103,7 @@ namespace order_service.OrderService.Infrastructure.Persistence
 
             services.AddScoped<GetInformationOfCart>();
             services.AddScoped<GetAddressUserServiceSideClient>();
-
-           
+            services.AddScoped<InventoryProduct>();
             services.AddControllers();
             services.AddSignalR();
             services.AddGrpc();

@@ -21,6 +21,8 @@ public partial class FoodProductsDbContext : DbContext
 
     public virtual DbSet<ProductVariant> ProductVariants { get; set; }
 
+    public virtual DbSet<ProductDailyInventory> ProductDailyInventories { get; set; }
+
     public virtual DbSet<OutBoxMessage> OutBoxMessages { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -139,6 +141,52 @@ public partial class FoodProductsDbContext : DbContext
             entity.HasOne(d => d.Product).WithMany(p => p.ProductVariants)
                 .HasForeignKey(d => d.ProductId)
                 .HasConstraintName("fk_variant_product");
+        });
+
+        modelBuilder.Entity<ProductDailyInventory>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("product_daily_inventories_pkey");
+
+            entity.ToTable("product_daily_inventories", table =>
+            {
+                table.HasCheckConstraint("ck_daily_inventory_initial_quantity", "initial_quantity >= 0");
+                table.HasCheckConstraint("ck_daily_inventory_remaining_quantity", "remaining_quantity >= 0");
+                table.HasCheckConstraint("ck_daily_inventory_sold_quantity", "sold_quantity >= 0");
+                table.HasCheckConstraint("ck_daily_inventory_quantity_balance", "remaining_quantity + sold_quantity = initial_quantity");
+            });
+
+            entity.HasIndex(e => new { e.ProductId, e.InventoryDate })
+                .IsUnique()
+                .HasDatabaseName("uq_daily_inventory_product_date");
+
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("uuidv7()")
+                .HasColumnName("id");
+            entity.Property(e => e.ProductId).HasColumnName("product_id");
+            entity.Property(e => e.InventoryDate).HasColumnName("inventory_date");
+            entity.Property(e => e.InitialQuantity)
+                .HasDefaultValue(100)
+                .HasColumnName("initial_quantity");
+            entity.Property(e => e.RemainingQuantity)
+                .HasDefaultValue(100)
+                .HasColumnName("remaining_quantity");
+            entity.Property(e => e.SoldQuantity)
+                .HasDefaultValue(0)
+                .HasColumnName("sold_quantity");
+            entity.Property(e => e.IsAvailable)
+                .HasDefaultValue(true)
+                .HasColumnName("is_available");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnName("created_at");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnName("updated_at");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductDailyInventories)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_daily_inventory_product");
         });
 
         OnModelCreatingPartial(modelBuilder);
