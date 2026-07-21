@@ -21,8 +21,7 @@ The project demonstrates practical backend engineering patterns such as Domain-D
 <img width="1844" height="942" alt="Foodly home app screenshot" src="https://github.com/user-attachments/assets/42a4ae24-9847-40d5-a416-cca6354cb1fb" />
 
 ### Admin App
-
-<img width="1858" height="949" alt="Foodly admin app screenshot" src="https://github.com/user-attachments/assets/1cd96de6-c866-4a92-b184-b76c47024548" />
+<img width="1843" height="949" alt="Screenshot 2026-07-21 225118" src="https://github.com/user-attachments/assets/7bd837df-6065-4d07-94c7-eae4203079e5" />
 
 Frontend repository: [Food Ordering Microservices Frontend](https://github.com/khongphaiduc/food-ordering-microservices-frontend)
 
