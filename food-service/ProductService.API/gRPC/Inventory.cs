@@ -18,27 +18,27 @@ namespace food_service.ProductService.API.gRPC
         {
             var response = new ReserveDailyInventoryResponse();
             var inventoryRequests = new List<Application.DTOs.Request.ReserveProductDailyInventoryRequest>();
+            var validationErrors = new string?[request.Items.Count];
 
-            foreach (var item in request.Items)
+            if (request.Items.Count == 0)
             {
+                response.Success = false;
+                response.Message = "At least one inventory item is required.";
+                return response;
+            }
+
+            for (var index = 0; index < request.Items.Count; index++)
+            {
+                var item = request.Items[index];
+
                 if (!Guid.TryParse(item.ProductId, out var productId))
                 {
-                    response.Items.Add(new ReserveDailyInventoryItemResult
-                    {
-                        ProductId = item.ProductId,
-                        Success = false,
-                        Message = "Invalid product_id. No inventory was reserved."
-                    });
+                    validationErrors[index] = "Invalid product_id. No inventory was reserved.";
                 }
                 else if (!string.IsNullOrWhiteSpace(item.InventoryDate)
                     && !DateOnly.TryParseExact(item.InventoryDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
                 {
-                    response.Items.Add(new ReserveDailyInventoryItemResult
-                    {
-                        ProductId = item.ProductId,
-                        Success = false,
-                        Message = "inventory_date must use yyyy-MM-dd format. No inventory was reserved."
-                    });
+                    validationErrors[index] = "inventory_date must use yyyy-MM-dd format. No inventory was reserved.";
                 }
                 else
                 {
@@ -55,12 +55,29 @@ namespace food_service.ProductService.API.gRPC
                 }
             }
 
-            if (response.Items.Count > 0)
+            if (validationErrors.Any(error => error != null))
             {
+                response.Success = false;
+                response.Message = "No inventory was reserved because one or more items are invalid.";
+
+                for (var index = 0; index < request.Items.Count; index++)
+                {
+                    response.Items.Add(new ReserveDailyInventoryItemResult
+                    {
+                        ProductId = request.Items[index].ProductId,
+                        Success = false,
+                        Message = validationErrors[index]
+                            ?? "No inventory was reserved because the request contains invalid items."
+                    });
+                }
+
                 return response;
             }
 
             var batchResult = await _reserve.ExecuteBatchAsync(inventoryRequests);
+            response.Success = batchResult.Success;
+            response.Message = batchResult.Message;
+
             foreach (var item in request.Items)
             {
                 var itemProductId = Guid.TryParse(item.ProductId, out var productId) ? productId : Guid.Empty;

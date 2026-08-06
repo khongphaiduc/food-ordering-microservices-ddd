@@ -1,4 +1,4 @@
-using CartService.API.Protos;
+﻿using CartService.API.Protos;
 using Grpc.Core;
 using Microsoft.IdentityModel.Tokens;
 using order_service.OrderService.Application.DTOs.DTOsInternal;
@@ -80,23 +80,72 @@ namespace order_service.OrderService.API.gRPC
 
 
         #region change status cart
-        public async Task<bool> ChangeStatusCart(Guid IdCart, StatusCart statusCart)
+        public async Task<bool> ChangeStatusCart(Guid idCart, StatusCart statusCart, CancellationToken cancellationToken = default)
         {
-            var result = await _cartInforGrpcClient.ChangeStatusCartAsync(new global::CartService.API.Protos.RequestChangeStatusCart
+            const int maxAttempts = 3;
+
+            for (int attempt = 1; attempt <= maxAttempts; attempt++)
             {
-                IdCart = IdCart.ToString(),
-                StatusChange = statusCart.ToString()
-            });
-            if (result.Status)
-            {
-                _logger.LogInformation("Change status cart {IdCart} to {StatusChange}", IdCart, statusCart);
-            }
-            else
-            {
-                _logger.LogError("Failed to change status cart {IdCart} to {StatusChange}", IdCart, statusCart);
+                try
+                {
+                    var result = await _cartInforGrpcClient.ChangeStatusCartAsync(
+                        new RequestChangeStatusCart
+                        {
+                            IdCart = idCart.ToString(),
+                            StatusChange = statusCart.ToString()
+                        },
+                        deadline: DateTime.UtcNow.AddSeconds(3),
+                        cancellationToken: cancellationToken);
+
+                    if (result.Status)
+                    {
+                        _logger.LogInformation(
+                            "Changed cart {CartId} status to {Status}. Attempt {Attempt}/{MaxAttempts}",
+                            idCart,
+                            statusCart,
+                            attempt,
+                            maxAttempts);
+                    }
+                    else
+                    {
+                        _logger.LogWarning(
+                            "Cart Service rejected status change for cart {CartId} to {Status}",
+                            idCart,
+                            statusCart);
+                    }
+
+                    return result.Status;
+                }
+                catch (RpcException ex) when (
+                    ex.StatusCode == StatusCode.Unavailable ||
+                    ex.StatusCode == StatusCode.DeadlineExceeded)
+                {
+                    _logger.LogWarning(
+                        ex,
+                        "gRPC call failed for cart {CartId}. Attempt {Attempt}/{MaxAttempts}",
+                        idCart,
+                        attempt,
+                        maxAttempts);
+
+                    if (attempt == maxAttempts)
+                    {
+                        _logger.LogError(
+                            ex,
+                            "Failed to change cart {CartId} status after {MaxAttempts} attempts",
+                            idCart,
+                            maxAttempts);
+
+                        throw;
+                    }
+
+                    
+                    await Task.Delay(
+                        TimeSpan.FromMilliseconds(200 * attempt),
+                        cancellationToken);
+                }
             }
 
-            return result.Status;
+            return false;
         }
         #endregion
     }

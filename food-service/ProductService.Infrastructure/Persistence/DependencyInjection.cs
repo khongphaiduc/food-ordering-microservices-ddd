@@ -99,6 +99,8 @@ namespace food_service.ProductService.Infrastructure.Persistence
             services.AddScoped<IGetListCategory, GetListCategory>();
             services.AddScoped<IGetProductDailyInventory, GetProductDailyInventory>();
             services.AddScoped<IReserveProductDailyInventory, ReserveProductDailyInventory>();
+            services.AddScoped<IAdminProductDailyInventory, AdminProductDailyInventory>();
+            services.AddSingleton<IInventoryDateProvider, InventoryDateProvider>();
 
             services.AddScoped<IMinIOFood, MinIOFood>();
             services.AddScoped<IRecommendPersonalFood, RecommendPersonalFood>();

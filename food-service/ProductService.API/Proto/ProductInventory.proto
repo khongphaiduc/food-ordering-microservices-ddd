@@ -26,6 +26,12 @@ message ReserveDailyInventoryItem {
 
 message ReserveDailyInventoryResponse {
   repeated ReserveDailyInventoryItemResult items = 1;
+
+  // True only when the complete batch was reserved.
+  bool success = 2;
+
+  // Batch-level result for the calling service and HTTP client.
+  string message = 3;
 }
 
 message ReserveDailyInventoryItemResult {

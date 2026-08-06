@@ -57,7 +57,7 @@ namespace cart_service.CartService.API.gRPC
 
         public override async Task<StatusCartRespone> ChangeStatusCart(RequestChangeStatusCart request, ServerCallContext context)
         {
-            var cart = await _db.Carts.FirstOrDefaultAsync(c => c.Id == Guid.Parse(request.IdCart) && c.Status == StatusCart.ACTIVE.ToString());
+            var cart = await _db.Carts.FirstOrDefaultAsync(c => c.Id == Guid.Parse(request.IdCart));
 
             if (cart == null)
             {
@@ -70,7 +70,7 @@ namespace cart_service.CartService.API.gRPC
             }
             else
             {
-                var allowedNextStatuses = new[] { StatusCart.EXPIRED.ToString(), StatusCart.CHECKED_OUT.ToString() };  //  ch? cho d?i ? tr?i thái này 
+                var allowedNextStatuses = new[] { StatusCart.ACTIVE.ToString() ,StatusCart.EXPIRED.ToString(), StatusCart.CHECKED_OUT.ToString() };  //  ch? cho d?i ? tr?i thái này 
 
                 if (!allowedNextStatuses.Contains(request.StatusChange))
                 {

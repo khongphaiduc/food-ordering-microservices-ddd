@@ -22,7 +22,7 @@
     <ProjectReference Include="..\auth-services\auth-services.csproj" />
     <ProjectReference Include="..\cart-service\cart-service.csproj" />
     <ProjectReference Include="..\user-service\user-service.csproj" />
-    <ProjectReference Include="..\food-service\food-service.csproj" />
+    <ProjectReference Include="..\food-service\food-service.csproj" Aliases="global,FoodServiceProject" />
     <ProjectReference Include="..\order-service\order-service.csproj" />
     <ProjectReference Include="..\tracking-service\tracking-service.csproj" />
   </ItemGroup>

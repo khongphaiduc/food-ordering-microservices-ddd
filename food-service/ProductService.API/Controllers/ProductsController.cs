@@ -98,15 +98,19 @@ namespace food_service.ProductService.API.Controllers
 
         [AllowAnonymous]
         [HttpGet("inventory")]
-        public async Task<IActionResult> GetProductDailyInventory([FromQuery] RequestGetProductDailyInventory request)
+        public async Task<IActionResult> GetProductDailyInventory(
+            [FromQuery] RequestGetProductDailyInventory request,
+            CancellationToken cancellationToken)
         {
-            var result = await _getProductDailyInventory.ExecuteAsync(request);
+            var result = await _getProductDailyInventory.ExecuteAsync(request, cancellationToken);
             return Ok(new
             {
                 list = result.Items,
                 totalProduct = result.TotalCount,
-                pageIndex = request.PageIndex < 1 ? 1 : request.PageIndex,
-                pageSize = Math.Clamp(request.PageSize, 1, 100)
+                inventoryDate = result.InventoryDate,
+                summary = result.Summary,
+                pageIndex = result.PageIndex,
+                pageSize = result.PageSize
             });
         }
 

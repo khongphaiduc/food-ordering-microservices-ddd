@@ -33,12 +33,23 @@ namespace order_service.OrderService.API.OrderControllers
         public async Task<IActionResult> CreateNewOrder([FromBody] RequestPaymentCart request)
         {
             PaymentMethod methodPayment = (PaymentMethod)request.PaymentMethod;
-            var QRCodeString = await _order.Execute(request.IdCart, methodPayment, request.IdAddress);
-            return Ok(QRCodeString);
+            var result = await _order.Execute(request.IdCart, methodPayment, request.IdAddress);
+
+            if (result.StatusCreateOrder)
+            {
+                return Ok(result);
+            }
+
+            if (result.ErrorCode == "INVENTORY_RESERVATION_FAILED")
+            {
+                return Conflict(result);
+            }
+
+            return BadRequest(result);
         }
 
 
-        // xem danh s·ch order of user 
+        // xem danh s√°ch order of user
         [HttpPost("histories")]
         public async Task<IActionResult> GetListOrders([FromBody] RequestGetListOrderWithPagination request)
         {

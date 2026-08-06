@@ -32,12 +32,12 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
             _orderHub = hubContext;
         }
 
-        public async Task<string> Execute(Guid IdCart, PaymentMethod paymentMethod, Guid IdAddress)
+        public async Task<RequestCreateNewOrderAndPayment> Execute(Guid IdCart, PaymentMethod paymentMethod, Guid IdAddress)
         {
             // yet retry
             var cart = await _cartClientGRPC.Excute(IdCart);  // data cart service 
 
-            if (cart.CartId == Guid.Empty) return string.Empty;
+            if (cart.CartId == Guid.Empty) return new RequestCreateNewOrderAndPayment { Message = "Cart not found", StatusCreateOrder = false };
 
 
             // yet retry
@@ -55,7 +55,7 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
                 }
             }
 
-            // d?a ch? giao h‡ng 
+            // User's Address
             newOrderAggregate.AddDelivery(OrderDeliveryEntity.CreateNewOrderDelivery(newOrderAggregate.IdOrder, AddressUser.NameUser, AddressUser.Phone, AddressUser.Address, AddressUser.Note, DateTime.UtcNow.AddHours(1)));
 
             // discount 
@@ -76,12 +76,12 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
             {
                 var resultChangeStatusCart = await _cartClientGRPC.ChangeStatusCart(cart.CartId, StatusCart.CHECKED_OUT);  //  change status cart = Checked out
 
-                if (resultChangeStatusCart == false) return string.Empty;
+                if (resultChangeStatusCart == false) return new RequestCreateNewOrderAndPayment { Message = "Cart can not change status to CheckOut", StatusCreateOrder = false };
 
 
                 var orderNotificationRealTimeDTO = new ViewOrderDTO
                 {
-                    OrderCode = "–on Food Mi",
+                    OrderCode = "ƒêon Food Mi",
                     IdOrder = newOrderAggregate.IdOrder,
                     NameCustomer = newOrderAggregate.SnapshotNameCustomer,
                     CreateAt = newOrderAggregate.CreatedAt,
@@ -105,11 +105,25 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
                 // The order payment remains PENDING until the order reaches COMPLETED.
                 if (paymentMethod == PaymentMethod.Cash)
                 {
-                    var inventoryReserved = await _inventoryProduct.ReduceInventoryProduct(cart.CartItems);
-                    if (!inventoryReserved) return string.Empty;
+                    var inventoryReservation = await _inventoryProduct.ReduceInventoryProduct(cart.CartItems ?? []);
+                    if (!inventoryReservation.Success)
+                    {
+                        await _cartClientGRPC.ChangeStatusCart(cart.CartId, StatusCart.ACTIVE);
+                        return new RequestCreateNewOrderAndPayment
+                        {
+                            Message = inventoryReservation.Message,
+                            ErrorCode = "INVENTORY_RESERVATION_FAILED",
+                            StatusCreateOrder = false,
+                        };
+                    }
 
                     _logger.LogInformation("Cash order {OrderId} was created and is awaiting payment on delivery.", resultCreateNewOrder.IdOrder);
-                    return "Success";
+                    return new RequestCreateNewOrderAndPayment
+                    {
+                        Message = inventoryReservation.Message,
+                        StatusCreateOrder = true,
+
+                    };
                 }
 
 
@@ -124,12 +138,12 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
 
                 if (QRCodeString.StatusCreatePayment == "Success")
                 {
-                    return QRCodeString.QRCodeString;
+                    return new RequestCreateNewOrderAndPayment { Message = "", StatusCreateOrder = true, QRCodeString = QRCodeString.QRCodeString };
                 }
             }
 
 
-            return string.Empty;
+            return new RequestCreateNewOrderAndPayment { Message = "Bug occured when process the payment", StatusCreateOrder = false };
         }
     }
 }

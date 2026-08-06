@@ -10,10 +10,14 @@ public class ReserveProductDailyInventory : IReserveProductDailyInventory
 {
     private const int DefaultDailyQuantity = 100;
     private readonly FoodProductsDbContext _db;
+    private readonly IInventoryDateProvider _dateProvider;
 
-    public ReserveProductDailyInventory(FoodProductsDbContext foodProductsDbContext)
+    public ReserveProductDailyInventory(
+        FoodProductsDbContext foodProductsDbContext,
+        IInventoryDateProvider dateProvider)
     {
         _db = foodProductsDbContext;
+        _dateProvider = dateProvider;
     }
 
     public async Task<bool> ExecuteAsync(ReserveProductDailyInventoryRequest request)
@@ -47,7 +51,7 @@ public class ReserveProductDailyInventory : IReserveProductDailyInventory
             inventoryRequests.Add((
                 request.ProductId,
                 request.Quantity,
-                request.InventoryDate ?? DateOnly.FromDateTime(DateTime.Today)));
+                request.InventoryDate ?? _dateProvider.Today));
         }
 
         await using var transaction = await _db.Database.BeginTransactionAsync();

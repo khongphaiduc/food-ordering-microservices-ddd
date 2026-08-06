@@ -39,7 +39,7 @@ namespace cart_service.CartService.API.CartControllers
             return Ok(result);
         }
 
-        // t?o cart
+     
         [HttpPost]
         public async Task<IActionResult> TestCreateCart([FromBody] RequestCreateNewCartUser request, CancellationToken cancellationToken)
         {
@@ -47,7 +47,7 @@ namespace cart_service.CartService.API.CartControllers
             return Ok(idCart);
         }
 
-        //c?p nh?t cart
+     
         [HttpPost("update-cart")]
         public async Task<IActionResult> TestAddProductIntoCart([FromBody] RequestUpdateCartFood request)
         {
@@ -55,9 +55,8 @@ namespace cart_service.CartService.API.CartControllers
             return Ok();
         }
 
-
-
-        //xem cart 
+    
+        
         [HttpGet("user-cart/{idUser}")]
         public async Task<IActionResult> GetCartUser([FromRoute] Guid idUser, CancellationToken cancellationToken)
         {

@@ -5,5 +5,7 @@ namespace food_service.ProductService.Application.Service;
 
 public interface IGetProductDailyInventory
 {
-    Task<PagedProductDailyInventoryDTO> ExecuteAsync(RequestGetProductDailyInventory request);
+    Task<PagedProductDailyInventoryDTO> ExecuteAsync(
+        RequestGetProductDailyInventory request,
+        CancellationToken cancellationToken = default);
 }
