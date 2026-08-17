@@ -11,6 +11,7 @@ using order_service.OrderService.Infrastructure.Repository;
 using order_service.OrderService.Infrastructure.ServicesImplements;
 using PaymentService.API.Proto;
 using productService.API.Protos;
+using StackExchange.Redis;
 using UserService.API.Protos;
 
 namespace order_service.OrderService.Infrastructure.Persistence
@@ -25,6 +26,14 @@ namespace order_service.OrderService.Infrastructure.Persistence
                 options.UseSqlServer(config["URLORDER"]);
             });
 
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = config["Redis"];
+                options.InstanceName = "Redis_OrderService";
+            });
+
+            services.AddSingleton<IConnectionMultiplexer>(sp =>
+                   ConnectionMultiplexer.Connect(config["Redis"]!));
 
             services.AddAuthentication(options =>
             {

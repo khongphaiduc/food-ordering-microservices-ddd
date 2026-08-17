@@ -30,10 +30,10 @@ namespace order_service.OrderService.API.OrderControllers
 
         // create order 
         [HttpPost]
-        public async Task<IActionResult> CreateNewOrder([FromBody] RequestPaymentCart request)
+        public async Task<IActionResult> CreateNewOrder([FromHeader(Name = "Idempotency-Key")] Guid idempotencyKey, [FromBody] RequestPaymentCart request)
         {
             PaymentMethod methodPayment = (PaymentMethod)request.PaymentMethod;
-            var result = await _order.Execute(request.IdCart, methodPayment, request.IdAddress);
+            var result = await _order.Execute(idempotencyKey, request.IdCart, methodPayment, request.IdAddress);
 
             if (result.StatusCreateOrder)
             {

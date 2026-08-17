@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Caching.Distributed;
 using order_service.OrderService.API.gRPC;
 using order_service.OrderService.Application.DTOs;
 using order_service.OrderService.Application.Services;
@@ -8,6 +10,7 @@ using order_service.OrderService.Domain.Enums;
 using order_service.OrderService.Domain.Interface;
 using order_service.OrderService.Infrastructure.OrderRealTime;
 using PaymentService.API.Proto;
+using StackExchange.Redis;
 
 namespace order_service.OrderService.Infrastructure.ServicesImplements
 {
@@ -20,8 +23,9 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
         private readonly ILogger<CreateNewOrder> _logger;
         private readonly GetAddressUserServiceSideClient _AddressUser;
         private readonly IHubContext<NotificationOrderHUB> _orderHub;
+        private readonly IDatabase _cache;
 
-        public CreateNewOrder(InventoryProduct inventoryProduct, IHubContext<NotificationOrderHUB> hubContext, GetAddressUserServiceSideClient getAddressUserServiceSideClient, GetInformationOfCart getInformationOfCartClient, IOrderRepository orderRepository, PaymentInforGrpc.PaymentInforGrpcClient paymentInforGrpcClient, ILogger<CreateNewOrder> logger)
+        public CreateNewOrder(IConnectionMultiplexer connectionMultiplexer, InventoryProduct inventoryProduct, IHubContext<NotificationOrderHUB> hubContext, GetAddressUserServiceSideClient getAddressUserServiceSideClient, GetInformationOfCart getInformationOfCartClient, IOrderRepository orderRepository, PaymentInforGrpc.PaymentInforGrpcClient paymentInforGrpcClient, ILogger<CreateNewOrder> logger)
         {
             _inventoryProduct = inventoryProduct;
             _cartClientGRPC = getInformationOfCartClient;
@@ -30,14 +34,53 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
             _logger = logger;
             _AddressUser = getAddressUserServiceSideClient;
             _orderHub = hubContext;
+            _cache = connectionMultiplexer.GetDatabase();
+
         }
 
-        public async Task<RequestCreateNewOrderAndPayment> Execute(Guid IdCart, PaymentMethod paymentMethod, Guid IdAddress)
+        public async Task<RequestCreateNewOrderAndPayment> Execute(Guid IdempotencyKey, Guid IdCart, PaymentMethod paymentMethod, Guid IdAddress)
         {
+
+            string key = IdempotencyKey.ToString();
+
+            var ResultRequest = await _cache.StringGetAsync(key);
+
+            if (!string.IsNullOrEmpty(ResultRequest))
+            {
+                return new RequestCreateNewOrderAndPayment
+                {
+                    Message = "Request is already being processed",
+                    StatusCreateOrder = false,
+                    QRCodeString = "DUC is testing this api"
+                };
+
+            }
+
+            var acquired = await _cache.StringSetAsync(IdempotencyKey.ToString(), IdCart.ToString(), TimeSpan.FromDays(1), When.NotExists);
+
+            if (!acquired)
+            {
+                return new RequestCreateNewOrderAndPayment
+                {
+                    Message = "Request is already being processed",
+                    StatusCreateOrder = false
+                };
+            }
+
+
             // yet retry
             var cart = await _cartClientGRPC.Excute(IdCart);  // data cart service 
 
-            if (cart.CartId == Guid.Empty) return new RequestCreateNewOrderAndPayment { Message = "Cart not found", StatusCreateOrder = false };
+            if (cart.CartId == Guid.Empty)
+            {
+                await _cache.KeyDeleteAsync(key);
+
+                return new RequestCreateNewOrderAndPayment
+                {
+                    Message = "Cart not found",
+                    StatusCreateOrder = false
+                };
+            }
 
 
             // yet retry
@@ -76,7 +119,13 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
             {
                 var resultChangeStatusCart = await _cartClientGRPC.ChangeStatusCart(cart.CartId, StatusCart.CHECKED_OUT);  //  change status cart = Checked out
 
-                if (resultChangeStatusCart == false) return new RequestCreateNewOrderAndPayment { Message = "Cart can not change status to CheckOut", StatusCreateOrder = false };
+                if (resultChangeStatusCart == false)
+                {
+                    await _cache.KeyDeleteAsync(key);
+                    return new RequestCreateNewOrderAndPayment { Message = "Cart can not change status to CheckOut", StatusCreateOrder = false };
+                }
+
+
 
 
                 var orderNotificationRealTimeDTO = new ViewOrderDTO
@@ -100,6 +149,7 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Realtime notification failed");
+                    throw;
                 }
                 // Cash orders are paid when the customer receives the delivery.
                 // The order payment remains PENDING until the order reaches COMPLETED.
@@ -109,6 +159,7 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
                     if (!inventoryReservation.Success)
                     {
                         await _cartClientGRPC.ChangeStatusCart(cart.CartId, StatusCart.ACTIVE);
+                        await _cache.KeyDeleteAsync(key);
                         return new RequestCreateNewOrderAndPayment
                         {
                             Message = inventoryReservation.Message,
@@ -138,6 +189,12 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
 
                 if (QRCodeString.StatusCreatePayment == "Success")
                 {
+                    await _cache.StringSetAsync(
+                      key,
+                      resultCreateNewOrder.IdOrder.ToString(),
+                      TimeSpan.FromDays(1),
+                      When.Exists);
+
                     return new RequestCreateNewOrderAndPayment { Message = "", StatusCreateOrder = true, QRCodeString = QRCodeString.QRCodeString };
                 }
             }

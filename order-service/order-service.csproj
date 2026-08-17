@@ -32,11 +32,13 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.30" />
 		<PackageReference Include="OpenTelemetry" Version="1.15.0" />
 		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.15.0" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.0" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.15.0" />
 		<PackageReference Include="RabbitMQ.Client" Version="7.2.0" />
+		<PackageReference Include="StackExchange.Redis" Version="3.1.13" />
 	</ItemGroup>
 
 
