@@ -3,5 +3,7 @@
     public class ReservedOrderSuccess
     {
         public Guid IdOrder { get; set; }
+
+        public string PaymentMethod { get; set; } = "PayOS";
     }
 }

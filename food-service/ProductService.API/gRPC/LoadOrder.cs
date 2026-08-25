@@ -29,6 +29,8 @@ namespace food_service.ProductService.API.gRPC
                     return new ReponseOrder
                     {
                         IdOrder = Guid.Parse(result.IdOrder),
+                        PaymentMethod  = result.PaymentMethod,
+                        Amount = result.Amount,
                         OrderItems = result.OrderItems.Select(x => new LoadOrderResponse
                         {
                             IdProduct = Guid.Parse(x.ProductId),
@@ -60,6 +62,8 @@ namespace food_service.ProductService.API.gRPC
     {
         public Guid IdOrder { get; set; }
 
+        public long Amount { get; set; }
+        public string PaymentMethod { get; set; } = string.Empty;
         public List<LoadOrderResponse> OrderItems { get; set; } = new();
     }
 

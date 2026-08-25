@@ -50,7 +50,8 @@ namespace food_service.ProductService.Infrastructure.MasstransitProducerRabbitMQ
                     {
                         await _IpublishEvent.Publish(new ReservedOrderFail
                         {
-                            IdOrder = idOrder
+                            IdOrder = idOrder,
+                            PaymentMethod = order.PaymentMethod
                         });
 
                         throw new InvalidOperationException(
@@ -62,7 +63,8 @@ namespace food_service.ProductService.Infrastructure.MasstransitProducerRabbitMQ
                 // bắn event thành công cho thằng Payment Services;
                 await _IpublishEvent.Publish(new ReservedOrderSuccess
                 {
-                    IdOrder = idOrder
+                    IdOrder = idOrder,
+                    PaymentMethod = order.PaymentMethod
                 });
 
             }

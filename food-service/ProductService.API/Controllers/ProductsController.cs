@@ -2,7 +2,6 @@ using Elastic.Clients.Elasticsearch.Requests;
 using food_service.ProductService.Application.DTOs.Request;
 using food_service.ProductService.Application.Interface;
 using food_service.ProductService.Application.Service;
-using food_service.ProductService.Infrastructure.MasstransitProducerRabbitMQ.Producer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,20 +23,18 @@ namespace food_service.ProductService.API.Controllers
         private readonly IProductRecommendationService _recommendationProduct;
         private readonly IGetListCategory _getListCategory;
         private readonly IGetProductDailyInventory _getProductDailyInventory;
-        private readonly IRecommendPersonalFood _recommendationAI;
-        private readonly IDistributedCache _cache;
-        private readonly GeminiModelFoodlyProducer _recommendProducer;
 
-        public ProductsController(GeminiModelFoodlyProducer geminiModelFoodlyProducer, IGetListCategory getListCategory, IGetProductDailyInventory getProductDailyInventory, IGetListProduct listProduct, IViewDetailProduct viewDetailProduct, IProductRecommendationService productRecommendationService, IRecommendPersonalFood recommendPersonalFood, IDistributedCache distributedCache)
+
+
+        public ProductsController( IGetListCategory getListCategory, IGetProductDailyInventory getProductDailyInventory, IGetListProduct listProduct, IViewDetailProduct viewDetailProduct, IProductRecommendationService productRecommendationService)
         {
             _iListProduct = listProduct;
             _iViewDetailProduct = viewDetailProduct;
             _recommendationProduct = productRecommendationService;
             _getListCategory = getListCategory;
             _getProductDailyInventory = getProductDailyInventory;
-            _recommendationAI = recommendPersonalFood;
-            _cache = distributedCache;
-            _recommendProducer = geminiModelFoodlyProducer;
+
+
 
         }
 
@@ -58,34 +55,10 @@ namespace food_service.ProductService.API.Controllers
         [HttpGet("ai")]
         public async Task<IActionResult> GetListProductRecommendByAI()
         {
-            var idUserClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            Guid userId;
-            bool isLogin = Guid.TryParse(idUserClaim, out userId);
-
-
-            if (!isLogin)
-            {
                 var sampleProduct = await _iListProduct.ExecuteAsync(new RequestGetListProduct());
                 return Ok(new { list = sampleProduct, totalProduct = sampleProduct.Count });
-            }
-
-
-            var cacheKey = userId.ToString() + "PersonalFoods";
-            var cacheData = await _cache.GetStringAsync(cacheKey);
-
-            if (cacheData != null)
-            {
-                var product = await _recommendationAI.Execute1(userId);
-                return Ok(new { list = product, totalProduct = product.Count });
-            }
-            else
-            {
-                await _recommendProducer.SendMessage(new Infrastructure.MasstransitProducerRabbitMQ.MessageContract.RecommendationAI { IdUser = userId });
-                var sampleProduct = await _iListProduct.ExecuteAsync(new RequestGetListProduct());
-                return Ok(new { list = sampleProduct, totalProduct = sampleProduct.Count });
-            }
-
+ 
         }
 
         [AllowAnonymous]

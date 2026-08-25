@@ -55,7 +55,6 @@
 
 
 	<ItemGroup>
-		<Protobuf Include="ProductService.API\Proto\GetResultRecommendFood.proto" GrpcServices="Client" />
 		<Protobuf Include="ProductService.API\Proto\OrderDetailgRPC.proto">
 		  <GrpcServices>Client</GrpcServices>
 		</Protobuf>

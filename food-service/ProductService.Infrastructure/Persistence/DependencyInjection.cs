@@ -5,7 +5,6 @@ using food_service.ProductService.Domain.Interface;
 using food_service.ProductService.Infrastructure.BackgroundServices;
 using food_service.ProductService.Infrastructure.ImplementService;
 using food_service.ProductService.Infrastructure.MasstransitProducerRabbitMQ.Consumers;
-using food_service.ProductService.Infrastructure.MasstransitProducerRabbitMQ.Producer;
 using food_service.ProductService.Infrastructure.MinIO;
 using food_service.ProductService.Infrastructure.Models;
 using food_service.ProductService.Infrastructure.ProducerRabbitMQ;
@@ -19,7 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using Minio;
 using order_service.OrderService.API.Proto;
 using StackExchange.Redis;
-using trackingtService.API.Protos;
+
 
 namespace food_service.ProductService.Infrastructure.Persistence
 {
@@ -69,7 +68,7 @@ namespace food_service.ProductService.Infrastructure.Persistence
 
             services.AddMassTransit(x =>
             {
-                x.AddConsumer<RecommendFoodConsumer>();
+               
 
                 x.AddConsumer<ReserveProductConsumer>();
                 x.UsingRabbitMq((context, cfg) =>
@@ -80,11 +79,6 @@ namespace food_service.ProductService.Infrastructure.Persistence
                         h.Password(config["RabbitMQPassword"]!);
                     });
 
-                    cfg.ReceiveEndpoint("RecommendationFoodByAI_Queue", e =>
-                    {
-                        e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(3)));
-                        e.ConfigureConsumer<RecommendFoodConsumer>(context);
-                    });
 
                     cfg.ReceiveEndpoint("ReserveProduct_Queue", e =>
                     {
@@ -121,13 +115,12 @@ namespace food_service.ProductService.Infrastructure.Persistence
             services.AddSingleton<IInventoryDateProvider, InventoryDateProvider>();
 
             services.AddScoped<IMinIOFood, MinIOFood>();
-            services.AddScoped<IRecommendPersonalFood, RecommendPersonalFood>();
+   
             services.AddScoped<IProductRecommendationService, ProductRecommendationService>();
 
 
             services.AddSingleton<FoodProducer>();
-            services.AddScoped<GeminiModelFoodlyProducer>();
-
+       
 
             services.AddScoped<IOutBoxPatternProduct, OutBoxPatternProduct>();
             services.AddHostedService<OutboxMessageProcessor>();
@@ -153,12 +146,7 @@ namespace food_service.ProductService.Infrastructure.Persistence
                     .Build();
             });
 
-
-            services.AddGrpcClient<GeminiFoodlyGrpc.GeminiFoodlyGrpcClient>(options =>
-            {
-                options.Address = new Uri(config["gRPCPort_TrackingService"]!);
-            });
-
+   
 
             services.AddGrpcClient<OrderGrpc.OrderGrpcClient>(options =>
             {
