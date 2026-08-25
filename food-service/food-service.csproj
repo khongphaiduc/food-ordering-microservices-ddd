@@ -8,6 +8,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="ProductService.API\Proto\OrderDetailgRPC.proto" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="DotNetEnv" Version="3.1.1" />
 		<PackageReference Include="Elastic.Clients.Elasticsearch" Version="8.19.13" />
 		<PackageReference Include="Google.Protobuf" Version="3.33.5" />
@@ -28,7 +32,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.23" />
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.30" />
 		<PackageReference Include="Minio" Version="7.0.0" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
 		<PackageReference Include="OpenTelemetry" Version="1.15.0" />
@@ -42,6 +46,7 @@
 		<PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
 		<PackageReference Include="Serilog.Sinks.Elasticsearch" Version="8.4.1" />
 		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+		<PackageReference Include="StackExchange.Redis" Version="3.1.13" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -51,6 +56,9 @@
 
 	<ItemGroup>
 		<Protobuf Include="ProductService.API\Proto\GetResultRecommendFood.proto" GrpcServices="Client" />
+		<Protobuf Include="ProductService.API\Proto\OrderDetailgRPC.proto">
+		  <GrpcServices>Client</GrpcServices>
+		</Protobuf>
 		<Protobuf Include="ProductService.API\Proto\Products.proto" GrpcServices="Server" />
 		<Protobuf Include="ProductService.API\Proto\LoadAllProduct.proto" GrpcServices="Server" />
 		<Protobuf Include="ProductService.API\Proto\ProductInventory.proto" GrpcServices="Server" />

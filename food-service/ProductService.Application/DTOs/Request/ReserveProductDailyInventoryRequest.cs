@@ -6,6 +6,5 @@ public class ReserveProductDailyInventoryRequest
 
     public int Quantity { get; set; }
 
-    // Không truyền sẽ dùng ngày hiện tại của server.
     public DateOnly? InventoryDate { get; set; }
 }

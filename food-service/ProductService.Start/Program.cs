@@ -36,6 +36,8 @@ namespace food_service.ProductService.Start
 
             var builder = WebApplication.CreateBuilder(args);
 
+           
+
             builder.Services.AddAllServices(builder.Configuration);
             builder.Services.AddControllers();
 
@@ -62,6 +64,7 @@ namespace food_service.ProductService.Start
             app.MapGrpcService<ProductInformationsServices>();
             app.MapGrpcService<LoadFullProduct>();
             app.MapGrpcService<Inventory>();
+   
 
             app.UseRateLimiter();
 

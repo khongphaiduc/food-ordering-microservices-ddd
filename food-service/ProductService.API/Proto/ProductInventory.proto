@@ -4,7 +4,7 @@ option csharp_namespace = "productService.API.Protos";
 
 package productservice;
 
-// Internal gRPC contract for Cart/Order services to reserve a product's daily inventory.
+
 service ProductInventoryGrpc {
   rpc ReserveDailyInventory (ReserveDailyInventoryRequest) returns (ReserveDailyInventoryResponse);
 }
@@ -14,32 +14,31 @@ message ReserveDailyInventoryRequest {
 }
 
 message ReserveDailyInventoryItem {
-  // UUID of products.id.
+ 
   string product_id = 1;
 
-  // Number of servings requested. Must be greater than zero.
+  
   int32 quantity = 2;
 
-  // Date in yyyy-MM-dd format.
   string inventory_date = 3;
 }
 
 message ReserveDailyInventoryResponse {
   repeated ReserveDailyInventoryItemResult items = 1;
 
-  // True only when the complete batch was reserved.
+  
   bool success = 2;
 
-  // Batch-level result for the calling service and HTTP client.
+ 
   string message = 3;
 }
 
 message ReserveDailyInventoryItemResult {
   string product_id = 1;
 
-  // True only when inventory was created/reserved successfully for this item.
+ 
   bool success = 2;
 
-  // Human-readable result for the caller's logs or error response for this item.
+ 
   string message = 3;
 }

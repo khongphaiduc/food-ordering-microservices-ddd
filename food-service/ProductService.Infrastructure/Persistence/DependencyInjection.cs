@@ -1,3 +1,4 @@
+using food_service.ProductService.API.gRPC;
 using food_service.ProductService.Application.Interface;
 using food_service.ProductService.Application.Service;
 using food_service.ProductService.Domain.Interface;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Minio;
+using order_service.OrderService.API.Proto;
 using StackExchange.Redis;
 using trackingtService.API.Protos;
 
@@ -25,13 +27,13 @@ namespace food_service.ProductService.Infrastructure.Persistence
     {
         public static IServiceCollection AddAllServices(this IServiceCollection services, IConfiguration config)
         {
-            
+
             services.AddDbContext<FoodProductsDbContext>(options =>
             {
                 options.UseNpgsql(config["SQLFOOD_PRODUCTS"]!);
             });
 
-           
+
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -54,42 +56,58 @@ namespace food_service.ProductService.Infrastructure.Persistence
 
             services.AddAuthorization();
 
-         
+
             services.AddRateLimiter(option =>
             {
                 option.AddFixedWindowLimiter("rateFix", s =>
                 {
                     s.Window = TimeSpan.FromSeconds(60);
-                    s.PermitLimit = 10; 
+                    s.PermitLimit = 10;
                     s.QueueLimit = 0;
                 });
             });
 
             services.AddMassTransit(x =>
             {
-                x.AddConsumer<RecommendFoodConsumer>();  // register consumer 
+                x.AddConsumer<RecommendFoodConsumer>();
 
+                x.AddConsumer<ReserveProductConsumer>();
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    cfg.Host(config["RabbitMQ_Side_ProductService:Host"], h =>
+                    cfg.Host(config["RabbitMQHost"], "/", h =>
                     {
-                        h.Username(config["RabbitMQ_Side_ProductService:Username"]!);
-                        h.Password(config["RabbitMQ_Side_ProductService:Password"]!);
+                        h.Username(config["RabbitMQUsername"]!);
+                        h.Password(config["RabbitMQPassword"]!);
                     });
 
-                    cfg.ReceiveEndpoint("RecommendationFoodByAI_Queue", e =>  // name of queue
+                    cfg.ReceiveEndpoint("RecommendationFoodByAI_Queue", e =>
                     {
-                        e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
-                        e.ConfigureConsumer<RecommendFoodConsumer>(context);       // map consumer v?i queue
+                        e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(3)));
+                        e.ConfigureConsumer<RecommendFoodConsumer>(context);
                     });
-                    // khi run th́ nó s? bind exchange và queue d?a trên các type message c?a consumer dang map t?i queue
+
+                    cfg.ReceiveEndpoint("ReserveProduct_Queue", e =>
+                    {
+                        e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(3)));
+                        e.UseConcurrencyLimit(10);
+                        e.PrefetchCount = 20;
+                        e.ConfigureConsumer<ReserveProductConsumer>(context);
+                    });
+
+
+
+
+
+
                 });
             });
 
+            services.AddScoped<LoadOrder>();
+            services.AddScoped<IProductReserve, ProductReserve>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
 
-            
+
             services.AddScoped<IGetListProduct, GetListProduct>();
             services.AddScoped<IViewDetailProduct, ViewDetailProduct>();
             services.AddScoped<ICreateNewProduct, CreateNewProduct>();
@@ -106,15 +124,15 @@ namespace food_service.ProductService.Infrastructure.Persistence
             services.AddScoped<IRecommendPersonalFood, RecommendPersonalFood>();
             services.AddScoped<IProductRecommendationService, ProductRecommendationService>();
 
-    
+
             services.AddSingleton<FoodProducer>();
             services.AddScoped<GeminiModelFoodlyProducer>();
 
-       
+
             services.AddScoped<IOutBoxPatternProduct, OutBoxPatternProduct>();
             services.AddHostedService<OutboxMessageProcessor>();
 
-            
+
             services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = config["Redis:RedisAddress"];
@@ -122,28 +140,33 @@ namespace food_service.ProductService.Infrastructure.Persistence
             });
 
             services.AddSingleton<IConnectionMultiplexer>(sp =>
-                ConnectionMultiplexer.Connect(config["Redis:RedisAddress"]!)); 
+                ConnectionMultiplexer.Connect(config["Redis:RedisAddress"]!));
 
             services.AddTransient<IRedisLockService, RedisLockService>();
 
             services.AddSingleton<IMinioClient>(sp =>
             {
                 return new MinioClient()
-                    .WithEndpoint(config["Minio:Endpoint"] ?? "localhost:9000") 
+                    .WithEndpoint(config["Minio:Endpoint"] ?? "localhost:9000")
                     .WithCredentials(config["Minio:AccessKey"], config["Minio:SecretKey"])
                     .WithSSL(false)
                     .Build();
             });
 
-           
+
             services.AddGrpcClient<GeminiFoodlyGrpc.GeminiFoodlyGrpcClient>(options =>
             {
                 options.Address = new Uri(config["gRPCPort_TrackingService"]!);
             });
 
-            services.AddGrpc();
 
-            
+            services.AddGrpcClient<OrderGrpc.OrderGrpcClient>(options =>
+            {
+                options.Address = new Uri(config["gRPCPort_TrackingService"]!);
+            });
+
+
+            services.AddGrpc();
             services.AddControllers();
 
             return services;
