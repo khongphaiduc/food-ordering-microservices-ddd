@@ -7,5 +7,9 @@ namespace cart_service.CartService.Domain.Interface
         Task<Guid> CreateCartAsync(CartAggregate cartAggregate, CancellationToken cancellationToken);
         Task<CartAggregate?> GetCartByUserIdAsync(Guid userId);
         Task UpdateCartAsync(CartAggregate cartAggregate);
+
+        Task<bool> CheckOutCartAsync(Guid cartId);
+
+        Task<bool> RestoreOutCartAsync(Guid cartId);
     }
 }

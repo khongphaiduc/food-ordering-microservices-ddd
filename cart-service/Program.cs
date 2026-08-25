@@ -1,6 +1,8 @@
 using cart_service.CartService.API.gRPC;
+using cart_service.CartService.Infrastructure.Consumers;
 using cart_service.CartService.Infrastructure.Models;
 using cart_service.CartService.Infrastructure.Persistence;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace cart_service
@@ -12,7 +14,42 @@ namespace cart_service
             DotNetEnv.Env.Load();
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddPersistence(builder.Configuration);
+
+
+            builder.Services.AddMassTransit(x =>
+            {
+                x.AddConsumer<CheckOutCart>();
+                x.AddConsumer<RestoreStatusCart>();
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host(builder.Configuration["RabbitMQ_HostName"],"/", h =>
+                    {
+                        h.Username(builder.Configuration["RabbitMQ_UserName"]!);
+                        h.Password(builder.Configuration["RabbitMQ_Password"]!);
+                    });
+
+                    cfg.ReceiveEndpoint("CheckOutCartQueue", e =>
+                    {
+                        e.PrefetchCount = 10;
+                        e.ConcurrentMessageLimit = 5;
+                        e.ConfigureConsumer<CheckOutCart>(context);
+                    });
+
+
+                    cfg.ReceiveEndpoint("RestoreStatusCartQueue", e =>
+                    {
+                        e.PrefetchCount = 10;
+                        e.ConcurrentMessageLimit = 5;
+                        e.ConfigureConsumer<RestoreStatusCart>(context);
+                    });
+                });
+            });
+
             var app = builder.Build();
+
+
+
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;

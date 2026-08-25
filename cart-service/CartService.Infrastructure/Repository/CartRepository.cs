@@ -16,7 +16,12 @@ namespace cart_service.CartService.Infrastructure.Repository
             _map = mapModel;
         }
 
-        public async Task<Guid> CreateCartAsync(CartAggregate cartAggregate,CancellationToken cancellationToken)
+        public async Task<bool> CheckOutCartAsync(Guid cartId)
+        {
+            return await _db.Database.ExecuteSqlInterpolatedAsync($"update public.carts set status = 'CHECKED_OUT' where status = 'ACTIVE' and id = {cartId}") > 0;
+        }
+
+        public async Task<Guid> CreateCartAsync(CartAggregate cartAggregate, CancellationToken cancellationToken)
         {
             var cart = _map.MapAggregateToCartModel(cartAggregate);
 
@@ -31,6 +36,11 @@ namespace cart_service.CartService.Infrastructure.Repository
         public Task<CartAggregate?> GetCartByUserIdAsync(Guid userId)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<bool> RestoreOutCartAsync(Guid cartId)
+        {
+            return await _db.Database.ExecuteSqlInterpolatedAsync($"update public.carts set status = 'ACTIVE' where status = 'CHECKED_OUT' and id = {cartId}") > 0;
         }
 
 
@@ -74,7 +84,7 @@ namespace cart_service.CartService.Infrastructure.Repository
                     else                                       // update
                     {
                         if (item.Quantitys.Value == 0) continue;
-                        
+
                         var cartItemUpdate = cartBase.CartItems.FirstOrDefault(s => s.Id == item.Id);
 
                         if (cartItemUpdate != null)
