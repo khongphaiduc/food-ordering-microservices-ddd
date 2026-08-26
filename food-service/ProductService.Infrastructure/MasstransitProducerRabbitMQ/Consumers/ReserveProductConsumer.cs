@@ -1,7 +1,6 @@
 ﻿using food_service.ProductService.API.gRPC;
-using food_service.ProductService.Application.Interface;
-using food_service.ProductService.Infrastructure.ContractEvent;
 using food_service.ProductService.Infrastructure.Models;
+using Foodly.Contracts.Events;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using System.Net.WebSockets;
@@ -14,16 +13,20 @@ namespace food_service.ProductService.Infrastructure.MasstransitProducerRabbitMQ
         private readonly LoadOrder _gRPCOrder;
         private readonly FoodProductsDbContext _db;
         private readonly IPublishEndpoint _IpublishEvent;
+        private readonly ILogger<ReserveProductConsumer> _logger;
 
-        public ReserveProductConsumer(LoadOrder loadOrder, FoodProductsDbContext foodProductsDbContext, IPublishEndpoint publishEndpoint)
+        public ReserveProductConsumer(ILogger<ReserveProductConsumer> logger, LoadOrder loadOrder, FoodProductsDbContext foodProductsDbContext, IPublishEndpoint publishEndpoint)
         {
             _gRPCOrder = loadOrder;
             _db = foodProductsDbContext;
             _IpublishEvent = publishEndpoint;
+            _logger = logger;
         }
 
         public async Task Consume(ConsumeContext<CreatedOrderEvent> context)
         {
+            _logger.LogInformation("Start Consumer Reserver Product");
+
             await using var transaction = await _db.Database.BeginTransactionAsync();
 
             try
@@ -51,7 +54,8 @@ namespace food_service.ProductService.Infrastructure.MasstransitProducerRabbitMQ
                         await _IpublishEvent.Publish(new ReservedOrderFail
                         {
                             IdOrder = idOrder,
-                            PaymentMethod = order.PaymentMethod
+                            PaymentMethod = order.PaymentMethod,
+                            IdUser = context.Message.IdUser
                         });
 
                         throw new InvalidOperationException(
@@ -64,8 +68,11 @@ namespace food_service.ProductService.Infrastructure.MasstransitProducerRabbitMQ
                 await _IpublishEvent.Publish(new ReservedOrderSuccess
                 {
                     IdOrder = idOrder,
-                    PaymentMethod = order.PaymentMethod
+                    PaymentMethod = order.PaymentMethod,
+                    IdUser = context.Message.IdUser
                 });
+
+                _logger.LogInformation("Handle Reduce Product Success");
 
             }
             catch

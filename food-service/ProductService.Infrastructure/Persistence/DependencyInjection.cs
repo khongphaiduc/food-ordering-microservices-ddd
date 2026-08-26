@@ -2,7 +2,6 @@ using food_service.ProductService.API.gRPC;
 using food_service.ProductService.Application.Interface;
 using food_service.ProductService.Application.Service;
 using food_service.ProductService.Domain.Interface;
-using food_service.ProductService.Infrastructure.BackgroundServices;
 using food_service.ProductService.Infrastructure.ImplementService;
 using food_service.ProductService.Infrastructure.MasstransitProducerRabbitMQ.Consumers;
 using food_service.ProductService.Infrastructure.MinIO;
@@ -123,7 +122,6 @@ namespace food_service.ProductService.Infrastructure.Persistence
        
 
             services.AddScoped<IOutBoxPatternProduct, OutBoxPatternProduct>();
-            services.AddHostedService<OutboxMessageProcessor>();
 
 
             services.AddStackExchangeRedisCache(options =>
@@ -150,7 +148,7 @@ namespace food_service.ProductService.Infrastructure.Persistence
 
             services.AddGrpcClient<OrderGrpc.OrderGrpcClient>(options =>
             {
-                options.Address = new Uri(config["gRPCPort_TrackingService"]!);
+                options.Address = new Uri(config["gRPCPort_OrderServices"]!);
             });
 
 
