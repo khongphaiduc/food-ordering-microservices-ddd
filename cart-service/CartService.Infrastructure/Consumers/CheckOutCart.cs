@@ -1,5 +1,5 @@
 ﻿using cart_service.CartService.Domain.Interface;
-using cart_service.CartService.Infrastructure.Exchanges;
+using Foodly.Contracts.Events;
 using MassTransit;
 
 namespace cart_service.CartService.Infrastructure.Consumers

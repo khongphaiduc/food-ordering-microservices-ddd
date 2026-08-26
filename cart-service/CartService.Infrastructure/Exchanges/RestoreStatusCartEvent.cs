@@ -1,4 +1,4 @@
-﻿namespace cart_service.CartService.Infrastructure.Exchanges
+﻿namespace Foodly.Contracts.Events
 {
     public class RestoreStatusCartEvent
     {
