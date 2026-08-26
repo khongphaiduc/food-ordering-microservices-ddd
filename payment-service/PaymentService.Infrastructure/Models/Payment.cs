@@ -7,7 +7,7 @@ public partial class Payment
 {
     public Guid Id { get; set; }
 
-    public Guid OrderId { get; set; }
+    public string OrderCode { get; set; } = string.Empty;
 
     public Guid UserId { get; set; }
 
@@ -17,15 +17,13 @@ public partial class Payment
 
     public string PaymentMethod { get; set; } = null!;
 
-    public string? Provider { get; set; }
-
-    public string? TransactionId { get; set; }
-
     public string Status { get; set; } = null!;
 
     public DateTime CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
+
+
 
     public virtual ICollection<PaymentTransaction> PaymentTransactions { get; set; } = new List<PaymentTransaction>();
 

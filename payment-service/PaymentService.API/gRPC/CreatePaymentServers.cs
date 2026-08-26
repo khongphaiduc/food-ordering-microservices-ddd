@@ -15,7 +15,7 @@ namespace payment_service.PaymentService.API.gRPC
         }
 
 
-        // đã test 11/2/2025
+        
         public override async Task<ResponseOrderQRCode> CreateNewPayment(RequestOrderCreatePayment request, ServerCallContext context)
         {
 

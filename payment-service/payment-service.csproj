@@ -21,6 +21,8 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="MassTransit" Version="8.5.10" />
+		<PackageReference Include="MassTransit.RabbitMQ" Version="8.5.10" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.22" />
 		<PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.2.9" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.22" />
@@ -33,17 +35,19 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.30" />
 		<PackageReference Include="OpenTelemetry" Version="1.15.0" />
 		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.15.0" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.0" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.15.0" />
 		<PackageReference Include="payOS" Version="2.0.1" />
-		<PackageReference Include="RabbitMQ.Client" Version="7.2.0" />
+		<PackageReference Include="StackExchange.Redis" Version="3.1.13" />
 	</ItemGroup>
 
 
 	<ItemGroup>
 		<Protobuf Include="PaymentService.API\Proto\CreatePaymentForOrder.proto" GrpcServices="Server" />
+		<Protobuf Include="PaymentService.API\Proto\OrderDetailgRPC.proto" GrpcServices="Client" />
 		<Protobuf Include="PaymentService.API\Proto\UpdateStatusOrderPaid.proto" GrpcServices="Client" />
 	</ItemGroup>
 </Project>

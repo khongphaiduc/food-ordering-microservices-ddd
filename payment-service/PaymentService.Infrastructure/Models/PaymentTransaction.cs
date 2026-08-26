@@ -9,11 +9,9 @@ public partial class PaymentTransaction
 
     public Guid PaymentId { get; set; }
 
-    public string? ProviderTransactionId { get; set; }
-
     public string? Status { get; set; }
 
-    public string? RawResponse { get; set; }
+    public string? OrderQRCode { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

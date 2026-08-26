@@ -35,9 +35,7 @@ public partial class FoodPaymentContext : DbContext
             entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Currency).HasMaxLength(10);
             entity.Property(e => e.PaymentMethod).HasMaxLength(50);
-            entity.Property(e => e.Provider).HasMaxLength(50);
             entity.Property(e => e.Status).HasMaxLength(30);
-            entity.Property(e => e.TransactionId).HasMaxLength(100);
         });
 
         modelBuilder.Entity<PaymentTransaction>(entity =>
@@ -45,7 +43,6 @@ public partial class FoodPaymentContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__PaymentT__3214EC075ED04D2B");
 
             entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.ProviderTransactionId).HasMaxLength(100);
             entity.Property(e => e.Status).HasMaxLength(30);
 
             entity.HasOne(d => d.Payment).WithMany(p => p.PaymentTransactions)

@@ -1,9 +1,13 @@
+﻿using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using order_service.OrderService.API.Proto;
 using OrderService.API.Proto;
 using payment_service.PaymentService.Application.Services;
+using payment_service.PaymentService.Infrastructure.Consumers;
 using payment_service.PaymentService.Infrastructure.Models;
+using payment_service.PaymentService.Infrastructure.Repositorys;
 using payment_service.PaymentService.Infrastructure.ServicesImplements;
 using PayOS;
 using System.Text;
@@ -21,44 +25,68 @@ namespace payment_service.PaymentService.Infrastructure.Persistence
             });
 
 
-            services.AddAuthentication(options =>
+            services.AddMassTransit(x =>
             {
-                options.DefaultAuthenticateScheme = "AccessToken";
-                options.DefaultChallengeScheme = "AccessToken";
-            })
-            .AddJwtBearer("AccessToken", options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = config["Jwt:Issuer"],
-                    ValidAudience = config["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(config["Jwt:Key:AccessToken"]!)
-                    )
-                };
+                x.AddConsumer<PaymentConsumer>();
 
-
-                options.Events = new JwtBearerEvents
+                x.UsingRabbitMq((context, cfg) =>
                 {
-                    OnMessageReceived = context =>
+                    cfg.Host(config["RabbitMQHost"], "/", h =>
                     {
-                        var accessToken = context.Request.Query["access_token"];
-                        var path = context.HttpContext.Request.Path;
+                        h.Username(config["RabbitMQUsername"]!);
+                        h.Password(config["RabbitMQPassword"]!);
+                    });
 
-                        if (!string.IsNullOrEmpty(accessToken) &&
-                            path.StartsWithSegments("/notificationPayOS"))
-                        {
-                            context.Token = accessToken;
-                        }
-
-                        return Task.CompletedTask;
-                    }
-                };
+                    cfg.ReceiveEndpoint("PaymentQueue", s =>
+                    {
+                        s.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(3)));
+                        s.ConcurrentMessageLimit = 10;
+                        s.PrefetchCount = 20;
+                        s.ConfigureConsumer<PaymentConsumer>(context);
+                    });
+                });
             });
+
+            services.AddAuthentication(options =>
+              {
+                  options.DefaultAuthenticateScheme = "AccessToken";
+                  options.DefaultChallengeScheme = "AccessToken";
+              })
+        .AddJwtBearer("AccessToken", options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = config["Jwt:Issuer"],
+                ValidAudience = config["Jwt:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(config["Jwt:Key:AccessToken"]!)
+                )
+            };
+
+
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query["access_token"];
+
+                
+                    var path = context.HttpContext.Request.Path;
+                    if (!string.IsNullOrEmpty(accessToken) &&
+                        (path.StartsWithSegments("/QRCodeOrder") || path.StartsWithSegments("/notificationPayOS")))
+                    {
+       
+                        context.Token = accessToken;
+                    }
+
+                    return Task.CompletedTask;
+                }
+            };
+        });
 
             services.AddAuthorization();
 
@@ -94,8 +122,14 @@ namespace payment_service.PaymentService.Infrastructure.Persistence
                 options.Address = new Uri(config["gRPCPort_OrderService"]!);
             });
 
+            services.AddGrpcClient<OrderGrpc.OrderGrpcClient>(options =>
+            {
+                options.Address = new Uri(config["gRPCPort_OrderService"]!);
+            });
+
             services.AddGrpc();
 
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<ICreateNewPaymentOrder, CreateNewPaymentOrder>();
             services.AddScoped<IUpdateOrderStatus, UpdateOrderStatus>();
 
