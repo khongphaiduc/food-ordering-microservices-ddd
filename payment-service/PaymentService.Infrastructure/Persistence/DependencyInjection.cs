@@ -24,11 +24,10 @@ namespace payment_service.PaymentService.Infrastructure.Persistence
                 options.UseSqlServer(config["SQL"]);
             });
 
-
             services.AddMassTransit(x =>
             {
                 x.AddConsumer<PaymentConsumer>();
-
+                x.AddConsumer<CancelPaymentConsumer>();
                 x.UsingRabbitMq((context, cfg) =>
                 {
                     cfg.Host(config["RabbitMQHost"], "/", h =>
@@ -43,6 +42,14 @@ namespace payment_service.PaymentService.Infrastructure.Persistence
                         s.ConcurrentMessageLimit = 10;
                         s.PrefetchCount = 20;
                         s.ConfigureConsumer<PaymentConsumer>(context);
+                    });
+                    //end point to cancel the order which was TimeOut
+                    cfg.ReceiveEndpoint("CancellPaymentQueue", s =>
+                    {
+                        s.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(3)));
+                        s.ConcurrentMessageLimit = 10;
+                        s.PrefetchCount = 20;
+                        s.ConfigureConsumer<CancelPaymentConsumer>(context);
                     });
                 });
             });
@@ -74,12 +81,12 @@ namespace payment_service.PaymentService.Infrastructure.Persistence
                 {
                     var accessToken = context.Request.Query["access_token"];
 
-                
+
                     var path = context.HttpContext.Request.Path;
                     if (!string.IsNullOrEmpty(accessToken) &&
                         (path.StartsWithSegments("/QRCodeOrder") || path.StartsWithSegments("/notificationPayOS")))
                     {
-       
+
                         context.Token = accessToken;
                     }
 

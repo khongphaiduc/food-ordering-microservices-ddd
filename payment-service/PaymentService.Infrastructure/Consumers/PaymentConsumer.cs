@@ -18,14 +18,16 @@ namespace payment_service.PaymentService.Infrastructure.Consumers
         private readonly IPaymentRepository _payment;
         private readonly ILogger<PaymentConsumer> _logger;
         private readonly IHubContext<ViewQRCodeOrder> _hubcontext;
+        private readonly IPublishEndpoint _publishEvent;
 
-        public PaymentConsumer(IHubContext<ViewQRCodeOrder> hubContext, ILogger<PaymentConsumer> logger, PayOSClient payOSClient, OrderGrpc.OrderGrpcClient orderGrpcClient, IPaymentRepository paymentRepository)
+        public PaymentConsumer(IPublishEndpoint publishEndpoint, IHubContext<ViewQRCodeOrder> hubContext, ILogger<PaymentConsumer> logger, PayOSClient payOSClient, OrderGrpc.OrderGrpcClient orderGrpcClient, IPaymentRepository paymentRepository)
         {
             _payos = payOSClient;
             _orderClient = orderGrpcClient;
             _payment = paymentRepository;
             _logger = logger;
             _hubcontext = hubContext;
+            _publishEvent = publishEndpoint;
         }
 
         public async Task Consume(ConsumeContext<ReservedOrderSuccess> context)
@@ -36,9 +38,10 @@ namespace payment_service.PaymentService.Infrastructure.Consumers
                 var order = await _orderClient.ViewOrderDetailAsync(new RequestOrder { IdOrder = context.Message.IdOrder.ToString() });
                 var paymentRequest = new CreatePaymentLinkRequest
                 {
-                    OrderCode = long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss")),
+                    OrderCode = long.Parse(order.OrderCode),
                     Amount = (long)order.Amount,
                     Description = "2HONDAICODON",
+                    ExpiredAt = DateTimeOffset.UtcNow.AddMinutes(5).ToUnixTimeSeconds()
                 };
                 var payloadPayment = await _payos.PaymentRequests.CreateAsync(paymentRequest);
 
@@ -56,6 +59,8 @@ namespace payment_service.PaymentService.Infrastructure.Consumers
                     });
 
                     await _hubcontext.Clients.User(context.Message.IdUser.ToString()).SendAsync("ViewQRCodeOrderMethod", $"{payloadPayment.QrCode}");
+
+
                     _logger.LogInformation($"Id User :{context.Message.IdUser}");
                     if (affected) _logger.LogInformation("Created Successfully a Payment");
                 }

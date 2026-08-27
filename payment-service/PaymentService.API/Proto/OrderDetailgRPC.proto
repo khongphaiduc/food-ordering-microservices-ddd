@@ -18,6 +18,7 @@ message ResponseOrder {
   repeated OrderItem order_items = 3;
   string message_status = 4;
   int64 amount = 5;
+   string orderCode = 6;
 }
 
 
