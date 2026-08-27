@@ -55,6 +55,7 @@
 
 
 	<ItemGroup>
+		<Protobuf Include="ProductService.API\Proto\OrderByOrderCode.proto" GrpcServices="Client" />
 		<Protobuf Include="ProductService.API\Proto\OrderDetailgRPC.proto">
 		  <GrpcServices>Client</GrpcServices>
 		</Protobuf>

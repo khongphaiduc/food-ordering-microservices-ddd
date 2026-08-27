@@ -2,8 +2,8 @@ using food_service.ProductService.API.gRPC;
 using food_service.ProductService.Application.Interface;
 using food_service.ProductService.Application.Service;
 using food_service.ProductService.Domain.Interface;
+using food_service.ProductService.Infrastructure.Consumers;
 using food_service.ProductService.Infrastructure.ImplementService;
-using food_service.ProductService.Infrastructure.MasstransitProducerRabbitMQ.Consumers;
 using food_service.ProductService.Infrastructure.MinIO;
 using food_service.ProductService.Infrastructure.Models;
 using food_service.ProductService.Infrastructure.ProducerRabbitMQ;
@@ -70,6 +70,9 @@ namespace food_service.ProductService.Infrastructure.Persistence
                
 
                 x.AddConsumer<ReserveProductConsumer>();
+
+                x.AddConsumer<RestoreProductPayTimeOutConsumer>();
+
                 x.UsingRabbitMq((context, cfg) =>
                 {
                     cfg.Host(config["RabbitMQHost"], "/", h =>
@@ -88,7 +91,13 @@ namespace food_service.ProductService.Infrastructure.Persistence
                     });
 
 
-
+                    cfg.ReceiveEndpoint("RestoreProduct_Queue", e =>
+                    {
+                        e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(3)));
+                        e.UseConcurrencyLimit(10);
+                        e.PrefetchCount = 20;
+                        e.ConfigureConsumer<RestoreProductPayTimeOutConsumer>(context);
+                    });
 
 
 
@@ -147,6 +156,11 @@ namespace food_service.ProductService.Infrastructure.Persistence
    
 
             services.AddGrpcClient<OrderGrpc.OrderGrpcClient>(options =>
+            {
+                options.Address = new Uri(config["gRPCPort_OrderServices"]!);
+            });
+
+            services.AddGrpcClient<OrderByOrderCodeGrpc.OrderByOrderCodeGrpcClient>(options =>
             {
                 options.Address = new Uri(config["gRPCPort_OrderServices"]!);
             });

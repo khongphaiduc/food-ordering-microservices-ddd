@@ -5,7 +5,7 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using System.Net.WebSockets;
 
-namespace food_service.ProductService.Infrastructure.MasstransitProducerRabbitMQ.Consumers
+namespace food_service.ProductService.Infrastructure.Consumers
 {
     public class ReserveProductConsumer : IConsumer<CreatedOrderEvent>
     {
