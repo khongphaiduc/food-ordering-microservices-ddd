@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option csharp_namespace = "order_service.OrderService.API.Proto";
+
+service OrderByOrderCodeGrpc {
+  rpc ViewOrderDetailByOrderCode(RequestOrderByOrderCode) returns (ResponseOrderByOrderCode);
+}
+
+message RequestOrderByOrderCode {
+  string order_code = 1;
+}
+
+message ResponseOrderByOrderCode {
+  string order_code =1 ;
+  string payment_menthod = 2;
+  repeated OrderItemByOrderCode order_items = 3;
+  string message_status = 4;
+  int64 amount = 5;
+  string date_time = 6;
+}
+
+message OrderItemByOrderCode {
+  string product_id = 1;
+  int32 quantity = 2;
+}

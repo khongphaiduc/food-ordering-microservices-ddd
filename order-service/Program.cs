@@ -1,4 +1,5 @@
 using CartService.API.Protos;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -24,6 +25,8 @@ namespace order_service
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddAllServices(builder.Configuration);
+
+   
 
             var app = builder.Build();
 
@@ -57,7 +60,12 @@ namespace order_service
 
 
             app.MapHub<NotificationOrderHUB>("/ordersHub");
+
+            app.MapHub<OrderOfUser>("/orderofuser");
+
             app.MapGrpcService<UpdateStatusOrderService>();
+            app.MapGrpcService<OrderInformation>();
+            app.MapGrpcService<GetOrderByOrderCode>();
             app.MapControllers();
 
             app.Run();

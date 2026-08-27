@@ -21,6 +21,8 @@
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="MassTransit" Version="8.5.10" />
+		<PackageReference Include="MassTransit.RabbitMQ" Version="8.5.10" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.22" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.22" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.22">
@@ -37,7 +39,7 @@
 		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.15.0" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.0" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.15.0" />
-		<PackageReference Include="RabbitMQ.Client" Version="7.2.0" />
+		<PackageReference Include="RabbitMQ.Client" Version="7.2.2" />
 		<PackageReference Include="StackExchange.Redis" Version="3.1.13" />
 	</ItemGroup>
 
@@ -47,8 +49,9 @@
 		<Protobuf Include="OrderService.API\Proto\InformationCart.proto" GrpcServices="Client" />
 		<Protobuf Include="OrderService.API\Proto\ProductInventory.proto" GrpcServices="Client" />
 		<Protobuf Include="OrderService.API\Proto\UpdateStatusOrderPaid.proto" GrpcServices="Server" />
-
+		<Protobuf Include="OrderService.API\Proto\OrderDetailgRPC.proto" GrpcServices="Server" />
 		<Protobuf Include="OrderService.API\Proto\GetAddress.proto" GrpcServices="Client" />
+		<Protobuf Include="OrderService.API\Proto\OrderByOrderCode.proto" GrpcServices="Server" />
 	</ItemGroup>
 
 </Project>

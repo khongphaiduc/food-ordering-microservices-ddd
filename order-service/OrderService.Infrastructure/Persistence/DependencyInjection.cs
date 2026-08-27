@@ -1,4 +1,5 @@
 using CartService.API.Protos;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -6,9 +7,11 @@ using order_service.OrderService.API.gRPC;
 using order_service.OrderService.Application.Interface;
 using order_service.OrderService.Application.Services;
 using order_service.OrderService.Domain.Interface;
+using order_service.OrderService.Infrastructure.Consumers;
 using order_service.OrderService.Infrastructure.Models;
 using order_service.OrderService.Infrastructure.Repository;
 using order_service.OrderService.Infrastructure.ServicesImplements;
+using order_service.OrderService.Infrastructure.Workers;
 using PaymentService.API.Proto;
 using productService.API.Protos;
 using StackExchange.Redis;
@@ -62,7 +65,8 @@ namespace order_service.OrderService.Infrastructure.Persistence
                         var accessToken = context.Request.Query["access_token"];
                         var path = context.HttpContext.Request.Path;
 
-                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/ordersHub"))
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            (path.StartsWithSegments("/ordersHub") || path.StartsWithSegments("/orderofuser")))
                         {
                             context.Token = accessToken;
                         }
@@ -84,8 +88,45 @@ namespace order_service.OrderService.Infrastructure.Persistence
             });
 
 
+            services.AddMassTransit(x =>
+            {
+                x.AddConsumer<HandleOrderPaySuccessfullyConsumer>();
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+
+                    cfg.Host(config["RabbitMQ_HostName"], "/", h =>
+                    {
+                        h.Username(config["RabbitMQ_UserName"]!);
+                        h.Password(config["RabbitMQ_Password"]!);
+                    });
+
+
+
+                    cfg.ReceiveEndpoint("PaidOrderEvent", s =>
+                    {
+                        s.UseMessageRetry(r =>
+                        {
+                            r.Intervals(
+                                TimeSpan.FromSeconds(1),
+                                TimeSpan.FromSeconds(3),
+                                TimeSpan.FromSeconds(5)
+                            );
+                        });
+                        s.ConcurrentMessageLimit = 20;
+                        s.PrefetchCount = 30;
+                        s.ConfigureConsumer<HandleOrderPaySuccessfullyConsumer>(context);
+                    });
+
+                });
+
+            });
+
+
+
+
             services.AddGrpcClient<CartInforGrpc.CartInforGrpcClient>(o =>
-                o.Address = new Uri(config["gRPC_PORT_CartService"]!));
+             o.Address = new Uri(config["gRPC_PORT_CartService"]!));
 
             services.AddGrpcClient<PaymentInforGrpc.PaymentInforGrpcClient>(o =>
                 o.Address = new Uri(config["gRPC_PORT_PaymentService"]!));
@@ -97,6 +138,8 @@ namespace order_service.OrderService.Infrastructure.Persistence
             s.Address = new Uri(config["gRPC_PORT_FoodService"]!));
 
             services.AddScoped<IOrderRepository, OrderRepository>();
+
+            services.AddHostedService<CheckExpireOrder>();
 
             services.AddScoped<ICreateNewOrder, CreateNewOrder>();
             services.AddScoped<IGetListOrderOfUser, GetListOrderOfUser>();

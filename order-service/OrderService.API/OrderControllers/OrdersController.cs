@@ -5,6 +5,8 @@ using order_service.OrderService.Application.DTOs;
 using order_service.OrderService.Application.Services;
 using order_service.OrderService.Domain.Enums;
 using order_service.OrderService.Infrastructure.Models;
+using System.Net.WebSockets;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace order_service.OrderService.API.OrderControllers
@@ -28,16 +30,18 @@ namespace order_service.OrderService.API.OrderControllers
         }
 
 
-        // create order 
+       
         [HttpPost]
         public async Task<IActionResult> CreateNewOrder([FromHeader(Name = "Idempotency-Key")] Guid idempotencyKey, [FromBody] RequestPaymentCart request)
         {
+            var idUser = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
+
             PaymentMethod methodPayment = (PaymentMethod)request.PaymentMethod;
-            var result = await _order.Execute(idempotencyKey, request.IdCart, methodPayment, request.IdAddress);
+            var result = await _order.Execute(idUser, idempotencyKey, request.IdCart, methodPayment, request.IdAddress);
 
             if (result.StatusCreateOrder)
             {
-                return Ok(result);
+                return Ok();
             }
 
             if (result.ErrorCode == "INVENTORY_RESERVATION_FAILED")
@@ -49,7 +53,7 @@ namespace order_service.OrderService.API.OrderControllers
         }
 
 
-        // xem danh sách order of user
+    
         [HttpPost("histories")]
         public async Task<IActionResult> GetListOrders([FromBody] RequestGetListOrderWithPagination request)
         {

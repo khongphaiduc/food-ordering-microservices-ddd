@@ -1,3 +1,5 @@
+using Foodly.Contracts.Events;
+using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Distributed;
@@ -24,8 +26,9 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
         private readonly GetAddressUserServiceSideClient _AddressUser;
         private readonly IHubContext<NotificationOrderHUB> _orderHub;
         private readonly IDatabase _cache;
+        private readonly IPublishEndpoint _ipublishEvent;
 
-        public CreateNewOrder(IConnectionMultiplexer connectionMultiplexer, InventoryProduct inventoryProduct, IHubContext<NotificationOrderHUB> hubContext, GetAddressUserServiceSideClient getAddressUserServiceSideClient, GetInformationOfCart getInformationOfCartClient, IOrderRepository orderRepository, PaymentInforGrpc.PaymentInforGrpcClient paymentInforGrpcClient, ILogger<CreateNewOrder> logger)
+        public CreateNewOrder(IPublishEndpoint publishEndpoint, IConnectionMultiplexer connectionMultiplexer, InventoryProduct inventoryProduct, IHubContext<NotificationOrderHUB> hubContext, GetAddressUserServiceSideClient getAddressUserServiceSideClient, GetInformationOfCart getInformationOfCartClient, IOrderRepository orderRepository, PaymentInforGrpc.PaymentInforGrpcClient paymentInforGrpcClient, ILogger<CreateNewOrder> logger)
         {
             _inventoryProduct = inventoryProduct;
             _cartClientGRPC = getInformationOfCartClient;
@@ -35,16 +38,17 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
             _AddressUser = getAddressUserServiceSideClient;
             _orderHub = hubContext;
             _cache = connectionMultiplexer.GetDatabase();
+            _ipublishEvent = publishEndpoint;
 
         }
 
-        public async Task<RequestCreateNewOrderAndPayment> Execute(Guid IdempotencyKey, Guid IdCart, PaymentMethod paymentMethod, Guid IdAddress)
+        public async Task<RequestCreateNewOrderAndPayment> Execute(Guid Iduser,Guid IdempotencyKey, Guid IdCart, PaymentMethod paymentMethod, Guid IdAddress)
         {
 
             string key = IdempotencyKey.ToString();
 
             var ResultRequest = await _cache.StringGetAsync(key);
-
+            // case đã tồn tại 
             if (!string.IsNullOrEmpty(ResultRequest))
             {
                 return new RequestCreateNewOrderAndPayment
@@ -71,7 +75,7 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
             // yet retry
             var cart = await _cartClientGRPC.Excute(IdCart);  // data cart service 
 
-            if (cart.CartId == Guid.Empty)
+            if (cart.CartId == Guid.Empty)// case không  tìm thấy id cart 
             {
                 await _cache.KeyDeleteAsync(key);
 
@@ -83,6 +87,31 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
             }
 
 
+            // bắn event check out cart
+            try
+            {
+                await _ipublishEvent.Publish(new CheckOutCartEvent
+                {
+                    IdCart = cart.CartId,
+                    IdUser = Iduser
+                });
+
+                _logger.LogInformation(
+                    "Published CheckOutCartEvent successfully. CartId: {CartId}",
+                    cart.CartId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Failed to publish CheckOutCartEvent. CartId: {CartId}",
+                    cart.CartId);
+
+                throw;
+            }
+
+
+            //---------------------------------------------------------------------
             // yet retry
             var AddressUser = await _AddressUser.GetAddressUserAsync(new UserService.API.Protos.AddressformationUserRequest { IdAddress = IdAddress.ToString() });
 
@@ -117,15 +146,13 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
 
             if (resultCreateNewOrder.Status)
             {
-                var resultChangeStatusCart = await _cartClientGRPC.ChangeStatusCart(cart.CartId, StatusCart.CHECKED_OUT);  //  change status cart = Checked out
-
-                if (resultChangeStatusCart == false)
+                // bắn event thông báo đã tạo order thành công 
+                await _ipublishEvent.Publish(new CreatedOrderEvent
                 {
-                    await _cache.KeyDeleteAsync(key);
-                    return new RequestCreateNewOrderAndPayment { Message = "Cart can not change status to CheckOut", StatusCreateOrder = false };
-                }
-
-
+                    IdOrder = resultCreateNewOrder.IdOrder,
+                    OrderMethodPayment = paymentMethod.ToString(),
+                    IdUser = Iduser
+                });
 
 
                 var orderNotificationRealTimeDTO = new ViewOrderDTO
@@ -151,56 +178,20 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
                     _logger.LogError(ex, "Realtime notification failed");
                     throw;
                 }
-                // Cash orders are paid when the customer receives the delivery.
-                // The order payment remains PENDING until the order reaches COMPLETED.
-                if (paymentMethod == PaymentMethod.Cash)
+            }
+            else
+            {
+                // bắn event thông báo đã tạo order thất bại
+                await _ipublishEvent.Publish(new CreatedOrderEvent
                 {
-                    var inventoryReservation = await _inventoryProduct.ReduceInventoryProduct(cart.CartItems ?? []);
-                    if (!inventoryReservation.Success)
-                    {
-                        await _cartClientGRPC.ChangeStatusCart(cart.CartId, StatusCart.ACTIVE);
-                        await _cache.KeyDeleteAsync(key);
-                        return new RequestCreateNewOrderAndPayment
-                        {
-                            Message = inventoryReservation.Message,
-                            ErrorCode = "INVENTORY_RESERVATION_FAILED",
-                            StatusCreateOrder = false,
-                        };
-                    }
-
-                    _logger.LogInformation("Cash order {OrderId} was created and is awaiting payment on delivery.", resultCreateNewOrder.IdOrder);
-                    return new RequestCreateNewOrderAndPayment
-                    {
-                        Message = inventoryReservation.Message,
-                        StatusCreateOrder = true,
-
-                    };
-                }
-
-
-                // create url payment 
-                var QRCodeString = await _createPaymentPayOs.CreateNewPaymentAsync(new global::PaymentService.API.Proto.RequestOrderCreatePayment
-                {
-                    OrderId = resultCreateNewOrder.IdOrder.ToString(),
-                    DiscountAmount = 0,
-                    FinalAmount = (double)resultCreateNewOrder.FinalAmount,
-                    OrderCode = resultCreateNewOrder.OrderCode,
+                    IdOrder = resultCreateNewOrder.IdOrder,
+                    OrderMethodPayment = paymentMethod.ToString(),
+                    IdUser = Iduser
                 });
 
-                if (QRCodeString.StatusCreatePayment == "Success")
-                {
-                    await _cache.StringSetAsync(
-                      key,
-                      resultCreateNewOrder.IdOrder.ToString(),
-                      TimeSpan.FromDays(1),
-                      When.Exists);
-
-                    return new RequestCreateNewOrderAndPayment { Message = "", StatusCreateOrder = true, QRCodeString = QRCodeString.QRCodeString };
-                }
             }
 
-
-            return new RequestCreateNewOrderAndPayment { Message = "Bug occured when process the payment", StatusCreateOrder = false };
+            return new RequestCreateNewOrderAndPayment { Message = "Please, To Pay your order before the recieve", StatusCreateOrder = true };
         }
     }
 }
