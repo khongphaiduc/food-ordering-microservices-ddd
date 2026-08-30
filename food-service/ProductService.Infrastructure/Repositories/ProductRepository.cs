@@ -22,15 +22,14 @@ namespace food_service.ProductService.Infrastructure.Repositories
         private readonly IMinIOFood _minIo;
         private readonly FoodProductsDbContext _db;
         private readonly FoodProducer _workerFood;
-        private readonly IOutBoxPatternProduct _outBoxpattern;
         private readonly ILogger<ProductRepository> _logger;
 
-        public ProductRepository(IMinIOFood minIOFood, FoodProductsDbContext foodProductsDbContext, FoodProducer foodProducer, IOutBoxPatternProduct outBoxPatternProduct, ILogger<ProductRepository> logger)
+        public ProductRepository(IMinIOFood minIOFood, FoodProductsDbContext foodProductsDbContext, FoodProducer foodProducer,  ILogger<ProductRepository> logger)
         {
             _minIo = minIOFood;
             _db = foodProductsDbContext;
             _workerFood = foodProducer;
-            _outBoxpattern = outBoxPatternProduct;
+          
             _logger = logger;
         }
 
@@ -102,19 +101,8 @@ namespace food_service.ProductService.Infrastructure.Repositories
                     }).ToList(),
                 };
 
-                // ghi vào base 
+
                 await _db.Products.AddAsync(producModel);
-
-
-                // ghi vào OutBoxMessage
-                await _outBoxpattern.CreateNewMessage(new Application.DTOs.Internals.OutboxMessageDTO
-                {
-                    Id = Guid.NewGuid(),
-                    Type = "ProductCreated",
-                    PayLoad = JsonSerializer.Serialize(productDTP),
-                    IsProcesced = false,
-                    CreateAt = DateTime.UtcNow,
-                });
 
 
                 await _db.SaveChangesAsync();
@@ -309,16 +297,6 @@ namespace food_service.ProductService.Infrastructure.Repositories
 
                         await Task.WhenAll(tasks);
                     }
-
-
-                    var outboxTable = _outBoxpattern.CreateNewMessage(new Application.DTOs.Internals.OutboxMessageDTO
-                    {
-                        Id = Guid.NewGuid(),
-                        CreateAt = DateTime.Now,
-                        IsProcesced = false,
-                        PayLoad = JsonSerializer.Serialize(productDTP),
-                        Type = "ProductCreated"
-                    });
 
                     var result = await _db.SaveChangesAsync() > 0;
 

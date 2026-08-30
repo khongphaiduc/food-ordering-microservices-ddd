@@ -8,59 +8,78 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="ProductService.API\Proto\OrderDetailgRPC.proto" />
+		<None Remove="ProductService.API\Proto\OrderDetailgRPC.proto" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="DotNetEnv" Version="3.1.1" />
 		<PackageReference Include="Elastic.Clients.Elasticsearch" Version="8.19.13" />
 		<PackageReference Include="Google.Protobuf" Version="3.33.5" />
+
 		<PackageReference Include="Grpc.AspNetCore" Version="2.76.0" />
 		<PackageReference Include="Grpc.Tools" Version="2.78.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+
+		<!-- MassTransit -->
 		<PackageReference Include="MassTransit" Version="9.0.1" />
+		<PackageReference Include="MassTransit.EntityFrameworkCore" Version="9.0.1" />
 		<PackageReference Include="MassTransit.RabbitMQ" Version="9.0.1" />
+
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.22" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.22" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.22">
+
+		<!-- Entity Framework Core -->
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.1" />
+
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.22">
+
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+
+		<!-- PostgreSQL EF Core Provider -->
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.1" />
+
 		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.30" />
+
 		<PackageReference Include="Minio" Version="7.0.0" />
-		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
+
+		<!-- OpenTelemetry -->
 		<PackageReference Include="OpenTelemetry" Version="1.15.0" />
 		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.15.0" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.0" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.15.0" />
+
 		<PackageReference Include="RabbitMQ.Client" Version="7.2.0" />
+
+		<!-- Serilog -->
 		<PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
 		<PackageReference Include="Serilog.Settings.Configuration" Version="8.0.4" />
 		<PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
 		<PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
 		<PackageReference Include="Serilog.Sinks.Elasticsearch" Version="8.4.1" />
 		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+
 		<PackageReference Include="StackExchange.Redis" Version="3.1.13" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="ProductService.Infrastructure\ProductDbContexts\" />
-	</ItemGroup>
-
-
-	<ItemGroup>
 		<Protobuf Include="ProductService.API\Proto\OrderByOrderCode.proto" GrpcServices="Client" />
+
 		<Protobuf Include="ProductService.API\Proto\OrderDetailgRPC.proto">
-		  <GrpcServices>Client</GrpcServices>
+			<GrpcServices>Client</GrpcServices>
 		</Protobuf>
+
 		<Protobuf Include="ProductService.API\Proto\Products.proto" GrpcServices="Server" />
+
 		<Protobuf Include="ProductService.API\Proto\LoadAllProduct.proto" GrpcServices="Server" />
+
 		<Protobuf Include="ProductService.API\Proto\ProductInventory.proto" GrpcServices="Server" />
 	</ItemGroup>
+
 </Project>

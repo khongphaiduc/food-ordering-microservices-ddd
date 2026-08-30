@@ -9,18 +9,18 @@ using food_service.ProductService.Infrastructure.Models;
 
 #nullable disable
 
-namespace food_service.ProductService.Infrastructure.Migrations
+namespace food_service.Migrations
 {
     [DbContext(typeof(FoodProductsDbContext))]
-    [Migration("20260721100233_AddProductDailyInventory")]
-    partial class AddProductDailyInventory
+    [Migration("20260830080454_OutInBox")]
+    partial class OutInBox
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.22")
+                .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -65,31 +65,6 @@ namespace food_service.ProductService.Infrastructure.Migrations
                         .HasName("categories_pkey");
 
                     b.ToTable("categories", (string)null);
-                });
-
-            modelBuilder.Entity("food_service.ProductService.Infrastructure.Models.OutBoxMessage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsProcessd")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Payload")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("OutBoxMessage");
                 });
 
             modelBuilder.Entity("food_service.ProductService.Infrastructure.Models.Product", b =>

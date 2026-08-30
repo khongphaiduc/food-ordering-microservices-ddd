@@ -27,7 +27,7 @@ namespace food_service.ProductService.Infrastructure.Consumers
         {
             _logger.LogInformation("Start Consumer Reserver Product");
 
-            await using var transaction = await _db.Database.BeginTransactionAsync();
+         
 
             try
             {
@@ -63,7 +63,7 @@ namespace food_service.ProductService.Infrastructure.Consumers
                     }
                 }
 
-                await transaction.CommitAsync();
+                
                 // bắn event thành công cho thằng Payment Services;
                 await _IpublishEvent.Publish(new ReservedOrderSuccess
                 {
@@ -77,7 +77,7 @@ namespace food_service.ProductService.Infrastructure.Consumers
             }
             catch
             {
-                await transaction.RollbackAsync();
+               
                 throw;
             }
         }

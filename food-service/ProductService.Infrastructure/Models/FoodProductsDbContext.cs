@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-
+using MassTransit;
 namespace food_service.ProductService.Infrastructure.Models;
 
 public partial class FoodProductsDbContext : DbContext
@@ -23,8 +23,6 @@ public partial class FoodProductsDbContext : DbContext
 
     public virtual DbSet<ProductDailyInventory> ProductDailyInventories { get; set; }
 
-    public virtual DbSet<OutBoxMessage> OutBoxMessages { get; set; }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
 
@@ -32,6 +30,10 @@ public partial class FoodProductsDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.AddInboxStateEntity();
+        modelBuilder.AddOutboxStateEntity();
+        modelBuilder.AddOutboxMessageEntity();
+
         modelBuilder.Entity<Category>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("categories_pkey");

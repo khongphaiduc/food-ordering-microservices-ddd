@@ -67,7 +67,12 @@ namespace food_service.ProductService.Infrastructure.Persistence
 
             services.AddMassTransit(x =>
             {
-               
+
+                x.AddEntityFrameworkOutbox<FoodProductsDbContext>(s =>
+                {
+                    s.UsePostgres();
+                    s.UseBusOutbox();
+                });
 
                 x.AddConsumer<ReserveProductConsumer>();
 
@@ -87,7 +92,9 @@ namespace food_service.ProductService.Infrastructure.Persistence
                         e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(3)));
                         e.UseConcurrencyLimit(10);
                         e.PrefetchCount = 20;
+                        e.UseEntityFrameworkOutbox<FoodProductsDbContext>(context);
                         e.ConfigureConsumer<ReserveProductConsumer>(context);
+
                     });
 
 
@@ -96,7 +103,9 @@ namespace food_service.ProductService.Infrastructure.Persistence
                         e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(3)));
                         e.UseConcurrencyLimit(10);
                         e.PrefetchCount = 20;
+                        e.UseEntityFrameworkOutbox<FoodProductsDbContext>(context);
                         e.ConfigureConsumer<RestoreProductPayTimeOutConsumer>(context);
+
                     });
 
 
@@ -123,14 +132,13 @@ namespace food_service.ProductService.Infrastructure.Persistence
             services.AddSingleton<IInventoryDateProvider, InventoryDateProvider>();
 
             services.AddScoped<IMinIOFood, MinIOFood>();
-   
+
             services.AddScoped<IProductRecommendationService, ProductRecommendationService>();
 
 
             services.AddSingleton<FoodProducer>();
-       
 
-            services.AddScoped<IOutBoxPatternProduct, OutBoxPatternProduct>();
+
 
 
             services.AddStackExchangeRedisCache(options =>
@@ -153,7 +161,7 @@ namespace food_service.ProductService.Infrastructure.Persistence
                     .Build();
             });
 
-   
+
 
             services.AddGrpcClient<OrderGrpc.OrderGrpcClient>(options =>
             {

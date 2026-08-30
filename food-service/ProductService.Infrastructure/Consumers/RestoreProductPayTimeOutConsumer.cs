@@ -23,7 +23,7 @@ namespace food_service.ProductService.Infrastructure.Consumers
 
         public async Task Consume(ConsumeContext<OrderPaymentTimeoutEvent> context)
         {
-            await using var transaction = await _db.Database.BeginTransactionAsync();
+           
 
             try
             {
@@ -76,7 +76,6 @@ namespace food_service.ProductService.Infrastructure.Consumers
                 }
 
 
-                await transaction.CommitAsync();
 
                 _logger.LogInformation(
                     "Successfully restored inventory for OrderCode: {OrderCode}",
@@ -85,7 +84,7 @@ namespace food_service.ProductService.Infrastructure.Consumers
             catch (Exception ex)
             {
 
-                await transaction.RollbackAsync();
+              
 
                 _logger.LogError(
                     ex,
