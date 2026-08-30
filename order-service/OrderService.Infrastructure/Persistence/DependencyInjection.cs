@@ -90,6 +90,14 @@ namespace order_service.OrderService.Infrastructure.Persistence
 
             services.AddMassTransit(x =>
             {
+                x.AddEntityFrameworkOutbox<FoodOrderContext>(s =>
+                {
+                    s.UseSqlServer();
+                    s.UseBusOutbox();
+                    s.DuplicateDetectionWindow = TimeSpan.FromDays(7);
+                    s.QueryDelay = TimeSpan.FromSeconds(1);
+                });
+
                 x.AddConsumer<HandleOrderPaySuccessfullyConsumer>();
 
                 x.UsingRabbitMq((context, cfg) =>
@@ -100,8 +108,6 @@ namespace order_service.OrderService.Infrastructure.Persistence
                         h.Username(config["RabbitMQ_UserName"]!);
                         h.Password(config["RabbitMQ_Password"]!);
                     });
-
-
 
                     cfg.ReceiveEndpoint("PaidOrderEvent", s =>
                     {
@@ -115,9 +121,9 @@ namespace order_service.OrderService.Infrastructure.Persistence
                         });
                         s.ConcurrentMessageLimit = 20;
                         s.PrefetchCount = 30;
+                        s.UseEntityFrameworkOutbox<FoodOrderContext>(context);
                         s.ConfigureConsumer<HandleOrderPaySuccessfullyConsumer>(context);
                     });
-
                 });
 
             });

@@ -21,7 +21,7 @@ namespace order_service.OrderService.Infrastructure.Repository
         #region Create new order 
         public async Task<ResponseCreateNewOrder> CreateNewOrder(OrdersAggregate NewOrderAggregate)
         {
-            var Transaction = await _db.Database.BeginTransactionAsync();
+          
             try
             {
                 _logger.LogInformation("Start Create New Order");
@@ -82,9 +82,8 @@ namespace order_service.OrderService.Infrastructure.Repository
 
                 await _db.Orders.AddAsync(OrderBase);
 
-                _logger.LogInformation("Create New Order Success");
-                await _db.SaveChangesAsync();
-                await Transaction.CommitAsync();
+                _logger.LogInformation("Create New Order staged successfully");
+              
                 return new ResponseCreateNewOrder
                 {
                     IdOrder = OrderBase.Id,
@@ -96,7 +95,6 @@ namespace order_service.OrderService.Infrastructure.Repository
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while creating new order");
-                await _db.Database.RollbackTransactionAsync();
                 return new ResponseCreateNewOrder
                 {
                     IdOrder = Guid.Empty,

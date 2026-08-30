@@ -24,8 +24,7 @@ namespace order_service.OrderService.Infrastructure.Workers
         }
 
 
-        protected override async Task ExecuteAsync(
-            CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -38,7 +37,7 @@ namespace order_service.OrderService.Infrastructure.Workers
                         .GetRequiredService<FoodOrderContext>();
 
 
-                    
+
                     var expireOrders = await db.Orders
                         .Where(x =>
                             x.Status == OrderStatusPayment.PENDING.ToString()
@@ -60,7 +59,7 @@ namespace order_service.OrderService.Infrastructure.Workers
 
 
 
-                   
+
                     foreach (var order in expireOrders)
                     {
                         order.Status = OrderStatusPayment.CANCELLED.ToString();
@@ -69,7 +68,7 @@ namespace order_service.OrderService.Infrastructure.Workers
 
 
 
-              
+
                     await db.SaveChangesAsync(stoppingToken);
 
 
@@ -99,7 +98,7 @@ namespace order_service.OrderService.Infrastructure.Workers
 
 
 
-               
+
                 await Task.Delay(
                     TimeSpan.FromSeconds(30),
                     stoppingToken);

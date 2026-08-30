@@ -10,6 +10,7 @@ using order_service.OrderService.Domain.Aggregate;
 using order_service.OrderService.Domain.Entities;
 using order_service.OrderService.Domain.Enums;
 using order_service.OrderService.Domain.Interface;
+using order_service.OrderService.Infrastructure.Models;
 using order_service.OrderService.Infrastructure.OrderRealTime;
 using PaymentService.API.Proto;
 using StackExchange.Redis;
@@ -27,8 +28,9 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
         private readonly IHubContext<NotificationOrderHUB> _orderHub;
         private readonly IDatabase _cache;
         private readonly IPublishEndpoint _ipublishEvent;
+        private readonly FoodOrderContext _db;
 
-        public CreateNewOrder(IPublishEndpoint publishEndpoint, IConnectionMultiplexer connectionMultiplexer, InventoryProduct inventoryProduct, IHubContext<NotificationOrderHUB> hubContext, GetAddressUserServiceSideClient getAddressUserServiceSideClient, GetInformationOfCart getInformationOfCartClient, IOrderRepository orderRepository, PaymentInforGrpc.PaymentInforGrpcClient paymentInforGrpcClient, ILogger<CreateNewOrder> logger)
+        public CreateNewOrder(IPublishEndpoint publishEndpoint, IConnectionMultiplexer connectionMultiplexer, InventoryProduct inventoryProduct, IHubContext<NotificationOrderHUB> hubContext, GetAddressUserServiceSideClient getAddressUserServiceSideClient, GetInformationOfCart getInformationOfCartClient, IOrderRepository orderRepository, PaymentInforGrpc.PaymentInforGrpcClient paymentInforGrpcClient, FoodOrderContext foodOrderContext, ILogger<CreateNewOrder> logger)
         {
             _inventoryProduct = inventoryProduct;
             _cartClientGRPC = getInformationOfCartClient;
@@ -39,6 +41,7 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
             _orderHub = hubContext;
             _cache = connectionMultiplexer.GetDatabase();
             _ipublishEvent = publishEndpoint;
+            _db = foodOrderContext;
 
         }
 
@@ -87,31 +90,9 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
             }
 
 
-            // bắn event check out cart
-            try
-            {
-                await _ipublishEvent.Publish(new CheckOutCartEvent
-                {
-                    IdCart = cart.CartId,
-                    IdUser = Iduser
-                });
-
-                _logger.LogInformation(
-                    "Published CheckOutCartEvent successfully. CartId: {CartId}",
-                    cart.CartId);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(
-                    ex,
-                    "Failed to publish CheckOutCartEvent. CartId: {CartId}",
-                    cart.CartId);
-
-                throw;
-            }
 
 
-            //---------------------------------------------------------------------
+    
             // yet retry
             var AddressUser = await _AddressUser.GetAddressUserAsync(new UserService.API.Protos.AddressformationUserRequest { IdAddress = IdAddress.ToString() });
 
@@ -139,58 +120,68 @@ namespace order_service.OrderService.Infrastructure.ServicesImplements
                 newOrderAggregate.SetDiscount(DiscountAmount);
             }
 
-            // payment 
-            newOrderAggregate.AddOrderPayment(OrderPaymentsEntity.CreateOrderPayment(newOrderAggregate.IdOrder, paymentMethod, PaymentStatus.PENDING, newOrderAggregate.FinalAmount.Value, null, null));
-
+            
             var resultCreateNewOrder = await _orderRepository.CreateNewOrder(newOrderAggregate);  //   create order
 
-            if (resultCreateNewOrder.Status)
+            if (!resultCreateNewOrder.Status)
             {
-                // bắn event thông báo đã tạo order thành công 
-                await _ipublishEvent.Publish(new CreatedOrderEvent
-                {
-                    IdOrder = resultCreateNewOrder.IdOrder,
-                    OrderMethodPayment = paymentMethod.ToString(),
-                    IdUser = Iduser
-                });
+                //await _ipublishEvent.Publish(new CreatedOrderEventFail
+                //{
+                //    IdOrder = resultCreateNewOrder.IdOrder,
+                //    OrderMethodPayment = paymentMethod.ToString(),
+                //    IdUser = Iduser
+                //});
 
+                //await _db.SaveChangesAsync();
 
-                var orderNotificationRealTimeDTO = new ViewOrderDTO
+                return new RequestCreateNewOrderAndPayment
                 {
-                    OrderCode = "Đon Food Mi",
-                    IdOrder = newOrderAggregate.IdOrder,
-                    NameCustomer = newOrderAggregate.SnapshotNameCustomer,
-                    CreateAt = newOrderAggregate.CreatedAt,
-                    orderStatus = OrderStatus.PENDING,
-                    OrderStatusPayment = newOrderAggregate.StatusOrderPayment,
-                    PaymentMethod = paymentMethod,
-                    TotalAmount = newOrderAggregate.TotalAmount.Value,
+                    Message = "Create order failed",
+                    StatusCreateOrder = false
                 };
-
-                try
-                {
-                    await _orderHub.Clients.Group("ADMIN_GROUP").SendAsync("ReceiveOrder", orderNotificationRealTimeDTO);
-                    await _orderHub.Clients.Group("STAFF_GROUP").SendAsync("ReceiveOrder", orderNotificationRealTimeDTO);
-
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Realtime notification failed");
-                    throw;
-                }
             }
-            else
+
+            await _ipublishEvent.Publish(new CheckOutCartEvent
             {
-                // bắn event thông báo đã tạo order thất bại
-                await _ipublishEvent.Publish(new CreatedOrderEvent
-                {
-                    IdOrder = resultCreateNewOrder.IdOrder,
-                    OrderMethodPayment = paymentMethod.ToString(),
-                    IdUser = Iduser
-                });
+                IdCart = cart.CartId,
+                IdUser = Iduser
+            });
 
+            _logger.LogInformation(
+                "Staged CheckOutCartEvent in outbox. CartId: {CartId}",
+                cart.CartId);
+
+            await _ipublishEvent.Publish(new CreatedOrderEvent
+            {
+                IdOrder = resultCreateNewOrder.IdOrder,
+                OrderMethodPayment = paymentMethod.ToString(),
+                IdUser = Iduser
+            });
+
+            await _db.SaveChangesAsync();
+
+            var orderNotificationRealTimeDTO = new ViewOrderDTO
+            {
+                OrderCode = resultCreateNewOrder.OrderCode,
+                IdOrder = newOrderAggregate.IdOrder,
+                NameCustomer = newOrderAggregate.SnapshotNameCustomer,
+                CreateAt = newOrderAggregate.CreatedAt,
+                orderStatus = OrderStatus.PENDING,
+                OrderStatusPayment = newOrderAggregate.StatusOrderPayment,
+                PaymentMethod = paymentMethod,
+                TotalAmount = newOrderAggregate.TotalAmount.Value,
+            };
+
+            try
+            {
+                await _orderHub.Clients.Group("ADMIN_GROUP").SendAsync("ReceiveOrder", orderNotificationRealTimeDTO);
+                await _orderHub.Clients.Group("STAFF_GROUP").SendAsync("ReceiveOrder", orderNotificationRealTimeDTO);
             }
-
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Realtime notification failed");
+                throw;
+            }
             return new RequestCreateNewOrderAndPayment { Message = "Please, To Pay your order before the recieve", StatusCreateOrder = true };
         }
     }
