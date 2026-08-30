@@ -1,46 +1,68 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>cart_service</RootNamespace>
-  </PropertyGroup>
-
-
-  <ItemGroup>
-    <PackageReference Include="DotNetEnv" Version="3.1.1" />
-    <PackageReference Include="Google.Protobuf" Version="3.33.5" />
-    <PackageReference Include="Grpc.AspNetCore" Version="2.76.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.78.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="MassTransit" Version="8.5.10" />
-    <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.10" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.22" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.22" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.22">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.22">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.30" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
-    <PackageReference Include="StackExchange.Redis" Version="3.1.13" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="CartService.API\Middleware\" />
-    <Folder Include="CartService.API\GlobalExcetions\" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<RootNamespace>cart_service</RootNamespace>
+	</PropertyGroup>
 
 	<ItemGroup>
-		<Protobuf Include="CartService.API\Proto\Products.proto" GrpcServices="Client" />
-		<Protobuf Include="CartService.API\Proto\InformationCart.proto" GrpcServices="Server" />
+
+		<PackageReference Include="DotNetEnv" Version="3.1.1" />
+
+		<PackageReference Include="Google.Protobuf" Version="3.33.5" />
+
+		<PackageReference Include="Grpc.AspNetCore" Version="2.76.0" />
+
+		<PackageReference Include="Grpc.Tools" Version="2.78.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		
+		<PackageReference Include="MassTransit" Version="8.1.0" />
+		<PackageReference Include="MassTransit.EntityFrameworkCore" Version="8.1.0" />
+		<PackageReference Include="MassTransit.RabbitMQ" Version="8.1.0" />
+
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.22" />
+
+
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.22" />
+
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.22">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.22">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.30" />
+
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
+
+		<PackageReference Include="StackExchange.Redis" Version="3.1.13" />
+
+	</ItemGroup>
+
+	<ItemGroup>
+
+		<Folder Include="CartService.API\Middleware\" />
+
+		<Folder Include="CartService.API\GlobalExcetions\" />
+
+	</ItemGroup>
+
+	<ItemGroup>
+
+		<Protobuf Include="CartService.API\Proto\Products.proto"
+				  GrpcServices="Client" />
+
+		<Protobuf Include="CartService.API\Proto\InformationCart.proto"
+				  GrpcServices="Server" />
+
 	</ItemGroup>
 
 </Project>

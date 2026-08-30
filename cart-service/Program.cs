@@ -18,6 +18,12 @@ namespace cart_service
 
             builder.Services.AddMassTransit(x =>
             {
+                x.AddEntityFrameworkOutbox<FoodProductsDbContext>(s =>
+                {
+                    s.UsePostgres();
+                    s.UseBusOutbox(); 
+                });
+
                 x.AddConsumer<CheckOutCart>();
                 x.AddConsumer<RestoreStatusCart>();
 
@@ -33,6 +39,7 @@ namespace cart_service
                     {
                         e.PrefetchCount = 10;
                         e.ConcurrentMessageLimit = 5;
+                        e.UseEntityFrameworkOutbox<FoodProductsDbContext>(context);
                         e.ConfigureConsumer<CheckOutCart>(context);
                     });
 
@@ -41,6 +48,7 @@ namespace cart_service
                     {
                         e.PrefetchCount = 10;
                         e.ConcurrentMessageLimit = 5;
+                        e.UseEntityFrameworkOutbox<FoodProductsDbContext>(context);
                         e.ConfigureConsumer<RestoreStatusCart>(context);
                     });
                 });
