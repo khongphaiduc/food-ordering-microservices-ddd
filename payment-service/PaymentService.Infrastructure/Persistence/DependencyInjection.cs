@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using order_service.OrderService.API.Proto;
 using OrderService.API.Proto;
@@ -24,10 +25,14 @@ namespace payment_service.PaymentService.Infrastructure.Persistence
                 options.UseSqlServer(config["SQL"]);
             });
 
+
+
+
             services.AddMassTransit(x =>
             {
                 x.AddConsumer<PaymentConsumer>();
                 x.AddConsumer<CancelPaymentConsumer>();
+
                 x.UsingRabbitMq((context, cfg) =>
                 {
                     cfg.Host(config["RabbitMQHost"], "/", h =>
@@ -42,7 +47,9 @@ namespace payment_service.PaymentService.Infrastructure.Persistence
                         s.ConcurrentMessageLimit = 10;
                         s.PrefetchCount = 20;
                         s.ConfigureConsumer<PaymentConsumer>(context);
+                        
                     });
+
                     //end point to cancel the order which was TimeOut
                     cfg.ReceiveEndpoint("CancellPaymentQueue", s =>
                     {
@@ -50,6 +57,7 @@ namespace payment_service.PaymentService.Infrastructure.Persistence
                         s.ConcurrentMessageLimit = 10;
                         s.PrefetchCount = 20;
                         s.ConfigureConsumer<CancelPaymentConsumer>(context);
+                      
                     });
                 });
             });
@@ -135,7 +143,7 @@ namespace payment_service.PaymentService.Infrastructure.Persistence
             });
 
             services.AddGrpc();
-
+            services.AddScoped<IGetORCodePayment, GetORCodePayment>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<ICreateNewPaymentOrder, CreateNewPaymentOrder>();
             services.AddScoped<IUpdateOrderStatus, UpdateOrderStatus>();
