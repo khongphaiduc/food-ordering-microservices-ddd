@@ -21,7 +21,7 @@ namespace order_service.OrderService.Infrastructure.Repository
         #region Create new order 
         public async Task<ResponseCreateNewOrder> CreateNewOrder(OrdersAggregate NewOrderAggregate)
         {
-          
+
             try
             {
                 _logger.LogInformation("Start Create New Order");
@@ -82,8 +82,9 @@ namespace order_service.OrderService.Infrastructure.Repository
 
                 await _db.Orders.AddAsync(OrderBase);
 
+                await _db.SaveChangesAsync();
                 _logger.LogInformation("Create New Order staged successfully");
-              
+
                 return new ResponseCreateNewOrder
                 {
                     IdOrder = OrderBase.Id,
