@@ -1,3 +1,4 @@
+<img width="1863" height="951" alt="Screenshot 2026-09-01 234044" src="https://github.com/user-attachments/assets/ff269ae7-04d2-4d7c-8f93-31aa2eab5242" />
 # Foodly - Food Ordering Microservices System
 
 [![.NET 8](https://img.shields.io/badge/.NET-8.0-512bd4)](https://dotnet.microsoft.com/)
@@ -18,9 +19,7 @@ The project demonstrates practical backend engineering patterns such as Domain-D
 
 ### PC, Laptop, iPad
 
-
-<img width="1850" height="952" alt="Foodly home app screenshot" src="https://github.com/user-attachments/assets/f1c0e12e-8c9a-46c2-b42c-8b7b3a0ae055" />
-
+<img width="1863" height="951" alt="Foodly home app screenshot" src="https://github.com/user-attachments/assets/ed2f4db0-0b66-4335-94bf-c0ca750a7d9e" />
 
 ### Mobile Phone
 
