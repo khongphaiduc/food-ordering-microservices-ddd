@@ -18,7 +18,9 @@ The project demonstrates practical backend engineering patterns such as Domain-D
 
 ### PC, Laptop, iPad
 
-<img width="1856" height="935" alt="Foodly home app screenshot" src="https://github.com/user-attachments/assets/eb819f7d-cc7e-46ca-8244-8a135076da15" />
+
+<img width="1850" height="952" alt="Foodly home app screenshot" src="https://github.com/user-attachments/assets/f1c0e12e-8c9a-46c2-b42c-8b7b3a0ae055" />
+
 
 ### Mobile Phone
 
