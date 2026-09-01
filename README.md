@@ -1,4 +1,11 @@
 
+## 🎥 Video Demo
+
+| Side | Demo |
+|------|------|
+| Customer | [▶️ Watch Video Demo](https://drive.google.com/file/d/1NjsbKt0ZSbpr7LE8tju6pzWbFlIOy0ks/view?usp=drive_link) |
+| Admin | Coming soon  |
+
 # Foodly - Food Ordering Microservices System
 
 [![.NET 8](https://img.shields.io/badge/.NET-8.0-512bd4)](https://dotnet.microsoft.com/)
