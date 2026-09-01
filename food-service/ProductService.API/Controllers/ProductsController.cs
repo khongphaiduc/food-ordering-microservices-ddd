@@ -34,8 +34,6 @@ namespace food_service.ProductService.API.Controllers
             _getListCategory = getListCategory;
             _getProductDailyInventory = getProductDailyInventory;
 
-
-
         }
 
 
