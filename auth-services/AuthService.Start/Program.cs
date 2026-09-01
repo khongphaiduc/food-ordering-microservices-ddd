@@ -26,7 +26,7 @@ namespace auth_services.AuthService.Start
     public class Program
     {
         public static void Main(string[] args)
-        {
+     {
             DotNetEnv.Env.Load();
             var builder = WebApplication.CreateBuilder(args);
 

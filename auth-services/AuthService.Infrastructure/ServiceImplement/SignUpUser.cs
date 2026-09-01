@@ -35,11 +35,13 @@ namespace auth_services.AuthService.Infrastructure.ServiceImplement
             _logger = logger;
         }
 
-        public async Task<bool> Execute(RequestCreateNewUser user, CancellationToken token = default)
+        public async Task<ResponseRegisterAccountDto> Execute(RequestCreateNewUser user, CancellationToken token = default)
         {
-            if (user.Password != user.ConfirmPassword) return false;
+            if (user.Password != user.ConfirmPassword) return new ResponseRegisterAccountDto { Status = false, Message = "The confirm password not match" };
 
-            if (await _iUserRepository.IsExitUser(user.Email, token)) return false;
+            if(user.Password.Length < 8) return new ResponseRegisterAccountDto { Status = false, Message = "The password must be at least 8 characters long" };
+
+            if (await _iUserRepository.IsExitUser(user.Email, token)) return new ResponseRegisterAccountDto { Status = false, Message = "The account already exists" };
 
             var salt = _iGenerateSalt.GenerateSalt();
             var hashedPassword = _iHashPassword.HandleHashPassword(user.Password, salt);
@@ -94,13 +96,21 @@ namespace auth_services.AuthService.Infrastructure.ServiceImplement
 
 
                 await transaction.CommitAsync();
-                return true;
+                return new ResponseRegisterAccountDto
+                {
+                    Status = true,
+                    Message = "The account has been created successfully"
+                };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Bug At SigUp New User :{ex.Message}");
                 await transaction.RollbackAsync();
-                return false;
+                return new ResponseRegisterAccountDto
+                {
+                    Status = false,
+                    Message = "An error occurred while creating the account"
+                };
             }
 
         }

@@ -65,20 +65,10 @@ namespace auth_services.AuthService.API.AuthControllers
 
 
         [HttpPost("signup")]
-        public async Task<IActionResult> SignUp(RequestCreateNewUser user, CancellationToken token = default)
+        public async Task<IActionResult> SignUp([FromBody]RequestCreateNewUser user, CancellationToken token = default)
         {
             var result = await _iUserSignUp.Execute(user, token);
-
-            if (result)
-            {
-
-                return Created(" ", new { message = "Create New User Successful" });
-            }
-            else
-            {
-                return BadRequest("The account already exists");
-            }
-
+            return Ok(result);
         }
 
 
