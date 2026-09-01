@@ -16,10 +16,10 @@ The project demonstrates practical backend engineering patterns such as Domain-D
 
 ## Web UI Screenshots
 
-### Home App
-
-<img width="1844" height="942" alt="Foodly home app screenshot" src="https://github.com/user-attachments/assets/42a4ae24-9847-40d5-a416-cca6354cb1fb" />
-
+### PC , Laptop , Ipad ....
+<img width="1856" height="935" alt="Foodly home app screenshot" src="https://github.com/user-attachments/assets/eb819f7d-cc7e-46ca-8244-8a135076da15" />
+### Mobile Phone 
+<img width="475" height="938" alt="Screenshot 2026-09-01 171230" src="https://github.com/user-attachments/assets/72730bdb-a14d-45f7-ad65-cee3d84e3219" />
 ### Admin App
 <img width="1843" height="949" alt="Screenshot 2026-07-21 225118" src="https://github.com/user-attachments/assets/7bd837df-6065-4d07-94c7-eae4203079e5" />
 
