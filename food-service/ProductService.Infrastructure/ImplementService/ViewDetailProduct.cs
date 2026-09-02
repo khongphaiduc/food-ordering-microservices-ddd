@@ -30,6 +30,9 @@ namespace food_service.ProductService.Infrastructure.ImplementService
         {
             var cache = await _redis.GetStringAsync(idProduct.ToString());
 
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+
             if (cache != null)
             {
                 return JsonSerializer.Deserialize<ProductDetailDTO>(cache);
@@ -41,9 +44,10 @@ namespace food_service.ProductService.Infrastructure.ImplementService
                 {
                     IdCategory = s.CategoryId,
                     IdProduct = s.Id,
-                    Name  = s.Name,
+                    Name = s.Name,
                     Description = s.Description ?? "None",
                     Price = s.Price,
+                    Quality = s.ProductDailyInventories.Where(t => t.InventoryDate == today).Select(g => g.RemainingQuantity).FirstOrDefault(),
                     productImageDTOs = s.ProductImages
                         .Select(c => new ProductImageDTO
                         {
@@ -69,7 +73,7 @@ namespace food_service.ProductService.Infrastructure.ImplementService
                 .Where(i => !string.IsNullOrEmpty(i.UrlImage))
                 .Select(async i =>
                 {
-                    i.UrlImage = await _minio.GetUrlImage("images", i.UrlImage);      
+                    i.UrlImage = await _minio.GetUrlImage("images", i.UrlImage);
                 });
 
             await Task.WhenAll(tasks);

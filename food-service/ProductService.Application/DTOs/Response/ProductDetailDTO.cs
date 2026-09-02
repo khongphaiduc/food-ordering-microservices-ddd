@@ -10,6 +10,8 @@
 
         public decimal Price { get; set; }
 
+        public int Quality { get; set; }
+
         public List<ProductImageDTO> productImageDTOs { get; set; }
 
         public List<ProductVariantDTO> productVariantDTOs { get; set; }

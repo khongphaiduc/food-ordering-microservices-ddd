@@ -12,6 +12,8 @@
 
         public string? Decriptions { get; set; }
 
+        public int quantity { get; set; }  
+
         public List<ImageFood>? ImageFoods { get; set; }
         public bool IsAvailable { get; set; }   // còn bán hay không
     }

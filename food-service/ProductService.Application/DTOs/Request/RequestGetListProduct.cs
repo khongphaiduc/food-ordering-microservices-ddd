@@ -2,11 +2,11 @@
 {
     public class RequestGetListProduct
     {
-        public string? Keyword { get; set; }          // tìm theo tên sản phẩm
+        public string? Keyword { get; set; }          
 
-        public Guid? CategoryId { get; set; }          // lọc theo category
+        public Guid? CategoryId { get; set; }        
 
-        public int PageIndex { get; set; } = 1;        // trang hiện tại (bắt đầu từ 1)
-        public int PageSize { get; set; } = 12;        // số item / trang
+        public int PageIndex { get; set; } = 1;       
+        public int PageSize { get; set; } = 12;        
     }
 }

@@ -32,6 +32,7 @@ namespace food_service.ProductService.Infrastructure.ImplementService
         // search và phân trang
         public async Task<List<ProductDTO>> ExecuteAsync(RequestGetListProduct request)
         {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
             var numberSkip = (request.PageIndex - 1) * request.PageSize;
 
@@ -61,7 +62,8 @@ namespace food_service.ProductService.Infrastructure.ImplementService
                     Price = p.Price,
                     ImageFoods = p.ProductImages.Select(s => new ImageFood { ImageId = s.Id, IsMain = s.IsMain, UrlImage = s.ImageUrl }).ToList(),
                     IsAvailable = p.IsAvailable,
-                    Decriptions = p.Description
+                    Decriptions = p.Description,
+                    quantity = p.ProductDailyInventories.Where(s => s.InventoryDate == today).Select(s => s.RemainingQuantity).FirstOrDefault()
                 })
                 .ToListAsync();
 
