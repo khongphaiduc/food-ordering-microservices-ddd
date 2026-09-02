@@ -28,15 +28,11 @@ namespace food_service.ProductService.Infrastructure.ImplementService
 
         public async Task<ProductDetailDTO?> ExecuteAsync(Guid idProduct)
         {
-            var cache = await _redis.GetStringAsync(idProduct.ToString());
+            
 
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
 
-            if (cache != null)
-            {
-                return JsonSerializer.Deserialize<ProductDetailDTO>(cache);
-            }
 
             var product = await _db.Products
                 .Where(s => s.Id == idProduct)
