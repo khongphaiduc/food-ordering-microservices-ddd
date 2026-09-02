@@ -17,22 +17,22 @@ namespace payment_service
 
             var app = builder.Build();
 
-            //using (var scope = app.Services.CreateScope())
-            //{
-            //    var services = scope.ServiceProvider;
-            //    try
-            //    {
-            //        var context = services.GetRequiredService<FoodPaymentContext>();
-            //        context.Database.Migrate();
-            //        var logger = services.GetRequiredService<ILogger<Program>>();
-            //        logger.LogInformation("Database migration completed successfully.");
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        var logger = services.GetRequiredService<ILogger<Program>>();
-            //        logger.LogError(ex, "An error occurred while applying database migrations.");
-            //    }
-            //}
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var context = services.GetRequiredService<FoodPaymentContext>();
+                    context.Database.Migrate();
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogInformation("Database migration completed successfully.");
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred while applying database migrations.");
+                }
+            }
 
             app.UseHttpsRedirection();
 
