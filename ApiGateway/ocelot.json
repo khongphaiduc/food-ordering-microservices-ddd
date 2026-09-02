@@ -56,19 +56,6 @@
       "UpstreamPathTemplate": "/admin/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     },
-
-    {
-      "DownstreamPathTemplate": "/api/search/{everything}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7060
-        }
-      ],
-      "UpstreamPathTemplate": "/search/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
-    },
     {
       "DownstreamPathTemplate": "/api/cart/{everything}",
       "DownstreamScheme": "https",
@@ -104,20 +91,7 @@
       ],
       "UpstreamPathTemplate": "/payments/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/tracking/{everything}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7139
-        }
-      ],
-      "UpstreamPathTemplate": "/tracking/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     }
-
   ],
 
   "GlobalConfiguration": {
