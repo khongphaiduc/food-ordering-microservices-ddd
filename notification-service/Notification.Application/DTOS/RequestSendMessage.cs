@@ -12,19 +12,7 @@
         public string Body { get; set; }
 
 
-        public string TypeService { get; set; }  // Email, SMS
-
         public DateTime CreatedAt { get; set; }
-
-        public RequestSendMessage(string to, string subject, string body, string messageType)
-        {
-            To = to;
-            Subject = subject;
-            Body = body;
-            TypeService = messageType;
-            CreatedAt = DateTime.UtcNow;
-            IdMessage = Guid.NewGuid();
-        }
 
     }
 }

@@ -6,7 +6,7 @@ namespace notification_service.Notifications.Services
     {
 
         public string TypeService { get; }
-        Task<bool> SendRegisterAccount(RequestSendMessage request);
+        Task<bool> SendNotification(RequestSendMessage request);
 
     }
 }

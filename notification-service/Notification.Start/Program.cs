@@ -1,11 +1,12 @@
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using notification_service.Models;
 using notification_service.Notification.Application.Services;
 using notification_service.Notification.Domain.Interface;
+using notification_service.Notification.Infrastructure.Consumers;
 using notification_service.Notification.Infrastructure.Repositories;
-using notification_service.Notification.Infrastructure.Worker.EmailWorker;
 using notification_service.Notifications.Services;
 
 namespace notification_service.Notification.Start
@@ -31,24 +32,46 @@ namespace notification_service.Notification.Start
             })
             .AddJwtBearer("AccessToken", option =>
              {
-            option.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                ValidAudience = builder.Configuration["Jwt:Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key:AccessToken"]!))
-            };
+                 option.TokenValidationParameters = new TokenValidationParameters
+                 {
+                     ValidateIssuer = true,
+                     ValidateAudience = true,
+                     ValidateLifetime = true,
+                     ValidateIssuerSigningKey = true,
+                     ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                     ValidAudience = builder.Configuration["Jwt:Audience"],
+                     IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key:AccessToken"]!))
+                 };
              });
+
+
+            builder.Services.AddMassTransit(x =>
+            {
+                x.AddConsumer<SendEmailConsumer>();
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host(builder.Configuration["RabbitMQHost"], "/", h =>
+                    {
+                        h.Username(builder.Configuration["RabbitMQUsername"]!);
+                        h.Password(builder.Configuration["RabbitMQPassword"]!);
+                    });
+
+                    cfg.ReceiveEndpoint("SendEmailConfirmOrder", s =>
+                    {
+                        s.PrefetchCount = 20;
+                        s.ConcurrentMessageLimit = 10;
+                        s.ConfigureConsumer<SendEmailConsumer>(context);
+                    });
+
+                });
+            });
 
 
             builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
             builder.Services.AddSingleton<INotifications, Emails>();
 
-            builder.Services.AddHostedService<EmailConsumer>();
 
             var app = builder.Build();
 

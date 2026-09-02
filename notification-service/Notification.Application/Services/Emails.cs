@@ -7,20 +7,29 @@ namespace notification_service.Notification.Application.Services
 {
     public class Emails : INotifications
     {
+        private IConfiguration _config;
+
+        public Emails(IConfiguration configuration)
+        {
+            _config = configuration;
+        }
+
         public string TypeService => "Email";
 
-        public async Task<bool> SendRegisterAccount(RequestSendMessage request)
+
+        
+        public async Task<bool> SendNotification(RequestSendMessage request)
         {
             try
             {
                 using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
                 {
-                    smtp.Credentials = new NetworkCredential("hotelluxurytrungduc@gmail.com", "ykbg blmo tqxy hrld");
+                    smtp.Credentials = new NetworkCredential(_config["Email"], _config["EmailKey"]);
                     smtp.EnableSsl = true;
 
                     using (MailMessage message = new MailMessage())
                     {
-                        message.From = new MailAddress("hotelluxurytrungduc@gmail.com", "Hotel Management");
+                        message.From = new MailAddress(_config["Email"]!, _config["Name"]);
                         message.To.Add(request.To);
                         message.Subject = request.Subject;
                         message.Body = request.Body;
