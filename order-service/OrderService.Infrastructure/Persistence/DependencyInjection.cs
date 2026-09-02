@@ -80,7 +80,7 @@ namespace order_service.OrderService.Infrastructure.Persistence
             {
                 options.AddPolicy("AllowFrontend", policy =>
                 {
-                    policy.WithOrigins("http://localhost:5173")
+                    policy.WithOrigins(config["URL_FE"]!)
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials();

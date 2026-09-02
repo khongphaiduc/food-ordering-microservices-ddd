@@ -61,7 +61,7 @@ namespace order_service
 
             app.MapHub<NotificationOrderHUB>("/ordersHub");
 
-            app.MapHub<OrderOfUser>("/orderofuser");
+            app.MapHub<OrderOfUser>("/orderofuser");   // play a importance role make a address to client connection 
 
             app.MapGrpcService<UpdateStatusOrderService>();
             app.MapGrpcService<OrderInformation>();
