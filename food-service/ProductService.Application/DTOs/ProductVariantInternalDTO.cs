@@ -1,4 +1,4 @@
-namespace food_service.ProductService.Infrastructure.ProducerRabbitMQ
+﻿namespace food_service.ProductService.Application.DTOs
 {
     public class ProductVariantInternalDTO
     {
@@ -6,9 +6,9 @@ namespace food_service.ProductService.Infrastructure.ProducerRabbitMQ
 
         public string Name { get; set; }
 
-        public decimal  Extra_Price { get; set; }
+        public decimal Extra_Price { get; set; }
 
-        public DateTime CreateAt { get; set; } = DateTime.Now;  
+        public DateTime CreateAt { get; set; } = DateTime.Now;
 
         public DateTime UpdateAt { get; set; } = DateTime.Now;
     }

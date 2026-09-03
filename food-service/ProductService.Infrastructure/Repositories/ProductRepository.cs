@@ -8,27 +8,21 @@ using food_service.ProductService.Domain.Entities;
 using food_service.ProductService.Domain.Interface;
 using food_service.ProductService.Domain.ValueObject;
 using food_service.ProductService.Infrastructure.Models;
-using food_service.ProductService.Infrastructure.ProducerRabbitMQ;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using RabbitMQ.Client;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
+using food_service.ProductService.Application;
+using food_service.ProductService.Application.DTOs;
 namespace food_service.ProductService.Infrastructure.Repositories
 {
     public class ProductRepository : IProductRepository
     {
         private readonly IMinIOFood _minIo;
         private readonly FoodProductsDbContext _db;
-        private readonly FoodProducer _workerFood;
         private readonly ILogger<ProductRepository> _logger;
 
-        public ProductRepository(IMinIOFood minIOFood, FoodProductsDbContext foodProductsDbContext, FoodProducer foodProducer,  ILogger<ProductRepository> logger)
+        public ProductRepository(IMinIOFood minIOFood, FoodProductsDbContext foodProductsDbContext,   ILogger<ProductRepository> logger)
         {
             _minIo = minIOFood;
             _db = foodProductsDbContext;
-            _workerFood = foodProducer;
           
             _logger = logger;
         }

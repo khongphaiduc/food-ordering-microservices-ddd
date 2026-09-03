@@ -6,7 +6,7 @@ using food_service.ProductService.Infrastructure.Consumers;
 using food_service.ProductService.Infrastructure.ImplementService;
 using food_service.ProductService.Infrastructure.MinIO;
 using food_service.ProductService.Infrastructure.Models;
-using food_service.ProductService.Infrastructure.ProducerRabbitMQ;
+
 using food_service.ProductService.Infrastructure.RedisService.RedisInterface;
 using food_service.ProductService.Infrastructure.Repositories;
 using MassTransit;
@@ -135,12 +135,6 @@ namespace food_service.ProductService.Infrastructure.Persistence
 
             services.AddScoped<IProductRecommendationService, ProductRecommendationService>();
 
-
-            services.AddSingleton<FoodProducer>();
-
-
-
-
             services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = config["Redis:RedisAddress"];
@@ -160,8 +154,6 @@ namespace food_service.ProductService.Infrastructure.Persistence
                     .WithSSL(false)
                     .Build();
             });
-
-
 
             services.AddGrpcClient<OrderGrpc.OrderGrpcClient>(options =>
             {

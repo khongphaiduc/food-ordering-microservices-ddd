@@ -3,7 +3,6 @@ using food_service.ProductService.Domain.Aggregate;
 using food_service.ProductService.Domain.Interface;
 using food_service.ProductService.Domain.ValueObject;
 using food_service.ProductService.Infrastructure.Models;
-using food_service.ProductService.Infrastructure.ProducerRabbitMQ;
 using Microsoft.EntityFrameworkCore;
 
 namespace food_service.ProductService.Infrastructure.Repositories
@@ -11,12 +10,12 @@ namespace food_service.ProductService.Infrastructure.Repositories
     public class CategoryRepository : ICategoryRepository
     {
         private readonly FoodProductsDbContext _db;
-        private readonly FoodProducer _producerFood;
+ 
 
-        public CategoryRepository(FoodProductsDbContext foodProductsDbContext, FoodProducer foodProducer, ILogger<CategoryRepository> logger)
+        public CategoryRepository(FoodProductsDbContext foodProductsDbContext, ILogger<CategoryRepository> logger)
         {
             _db = foodProductsDbContext;
-            _producerFood = foodProducer;
+   
         }
 
         public async Task<bool> AddNewCategory(CategoryAggregate NewCategoty)

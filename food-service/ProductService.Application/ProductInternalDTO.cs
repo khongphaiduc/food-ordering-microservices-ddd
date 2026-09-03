@@ -1,4 +1,6 @@
-namespace food_service.ProductService.Infrastructure.ProducerRabbitMQ
+﻿using food_service.ProductService.Application.DTOs;
+
+namespace food_service.ProductService.Application
 {
     public class ProductInternalDTO
     {

@@ -23,9 +23,9 @@
 		</PackageReference>
 
 		<!-- MassTransit -->
-		<PackageReference Include="MassTransit" Version="9.0.1" />
-		<PackageReference Include="MassTransit.EntityFrameworkCore" Version="9.0.1" />
-		<PackageReference Include="MassTransit.RabbitMQ" Version="9.0.1" />
+		<PackageReference Include="MassTransit" Version="8.5.10" />
+		<PackageReference Include="MassTransit.EntityFrameworkCore" Version="8.5.10" />
+		<PackageReference Include="MassTransit.RabbitMQ" Version="8.5.10" />
 
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.22" />
 
@@ -54,8 +54,6 @@
 		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.15.0" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.0" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.15.0" />
-
-		<PackageReference Include="RabbitMQ.Client" Version="7.2.0" />
 
 		<!-- Serilog -->
 		<PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
