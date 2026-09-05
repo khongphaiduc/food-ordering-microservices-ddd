@@ -7,12 +7,26 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace cart_service.Migrations
 {
     /// <inheritdoc />
-    public partial class OutInBox : Migration
+    public partial class v1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
+            migrationBuilder.CreateTable(
+                name: "carts",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false, defaultValueSql: "'ACTIVE'::character varying"),
+                    total_price = table.Column<decimal>(type: "numeric(12,2)", precision: 12, scale: 2, nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("carts_pkey", x => x.id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "InboxState",
@@ -85,6 +99,73 @@ namespace cart_service.Migrations
                     table.PrimaryKey("PK_OutboxState", x => x.OutboxId);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "cart_discounts",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    cart_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    discount_type = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    discount_value = table.Column<decimal>(type: "numeric(12,2)", precision: 12, scale: 2, nullable: false),
+                    applied_amount = table.Column<decimal>(type: "numeric(12,2)", precision: 12, scale: 2, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("cart_discounts_pkey", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_cart_discount",
+                        column: x => x.cart_id,
+                        principalTable: "carts",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "cart_items",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    cart_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    product_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    variant_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    product_name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    variant_name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    unit_price = table.Column<decimal>(type: "numeric(12,2)", precision: 12, scale: 2, nullable: false),
+                    quantity = table.Column<int>(type: "integer", nullable: false),
+                    total_price = table.Column<decimal>(type: "numeric(12,2)", precision: 12, scale: 2, nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("cart_items_pkey", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_cart_items_cart",
+                        column: x => x.cart_id,
+                        principalTable: "carts",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_cart_discounts_cart_id",
+                table: "cart_discounts",
+                column: "cart_id");
+
+            migrationBuilder.CreateIndex(
+                name: "uq_cart_item_unique",
+                table: "cart_items",
+                columns: new[] { "cart_id", "product_id", "variant_id" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "uq_cart_user_active",
+                table: "carts",
+                column: "user_id",
+                unique: true,
+                filter: "((status)::text = 'ACTIVE'::text)");
+
             migrationBuilder.CreateIndex(
                 name: "IX_InboxState_Delivered",
                 table: "InboxState",
@@ -121,7 +202,11 @@ namespace cart_service.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "cart_discounts");
 
+            migrationBuilder.DropTable(
+                name: "cart_items");
 
             migrationBuilder.DropTable(
                 name: "InboxState");
@@ -132,7 +217,8 @@ namespace cart_service.Migrations
             migrationBuilder.DropTable(
                 name: "OutboxState");
 
-
+            migrationBuilder.DropTable(
+                name: "carts");
         }
     }
 }

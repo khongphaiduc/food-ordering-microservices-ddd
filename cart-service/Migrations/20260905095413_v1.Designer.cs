@@ -12,8 +12,8 @@ using cart_service.CartService.Infrastructure.Models;
 namespace cart_service.Migrations
 {
     [DbContext(typeof(FoodProductsDbContext))]
-    [Migration("20260830151007_OutInBox")]
-    partial class OutInBox
+    [Migration("20260905095413_v1")]
+    partial class v1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
