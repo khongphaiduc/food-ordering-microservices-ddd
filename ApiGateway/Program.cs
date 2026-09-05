@@ -18,7 +18,7 @@ namespace ApiGateway
                 options.AddPolicy("AllowReact",
                     policy =>
                         policy
-                            .WithOrigins("http://localhost:5173")
+                            .WithOrigins(builder.Configuration["URLACCEPTANCE_FE"]!)
                             .AllowAnyHeader()
                             .AllowAnyMethod()
                             .AllowCredentials()
