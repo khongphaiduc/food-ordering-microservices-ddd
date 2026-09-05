@@ -1,7 +1,9 @@
 using Elastic.Clients.Elasticsearch.Requests;
+using food_service.ProductService.Application.DTOs;
 using food_service.ProductService.Application.DTOs.Request;
 using food_service.ProductService.Application.Interface;
 using food_service.ProductService.Application.Service;
+using food_service.ProductService.Domain.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,10 +25,9 @@ namespace food_service.ProductService.API.Controllers
         private readonly IProductRecommendationService _recommendationProduct;
         private readonly IGetListCategory _getListCategory;
         private readonly IGetProductDailyInventory _getProductDailyInventory;
+  
 
-
-
-        public ProductsController( IGetListCategory getListCategory, IGetProductDailyInventory getProductDailyInventory, IGetListProduct listProduct, IViewDetailProduct viewDetailProduct, IProductRecommendationService productRecommendationService)
+        public ProductsController(IGetListCategory getListCategory, IGetProductDailyInventory getProductDailyInventory, IGetListProduct listProduct, IViewDetailProduct viewDetailProduct, IProductRecommendationService productRecommendationService)
         {
             _iListProduct = listProduct;
             _iViewDetailProduct = viewDetailProduct;
@@ -34,10 +35,11 @@ namespace food_service.ProductService.API.Controllers
             _getListCategory = getListCategory;
             _getProductDailyInventory = getProductDailyInventory;
 
+
         }
 
 
-        // tested
+      
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetListProduct([FromQuery] RequestGetListProduct request)
@@ -48,15 +50,15 @@ namespace food_service.ProductService.API.Controllers
         }
 
 
-        // AI Agent recommend food 
+       
         [AllowAnonymous]
         [HttpGet("ai")]
         public async Task<IActionResult> GetListProductRecommendByAI()
         {
 
-                var sampleProduct = await _iListProduct.ExecuteAsync(new RequestGetListProduct());
-                return Ok(new { list = sampleProduct, totalProduct = sampleProduct.Count });
- 
+            var sampleProduct = await _iListProduct.ExecuteAsync(new RequestGetListProduct());
+            return Ok(new { list = sampleProduct, totalProduct = sampleProduct.Count });
+
         }
 
         [AllowAnonymous]
@@ -85,10 +87,7 @@ namespace food_service.ProductService.API.Controllers
             });
         }
 
-
-
-
-        // tested
+  
         [AllowAnonymous]
         [HttpGet("{idProduct}")]
 

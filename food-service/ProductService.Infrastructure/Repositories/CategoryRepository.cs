@@ -1,4 +1,5 @@
 using food_service.ProductService.API.GlobalExceptions;
+using food_service.ProductService.Application.DTOs;
 using food_service.ProductService.Domain.Aggregate;
 using food_service.ProductService.Domain.Interface;
 using food_service.ProductService.Domain.ValueObject;
@@ -52,6 +53,45 @@ namespace food_service.ProductService.Infrastructure.Repositories
 
         }
 
+        public async Task<ResponseAddCategoryDto> AddNewCategory(RequestCreateCategoryDto request)
+        {
+            try
+            {
+                _db.Categories.Add(new Category
+                {
+                    Name = request.Name,
+                    Description = request.Description,
+                    IsActive = request.IsActive,
+                    CreatedAt = DateTime.UtcNow
+                });
+
+                var affectrow = await _db.SaveChangesAsync();
+
+                if (affectrow > 0)
+                {
+                    return new ResponseAddCategoryDto
+                    {
+                        Status = true,
+                        Message = "Add new category successfully"
+                    };
+                }
+                else
+                {
+                    return new ResponseAddCategoryDto
+                    {
+                        Status = false,
+                        Message = "Add new category failed"
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+              
+                throw;
+            }
+
+        }
+
         public async Task<CategoryAggregate> GetCategoryById(Guid Id)
         {
             var CategoryOrigin = await _db.Categories.Where(s => s.Id == Id).FirstOrDefaultAsync();
@@ -63,6 +103,30 @@ namespace food_service.ProductService.Infrastructure.Repositories
             throw new NotFoundCategoryException($"Not found Category Id : {Id}");
         }
 
+        public async Task<List<ResponseCategoryDto>> GetAllCategory()
+        {
+            try
+            {
+                var listCategory = await _db.Categories.Select(c => new ResponseCategoryDto
+                {
+                    Name = c.Name,
+                    Description = c.Description,
+                    IsActive = c.IsActive,
+                    CreatedAt = c.CreatedAt
+                }).ToListAsync();
+
+                if (listCategory != null)
+                {
+                    return listCategory;
+                }
+                return new List<ResponseCategoryDto>();
+            }
+            catch (Exception ex)
+            {
+                
+                throw;
+            }
+        }
 
         public async Task<bool> UpdateCategory(CategoryAggregate updateCategoty)
         {

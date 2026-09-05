@@ -27,14 +27,14 @@ public class AdminProductDailyInventory : IAdminProductDailyInventory
         var inventoryDate = request.InventoryDate ?? _dateProvider.Today;
 
         var insertedRows = await _db.Database.ExecuteSqlInterpolatedAsync($"""
-            INSERT INTO product_daily_inventories
-                (id, product_id, inventory_date, initial_quantity, remaining_quantity, sold_quantity, is_available, created_at, updated_at)
-            SELECT uuidv7(), p.id, {inventoryDate}, {request.InitialQuantity}, {request.InitialQuantity}, 0, {request.IsAvailable}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-            FROM products AS p
-            WHERE p.id = {request.ProductId}
-              AND p.is_deleted = FALSE
-            ON CONFLICT (product_id, inventory_date) DO NOTHING;
-            """, cancellationToken);
+    INSERT INTO product_daily_inventories
+        (id, product_id, inventory_date, initial_quantity, remaining_quantity, sold_quantity, is_available, created_at, updated_at)
+    SELECT gen_random_uuid(), p.id, {inventoryDate}, {request.InitialQuantity}, {request.InitialQuantity}, 0, {request.IsAvailable}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+    FROM products AS p
+    WHERE p.id = {request.ProductId}
+      AND p.is_deleted = FALSE
+    ON CONFLICT (product_id, inventory_date) DO NOTHING;
+    """, cancellationToken);
 
         if (insertedRows == 1)
         {

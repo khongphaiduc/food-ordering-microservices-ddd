@@ -1,6 +1,8 @@
+using food_service.ProductService.Application.DTOs;
 using food_service.ProductService.Application.DTOs.Request;
 using food_service.ProductService.Application.DTOs.Response;
 using food_service.ProductService.Application.Service;
+using food_service.ProductService.Domain.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,8 +22,9 @@ namespace food_service.ProductService.API.Controllers
         private readonly IUpdateProduct _updateProduct;
         private readonly IAdminProductDailyInventory _adminInventory;
         private readonly IGetProductDailyInventory _getProductDailyInventory;
+        private readonly ICategoryRepository _category;
 
-        public AdminManagementController(IUpdateProduct updateProduct, ICreateNewProduct createNewProduct, ICreateNewCategory createNewCategory, IUpdateCategory updateCategory, IAdminProductDailyInventory adminInventory, IGetProductDailyInventory getProductDailyInventory, ILogger<AdminManagementController> logger)
+        public AdminManagementController(ICategoryRepository categoryRepository, IUpdateProduct updateProduct, ICreateNewProduct createNewProduct, ICreateNewCategory createNewCategory, IUpdateCategory updateCategory, IAdminProductDailyInventory adminInventory, IGetProductDailyInventory getProductDailyInventory, ILogger<AdminManagementController> logger)
         {
             _iAddNewCategory = createNewCategory;
             _iAddNewProduct = createNewProduct;
@@ -30,6 +33,7 @@ namespace food_service.ProductService.API.Controllers
             _updateProduct = updateProduct;
             _adminInventory = adminInventory;
             _getProductDailyInventory = getProductDailyInventory;
+            _category = categoryRepository;
         }
 
         // tested
@@ -49,17 +53,10 @@ namespace food_service.ProductService.API.Controllers
 
         //tested
         [HttpPost("categories")]
-        public async Task<IActionResult> CreateNewCategory([FromBody] CreateNewCategoryDTO request)
+        public async Task<IActionResult> CreateNewCategory([FromBody] RequestCreateCategoryDto request)
         {
-            var result = await _iAddNewCategory.ExecuteAsync(request);
-            if (result)
-            {
-                return Ok(new { message = "Create new category successful" });
-            }
-            else
-            {
-                return BadRequest(new { message = "Failed to create category.", time = DateTime.Now });
-            }
+            var result = await _category.AddNewCategory(request);
+            return Ok(result);
         }
 
         // tested

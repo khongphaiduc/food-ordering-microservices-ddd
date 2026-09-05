@@ -137,20 +137,20 @@ namespace food_service.ProductService.Infrastructure.Persistence
 
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = config["Redis:RedisAddress"];
+                options.Configuration = config["RedisAddress"];
                 options.InstanceName = "FoodAppShared_";
             });
 
             services.AddSingleton<IConnectionMultiplexer>(sp =>
-                ConnectionMultiplexer.Connect(config["Redis:RedisAddress"]!));
+                ConnectionMultiplexer.Connect(config["RedisAddress"]!));
 
             services.AddTransient<IRedisLockService, RedisLockService>();
 
             services.AddSingleton<IMinioClient>(sp =>
             {
                 return new MinioClient()
-                    .WithEndpoint(config["Minio:Endpoint"] ?? "localhost:9000")
-                    .WithCredentials(config["Minio:AccessKey"], config["Minio:SecretKey"])
+                    .WithEndpoint(config["MinIOEndpoint"] ?? "localhost:9000")
+                    .WithCredentials(config["MinIOAccessKey"], config["MinIOSecretKey"])
                     .WithSSL(false)
                     .Build();
             });
