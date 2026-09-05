@@ -1,5 +1,6 @@
 using auth_services.AuthService.API.gRPCs;
 using auth_services.AuthService.Application.DTOS;
+using auth_services.AuthService.Application.Interfaces;
 using auth_services.AuthService.Application.Service;
 using auth_services.AuthService.Infrastructure.DbContextAuth;
 using Microsoft.AspNetCore.Authorization;
@@ -20,14 +21,14 @@ namespace auth_services.AuthService.API.AuthControllers
         private readonly ISignUpUser _iUserSignUp;
         private readonly ICheckLogin _iUserLogIn;
         private readonly IUserLogOut _iUserLogOut;
+        private readonly ISetupDatbase _setupDatbase;
 
-
-        public UsersController(ISignUpUser signUpUser, ICheckLogin checkLogin, IUserLogOut userLogOut)
+        public UsersController(ISignUpUser signUpUser, ICheckLogin checkLogin, IUserLogOut userLogOut, ISetupDatbase setupDatbase)
         {
             _iUserSignUp = signUpUser;
             _iUserLogIn = checkLogin;
             _iUserLogOut = userLogOut;
-
+            _setupDatbase = setupDatbase;
         }
 
 
@@ -71,6 +72,13 @@ namespace auth_services.AuthService.API.AuthControllers
             return Ok(result);
         }
 
+
+        [HttpGet("setup")]
+        public async Task<IActionResult> InitialRoleAdminAndStaff(CancellationToken token = default)
+        {
+           var result = await _setupDatbase.SetupDatabaseAsync();
+            return Ok(result);
+        }
 
     }
 }

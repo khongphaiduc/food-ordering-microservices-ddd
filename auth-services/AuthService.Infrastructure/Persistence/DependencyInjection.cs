@@ -92,7 +92,7 @@ namespace auth_services.AuthService.Infrastructure.Persistence
 
             services.AddValidatorsFromAssemblyContaining<Program>();  // scan all project 
             services.AddFluentValidationAutoValidation();            // auto
-
+            services.AddScoped<ISetupDatbase, SetupDatbase>();
             services.AddScoped<IGenerateSalt, GenerateSalt>();
             services.AddScoped<IHashPassword, HashPassword>();
             services.AddScoped<ISignUpUser, SignUpUser>();
@@ -101,7 +101,7 @@ namespace auth_services.AuthService.Infrastructure.Persistence
             services.AddScoped<IProvideAccessToken, ProvideAccessToken>();
             services.AddScoped<IUserLogOut, UserLogOut>();
             services.AddSingleton<UserServicesClient>();
-
+            
           
             services.AddScoped<IGenerateTokenJWT, GenerateAccessTokenJWT>();
             services.AddScoped<IGenerateTokenJWT, GenerateRefreshTokenJWT>();

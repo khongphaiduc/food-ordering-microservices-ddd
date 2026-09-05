@@ -22,9 +22,20 @@ namespace auth_services.AuthService.Infrastructure.Repository
         // thêm user 
         public async Task AddNewUser(UserAggregate userAggregate, CancellationToken token = default)
         {
-            var role = await _db.Roles.FirstOrDefaultAsync(s => s.Name == "Customer", token) ?? throw new NotfoundExceptions("Not found role User");
+            var role = await _db.Roles.FirstOrDefaultAsync(s => s.Name == "Customer", token);
 
-            // t? UserAggregate chuy?n thành User model d? luu vào database
+            if (role == null)
+            {
+                role = new Role()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Customer",
+                    Description = "Role for customer",
+                };
+                _db.Roles.Add(role);
+                await _db.SaveChangesAsync(token);
+            }
+
             var users = new User()
             {
                 Id = userAggregate.Id,
