@@ -52,11 +52,13 @@ pipeline {
                             }
 
                             if (isChanged) {
+
                                 echo "========================================"
                                 echo "Building ${serviceFolder}"
                                 echo "Image: ${imageName}"
                                 echo "Tag: ${TAG}"
                                 echo "========================================"
+
                                 dir(serviceFolder) {
 
                                     // Build image
@@ -84,16 +86,26 @@ pipeline {
         stage('Deploy to VPS') {
             steps {
                 script {
+
                     echo "Deploying to VPS..."
-                    // Run Docker Compose on VPS
-                    sh """
-                        ssh -o StrictHostKeyChecking=no \
-                            ${VPS_USER}@${VPS_HOST} '
-                                cd ${VPS_DEPLOY_PATH} &&
-                                docker compose pull &&
-                                docker compose up -d
-                            '
-                    """
+
+                    withCredentials([
+                        usernamePassword(
+                            credentialsId: 'vps-root-password',
+                            usernameVariable: 'VPS_SSH_USER',
+                            passwordVariable: 'VPS_SSH_PASSWORD'
+                        )
+                    ]) {
+
+                        sh '''
+                            sshpass -e ssh \
+                                -o StrictHostKeyChecking=no \
+                                "$VPS_SSH_USER@$VPS_HOST" \
+                                "cd $VPS_DEPLOY_PATH && \
+                                 docker compose pull && \
+                                 docker compose up -d"
+                        '''
+                    }
                 }
             }
         }
