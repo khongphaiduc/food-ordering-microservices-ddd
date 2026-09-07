@@ -1,14 +1,13 @@
 version: '3.8'
 
 services:
-  # --- INFRASTRUCTURE ---
+
   sql-server:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    environment:
-      - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=123StrongPassword!
+    env_file:
+      - .env
     ports:
-      - "1433:1433"
+      - "1888:1433"
     volumes:
       - sqlserver_data:/var/opt/mssql
     healthcheck:
@@ -19,10 +18,10 @@ services:
 
   postgres-db:
     image: postgres:17-alpine
-    environment:
-      - POSTGRES_PASSWORD=123StrongPassword!
+    env_file:
+      - .env
     ports:
-      - "5432:5432"
+      - "5555:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -33,6 +32,8 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
+    env_file:
+      - .env
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -56,33 +57,12 @@ services:
       timeout: 5s
       retries: 3
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
-    hostname: elasticsearch 
-    environment:
-      - discovery.type=single-node
-      - network.host=0.0.0.0 
-      - ELASTIC_USERNAME=elastic
-      - ELASTIC_PASSWORD=tRKT9*XFLHZog*Wzmd2v
-      - xpack.security.enabled=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" 
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    volumes:
-      - es_data:/usr/share/elasticsearch/data
-    healthcheck:
-      test: ["CMD-SHELL", "curl -s -u elastic:tRKT9*XFLHZog*Wzmd2v http://localhost:9200 >/dev/null || exit 1"]
-      interval: 20s
-      timeout: 10s
-      retries: 5
 
   minio:
     image: minio/minio
     command: server /data --console-address ":9001"
-    environment:
-      - MINIO_ROOT_USER=admin
-      - MINIO_ROOT_PASSWORD=admin123
+    env_file:
+      - .env
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -94,33 +74,34 @@ services:
       timeout: 5s
       retries: 5
 
-  # --- MICROSERVICES ---
+ 
   api-gateway:
-    build: ./ApiGateway
-    env_file: ./ApiGateway/.env
 
+    image: ptrungduc1011/foodlyapigateway:v5
+
+    env_file: gateway.env
     ports:
       - "9080:8080"
     depends_on:
       - auth-services
 
   auth-services:
-    build: ./auth-services
-    env_file: ./auth-services/.env
+    image: ptrungduc1011/foodlyauth:v2
+    env_file:  auth.env
     depends_on:
       sql-server:
         condition: service_healthy
 
   user-service:
-    build: ./user-service
-    env_file: ./user-service/.env
+    image: ptrungduc1011/foodlyuser:v1
+    env_file: user.env
     depends_on:
       sql-server:
         condition: service_healthy
 
   food-service:
-    build: ./food-service
-    env_file: ./food-service/.env
+    image: ptrungduc1011/foodlyfood:v12
+    env_file: food.env
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -130,8 +111,8 @@ services:
         condition: service_healthy
 
   order-service:
-    build: ./order-service
-    env_file: ./order-service/.env
+    image: ptrungduc1011/foodlyorder:v1
+    env_file: order.env
     depends_on:
       sql-server:
         condition: service_healthy
@@ -139,8 +120,8 @@ services:
         condition: service_healthy
 
   cart-service:
-    build: ./cart-service
-    env_file: ./cart-service/.env
+    image: ptrungduc1011/foodlycart:v2
+    env_file:  cart.env
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -148,46 +129,13 @@ services:
         condition: service_healthy
 
   payment-service:
-    build: ./payment-service
-    env_file: ./payment-service/.env
+    image: ptrungduc1011/foodlypayment:v1
+    env_file: payment.env
     depends_on:
       sql-server:
         condition: service_healthy
 
-  notification-service:
-    build: ./notification-service
-    env_file: ./notification-service/.env
-    depends_on:
-      postgres-db:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
 
-  search-service:
-    build: ./search-service
-    env_file: ./search-service/.env
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      elasticsearch:
-        condition: service_healthy
-      postgres-db:
-        condition: service_healthy
-
-  tracking-service:
-    build: ./tracking-service
-    env_file: ./tracking-service/.env
-    depends_on:
-      postgres-db:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-
-# --- VOLUMES ---
 volumes:
   sqlserver_data:
   postgres_data:
