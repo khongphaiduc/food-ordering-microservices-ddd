@@ -1,22 +1,28 @@
 pipeline {
     agent any
-  
+
     environment {
         DOCKERHUB_USERNAME = 'ptrungduc1011'
         DOCKER_CREDS_ID = 'DockerHub'
         TAG = "${BUILD_NUMBER}"
+
+        VPS_HOST = '161.248.147.31'
+        VPS_USER = 'root'
+        VPS_DEPLOY_PATH = '/foodlydevops'
     }
 
-
     stages {
+
         stage('Checkout Code') {
             steps {
                 checkout scm
             }
         }
-        stage('Detect Changes & Build & Deploy') {
+
+        stage('Detect Changes & Build & Push') {
             steps {
                 script {
+
                     // Detect changed files
                     def changedFiles = sh(
                         script: 'git diff --name-only HEAD~1 HEAD',
@@ -37,71 +43,68 @@ pipeline {
                     docker.withRegistry(
                         'https://index.docker.io/v1/',
                         DOCKER_CREDS_ID
-
                     ) {
+
                         services.each { serviceFolder, imageName ->
+
                             def isChanged = changedFiles.any { file ->
                                 file.startsWith("${serviceFolder}/")
                             }
+
                             if (isChanged) {
+                                echo "========================================"
+                                echo "Building ${serviceFolder}"
+                                echo "Image: ${imageName}"
+                                echo "Tag: ${TAG}"
+                                echo "========================================"
                                 dir(serviceFolder) {
+
                                     // Build image
                                     def img = docker.build(
                                         "${DOCKERHUB_USERNAME}/${imageName}:${TAG}",
                                         "."
                                     )
+
                                     // Push version tag
                                     img.push("${TAG}")
-                                   // Push latest
+
+                                    // Push latest
                                     img.push("latest")
                                 }
-                                // Update container
-                                sh """
-                                    docker compose pull 
-                                    docker compose up -d 
-                                """
+
                             } else {
                                 echo "Skip ${serviceFolder} - no changes"
                             }
-
-
                         }
-
-
                     }
-
-
                 }
-
-
             }
-
-
         }
 
-
+        stage('Deploy to VPS') {
+            steps {
+                script {
+                    echo "Deploying to VPS..."
+                    // Run Docker Compose on VPS
+                    sh """
+                        ssh -o StrictHostKeyChecking=no \
+                            ${VPS_USER}@${VPS_HOST} '
+                                cd ${VPS_DEPLOY_PATH} &&
+                                docker compose pull &&
+                                docker compose up -d
+                            '
+                    """
+                }
+            }
+        }
     }
-
-
-
-
 
     post {
 
-
         always {
-
-
             sh '''
-
                 docker image prune -f || true
-
             '''
-
-
         }
-
-
     }
-
 }
