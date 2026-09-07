@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     environment {
         DOCKERHUB_USERNAME = 'ptrungduc1011'
         DOCKER_CREDS_ID = 'DockerHub'
@@ -25,14 +29,14 @@ pipeline {
                     ).trim().split('\n')
 
                     def services = [
-                        'auth-services'        : 'foodlyauth',
-                        'cart-service'        : 'foodlycart',
-                        'food-service'        : 'foodlyfood',
-                        'notification-service': 'foodlynotification',
-                        'order-service'       : 'foodlyorder',
-                        'payment-service'     : 'foodlypayment',
-                        'user-service'        : 'foodlyuser',
-                        'ApiGateway'          : 'foodlyapigateway'
+                        'auth-services'         : 'foodlyauth',
+                        'cart-service'          : 'foodlycart',
+                        'food-service'          : 'foodlyfood',
+                        'notification-service'  : 'foodlynotification',
+                        'order-service'         : 'foodlyorder',
+                        'payment-service'       : 'foodlypayment',
+                        'user-service'          : 'foodlyuser',
+                        'ApiGateway'            : 'foodlyapigateway'
                     ]
 
                     docker.withRegistry(
@@ -74,6 +78,8 @@ pipeline {
             steps {
                 sh '''
                     cd /foodlydevops
+
+                    docker compose down
 
                     docker compose pull
 
