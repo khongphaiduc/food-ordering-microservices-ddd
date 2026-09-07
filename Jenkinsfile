@@ -7,7 +7,6 @@ pipeline {
         TAG = "${BUILD_NUMBER}"
 
         VPS_HOST = '161.248.147.31'
-        VPS_USER = 'root'
         VPS_DEPLOY_PATH = '/foodlydevops'
     }
 
@@ -32,12 +31,12 @@ pipeline {
                     def services = [
                         'auth-services'        : 'foodlyauth',
                         'cart-service'         : 'foodlycart',
-                        'food-service'         : 'foodlyfood',
-                        'notification-service' : 'foodlynotification',
-                        'order-service'        : 'foodlyorder',
-                        'payment-service'      : 'foodlypayment',
-                        'user-service'         : 'foodlyuser',
-                        'ApiGateway'           : 'foodlyapigateway'
+                        'food-service'        : 'foodlyfood',
+                        'notification-service': 'foodlynotification',
+                        'order-service'       : 'foodlyorder',
+                        'payment-service'     : 'foodlypayment',
+                        'user-service'        : 'foodlyuser',
+                        'ApiGateway'          : 'foodlyapigateway'
                     ]
 
                     docker.withRegistry(
@@ -87,18 +86,23 @@ pipeline {
             steps {
                 script {
 
-                    echo "Deploying to VPS..."
+                    echo "========================================"
+                    echo "Deploying to VPS"
+                    echo "Host: ${VPS_HOST}"
+                    echo "Path: ${VPS_DEPLOY_PATH}"
+                    echo "========================================"
 
                     withCredentials([
-                        usernamePassword(
-                            credentialsId: 'vps-root-password',
-                            usernameVariable: 'VPS_SSH_USER',
-                            passwordVariable: 'SSHPASS'
+                        sshUserPrivateKey(
+                            credentialsId: 'vps-ssh-key',
+                            keyFileVariable: 'SSH_KEY',
+                            usernameVariable: 'VPS_SSH_USER'
                         )
                     ]) {
 
                         sh '''
-                            sshpass -e ssh \
+                            ssh \
+                                -i "$SSH_KEY" \
                                 -o StrictHostKeyChecking=no \
                                 "$VPS_SSH_USER@$VPS_HOST" \
                                 "cd $VPS_DEPLOY_PATH && \
