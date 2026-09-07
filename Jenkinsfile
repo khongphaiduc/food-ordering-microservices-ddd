@@ -93,7 +93,7 @@ pipeline {
                         usernamePassword(
                             credentialsId: 'vps-root-password',
                             usernameVariable: 'VPS_SSH_USER',
-                            passwordVariable: 'VPS_SSH_PASSWORD'
+                            passwordVariable: 'SSHPASS'
                         )
                     ]) {
 
