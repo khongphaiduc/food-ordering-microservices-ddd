@@ -1,6 +1,9 @@
 ﻿using food_service.ProductService.Application.Interface;
 using Minio;
 using Minio.DataModel.Args;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Webp;
+using SixLabors.ImageSharp.Processing;
 
 namespace food_service.ProductService.Infrastructure.MinIO
 {
@@ -8,9 +11,7 @@ namespace food_service.ProductService.Infrastructure.MinIO
     {
         private readonly IConfiguration _configuration;
         private readonly IMinioClient _clientMinIO;
-
         private readonly IMinioClient _clientMinIOPublic;
-
         private readonly ILogger<MinIOFood> _logger;
 
         public MinIOFood(
@@ -21,8 +22,6 @@ namespace food_service.ProductService.Infrastructure.MinIO
             _configuration = configuration;
             _clientMinIO = minioClient;
             _logger = logger;
-
-  
 
             var publicEndpoint =
                 _configuration["PublicEndpoint"]
@@ -40,6 +39,7 @@ namespace food_service.ProductService.Infrastructure.MinIO
                 .WithSSL(publicUseSSL)
                 .Build();
         }
+
 
 
         public async Task DeleteAsync(string objectName)
@@ -60,6 +60,8 @@ namespace food_service.ProductService.Infrastructure.MinIO
             );
         }
 
+        
+
         public async Task<string> GetUrlImage(
             string bucket,
             string imageName)
@@ -75,17 +77,14 @@ namespace food_service.ProductService.Infrastructure.MinIO
 
             try
             {
-  
-
+                // Check object exists
                 await _clientMinIO.StatObjectAsync(
                     new StatObjectArgs()
                         .WithBucket(bucket)
                         .WithObject(imageName)
                 );
 
-
-
-
+                // Generate presigned URL
                 var url =
                     await _clientMinIOPublic.PresignedGetObjectAsync(
                         new PresignedGetObjectArgs()
@@ -118,6 +117,7 @@ namespace food_service.ProductService.Infrastructure.MinIO
             }
         }
 
+ 
 
         public async Task<string> UploadAsync(IFormFile file)
         {
@@ -136,39 +136,65 @@ namespace food_service.ProductService.Infrastructure.MinIO
                     "MinIOBucket is not configured.");
             }
 
+         
 
-            /*
-             * Generate tên file mới để tránh trùng object.
-             *
-             * Ví dụ:
-             *
-             * original:
-             * pizza.jpg
-             *
-             * object:
-             * 8c0c8f3a-4f5e-4b2f-9c12-a123456789.jpg
-             */
+            using var inputStream = file.OpenReadStream();
 
-            var extension =
-                Path.GetExtension(file.FileName);
+            using var image =
+                await Image.LoadAsync(inputStream);
+
+            var originalWidth = image.Width;
+            var originalHeight = image.Height;
+            var originalSize = file.Length;
+
+
+            const int maxWidth = 1200;
+            const int maxHeight = 1200;
+
+            if (image.Width > maxWidth ||
+                image.Height > maxHeight)
+            {
+                var ratio = Math.Min(
+                    (double)maxWidth / image.Width,
+                    (double)maxHeight / image.Height);
+
+                var newWidth =
+                    (int)(image.Width * ratio);
+
+                var newHeight =
+                    (int)(image.Height * ratio);
+
+                image.Mutate(x =>
+                    x.Resize(newWidth, newHeight));
+            }
+
+           
+
+            using var outputStream =
+                new MemoryStream();
+
+            var encoder = new WebpEncoder
+            {
+                Quality = 80
+            };
+
+            await image.SaveAsync(
+                outputStream,
+                encoder);
+
+            outputStream.Position = 0;
+
+          
 
             var objectName =
-                $"{Guid.NewGuid()}{extension}";
+                $"{Guid.NewGuid()}.webp";
 
-
-            using var stream = file.OpenReadStream();
-
-
-            // =====================================================
-            // CHECK BUCKET
-            // =====================================================
 
             var found =
                 await _clientMinIO.BucketExistsAsync(
                     new BucketExistsArgs()
                         .WithBucket(bucket)
                 );
-
 
             if (!found)
             {
@@ -179,25 +205,32 @@ namespace food_service.ProductService.Infrastructure.MinIO
             }
 
 
-            // =====================================================
-            // UPLOAD
-            // =====================================================
-
             await _clientMinIO.PutObjectAsync(
                 new PutObjectArgs()
                     .WithBucket(bucket)
                     .WithObject(objectName)
-                    .WithStreamData(stream)
-                    .WithObjectSize(file.Length)
-                    .WithContentType(file.ContentType)
+                    .WithStreamData(outputStream)
+                    .WithObjectSize(outputStream.Length)
+                    .WithContentType("image/webp")
             );
 
-
+         
             _logger.LogInformation(
-                "Successfully uploaded object {ObjectName} to bucket {Bucket}",
+                "Successfully uploaded optimized image. " +
+                "ObjectName={ObjectName}, " +
+                "Bucket={Bucket}, " +
+                "OriginalSize={OriginalSize} bytes, " +
+                "OptimizedSize={OptimizedSize} bytes, " +
+                "OriginalResolution={OriginalWidth}x{OriginalHeight}, " +
+                "FinalResolution={FinalWidth}x{FinalHeight}",
                 objectName,
-                bucket);
-
+                bucket,
+                originalSize,
+                outputStream.Length,
+                originalWidth,
+                originalHeight,
+                image.Width,
+                image.Height);
 
             return objectName;
         }
