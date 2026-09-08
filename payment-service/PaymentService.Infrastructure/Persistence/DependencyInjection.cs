@@ -113,7 +113,7 @@ namespace payment_service.PaymentService.Infrastructure.Persistence
             {
                 options.AddPolicy("AllowFrontend", policy =>
                 {
-                    policy.WithOrigins("http://localhost:5173")
+                    policy.WithOrigins(config["PortFrontEnd"]!)
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials();
