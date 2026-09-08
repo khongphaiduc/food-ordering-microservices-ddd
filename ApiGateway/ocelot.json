@@ -129,6 +129,8 @@
       "UpstreamHttpMethod": [ "GET", "POST", "OPTIONS" ]
     }
 
+
+
   ],
 
   "GlobalConfiguration": {
