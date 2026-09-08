@@ -1,4 +1,4 @@
-﻿{
+{
   "Routes": [
     {
       "DownstreamPathTemplate": "/api/auth/{everything}",
@@ -138,7 +138,7 @@
       ]
     },
     {
-      "DownstreamPathTemplate": "/notificationPayOS/negotiate",
+      "DownstreamPathTemplate": "/notificationPayOS/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -146,8 +146,25 @@
           "Port": 8080
         }
       ],
-      "UpstreamPathTemplate": "/notificationPayOS/negotiate",
+      "UpstreamPathTemplate": "/notificationPayOS/{everything}",
       "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "OPTIONS"
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/notificationPayOS",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "payment-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/notificationPayOS",
+      "UpstreamHttpMethod": [
+        "GET",
         "POST",
         "OPTIONS"
       ]
@@ -167,7 +184,7 @@
       ]
     },
     {
-      "DownstreamPathTemplate": "/QRCodeOrder/negotiate",
+      "DownstreamPathTemplate": "/QRCodeOrder/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -175,8 +192,25 @@
           "Port": 8080
         }
       ],
-      "UpstreamPathTemplate": "/QRCodeOrder/negotiate",
+      "UpstreamPathTemplate": "/QRCodeOrder/{everything}",
       "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "OPTIONS"
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/QRCodeOrder",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "payment-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/QRCodeOrder",
+      "UpstreamHttpMethod": [
+        "GET",
         "POST",
         "OPTIONS"
       ]
@@ -196,16 +230,33 @@
       ]
     },
     {
-      "DownstreamPathTemplate": "/orderofuser/negotiate",
+      "DownstreamPathTemplate": "/orderofuser/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "payment-service",
+          "Host": "order-service",
           "Port": 8080
         }
       ],
-      "UpstreamPathTemplate": "/orderofuser/negotiate",
+      "UpstreamPathTemplate": "/orderofuser/{everything}",
       "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "OPTIONS"
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/orderofuser",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "order-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/orderofuser",
+      "UpstreamHttpMethod": [
+        "GET",
         "POST",
         "OPTIONS"
       ]
@@ -215,11 +266,57 @@
       "DownstreamScheme": "ws",
       "DownstreamHostAndPorts": [
         {
-          "Host": "payment-service",
+          "Host": "order-service",
           "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/orderofuser/{everything}",
+      "UpstreamHttpMethod": [
+        "GET"
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/ordersHub/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "order-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/ordersHub/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "OPTIONS"
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/ordersHub",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "order-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/ordersHub",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "OPTIONS"
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/ordersHub/{everything}",
+      "DownstreamScheme": "ws",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "order-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/ordersHub/{everything}",
       "UpstreamHttpMethod": [
         "GET"
       ]
