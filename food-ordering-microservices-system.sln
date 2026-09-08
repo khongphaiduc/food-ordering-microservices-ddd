@@ -19,8 +19,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cart-service", "cart-servic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "auth-services", "auth-services\auth-services.csproj", "{3C06E7B8-3018-442A-8C1E-E81D82117FAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "search-service", "search-service\search-service.csproj", "{5FBC47BC-7A01-4C53-9A44-85AC28C72C2E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foodly.Tests", "Foodly.Tests\Foodly.Tests.csproj", "{DF27E72E-B724-4573-B6BC-8F120772D237}"
 EndProject
 Global
@@ -61,10 +59,6 @@ Global
 		{3C06E7B8-3018-442A-8C1E-E81D82117FAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C06E7B8-3018-442A-8C1E-E81D82117FAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C06E7B8-3018-442A-8C1E-E81D82117FAE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5FBC47BC-7A01-4C53-9A44-85AC28C72C2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5FBC47BC-7A01-4C53-9A44-85AC28C72C2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5FBC47BC-7A01-4C53-9A44-85AC28C72C2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5FBC47BC-7A01-4C53-9A44-85AC28C72C2E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DF27E72E-B724-4573-B6BC-8F120772D237}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DF27E72E-B724-4573-B6BC-8F120772D237}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF27E72E-B724-4573-B6BC-8F120772D237}.Release|Any CPU.ActiveCfg = Release|Any CPU

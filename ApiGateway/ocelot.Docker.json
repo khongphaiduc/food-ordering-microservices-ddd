@@ -109,7 +109,7 @@
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     },
     {
-      "DownstreamPathTemplate": "/notificationPayOS/{everything}",
+      "DownstreamPathTemplate": "/notificationPayOS/negotiate",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -117,8 +117,8 @@
           "Port": 8080
         }
       ],
-      "UpstreamPathTemplate": "/notificationPayOS/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "OPTIONS" ]
+      "UpstreamPathTemplate": "/notificationPayOS/negotiate",
+      "UpstreamHttpMethod": [ "POST", "OPTIONS" ]
     },
     {
       "DownstreamPathTemplate": "/notificationPayOS",
@@ -142,10 +142,10 @@
         }
       ],
       "UpstreamPathTemplate": "/notificationPayOS/{everything}",
-      "UpstreamHttpMethod": [ "GET" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "OPTIONS" ]
     },
     {
-      "DownstreamPathTemplate": "/QRCodeOrder/{everything}",
+      "DownstreamPathTemplate": "/QRCodeOrder/negotiate",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -153,8 +153,8 @@
           "Port": 8080
         }
       ],
-      "UpstreamPathTemplate": "/QRCodeOrder/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "OPTIONS" ]
+      "UpstreamPathTemplate": "/QRCodeOrder/negotiate",
+      "UpstreamHttpMethod": [ "POST", "OPTIONS" ]
     },
     {
       "DownstreamPathTemplate": "/QRCodeOrder",
@@ -178,10 +178,10 @@
         }
       ],
       "UpstreamPathTemplate": "/QRCodeOrder/{everything}",
-      "UpstreamHttpMethod": [ "GET" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "OPTIONS" ]
     },
     {
-      "DownstreamPathTemplate": "/orderofuser/{everything}",
+      "DownstreamPathTemplate": "/orderofuser/negotiate",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -189,8 +189,8 @@
           "Port": 8080
         }
       ],
-      "UpstreamPathTemplate": "/orderofuser/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "OPTIONS" ]
+      "UpstreamPathTemplate": "/orderofuser/negotiate",
+      "UpstreamHttpMethod": [ "POST", "OPTIONS" ]
     },
     {
       "DownstreamPathTemplate": "/orderofuser",
@@ -214,10 +214,10 @@
         }
       ],
       "UpstreamPathTemplate": "/orderofuser/{everything}",
-      "UpstreamHttpMethod": [ "GET" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "OPTIONS" ]
     },
     {
-      "DownstreamPathTemplate": "/ordersHub/{everything}",
+      "DownstreamPathTemplate": "/ordersHub/negotiate",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -225,8 +225,8 @@
           "Port": 8080
         }
       ],
-      "UpstreamPathTemplate": "/ordersHub/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "OPTIONS" ]
+      "UpstreamPathTemplate": "/ordersHub/negotiate",
+      "UpstreamHttpMethod": [ "POST", "OPTIONS" ]
     },
     {
       "DownstreamPathTemplate": "/ordersHub",
@@ -250,7 +250,7 @@
         }
       ],
       "UpstreamPathTemplate": "/ordersHub/{everything}",
-      "UpstreamHttpMethod": [ "GET" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "OPTIONS" ]
     }
   ],
   "GlobalConfiguration": {

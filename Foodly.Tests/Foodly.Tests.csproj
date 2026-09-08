@@ -12,8 +12,10 @@
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.30" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="StackExchange.Redis" Version="3.1.13" />
     <PackageReference Include="xunit" Version="2.5.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
   </ItemGroup>
@@ -24,7 +26,6 @@
     <ProjectReference Include="..\user-service\user-service.csproj" />
     <ProjectReference Include="..\food-service\food-service.csproj" Aliases="global,FoodServiceProject" />
     <ProjectReference Include="..\order-service\order-service.csproj" />
-    <ProjectReference Include="..\tracking-service\tracking-service.csproj" />
   </ItemGroup>
 
   <ItemGroup>

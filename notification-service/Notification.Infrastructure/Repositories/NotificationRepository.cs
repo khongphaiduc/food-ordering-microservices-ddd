@@ -30,21 +30,21 @@ namespace notification_service.Notification.Infrastructure.Repositories
 
         public async Task<bool> AddNewRecordNotification(RequestSendMessage message)
         {
-            var notificationAggregate = NotificationAggregate.CreateNewNotification(message.TypeService, message.To, message.Body, "Pending", "No Response");
-            var notification = new Models.Notification
-            {
-                Id = notificationAggregate.Id,
-                Userid = Guid.NewGuid(),
-                Content = notificationAggregate.Message,
-                Recipient = notificationAggregate.Recipient,
-                Providerresponse = notificationAggregate.ProvideResponse,
-                Createdat = notificationAggregate.CreateAt,
-                Updatedat = notificationAggregate.UpdateAt
-            };
+            //var notificationAggregate = NotificationAggregate.CreateNewNotification (message.To, message.Body, "Pending", "No Response");
+            //var notification = new Models.Notification
+            //{
+            //    Id = notificationAggregate.Id,
+            //    Userid = Guid.NewGuid(),
+            //    Content = notificationAggregate.Message,
+            //    Recipient = notificationAggregate.Recipient,
+            //    Providerresponse = notificationAggregate.ProvideResponse,
+            //    Createdat = notificationAggregate.CreateAt,
+            //    Updatedat = notificationAggregate.UpdateAt
+            //};
 
-            _db.Notifications.Add(notification);
-            _db.Entry(notification).Property("Type").CurrentValue = "Email";
-            _db.Entry(notification).Property("Status").CurrentValue = "Sent";
+            //_db.Notifications.Add(notification);
+            //_db.Entry(notification).Property("Type").CurrentValue = "Email";
+            //_db.Entry(notification).Property("Status").CurrentValue = "Sent";
             return await _db.SaveChangesAsync() > 0;
         }
 
