@@ -2,42 +2,37 @@
   "Routes": [
     {
       "DownstreamPathTemplate": "/api/auth/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 7223
+          "Host": "auth-services",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/auth/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
-      "UpstreamHeaderTransform": {
-        "X-Forwarded-Host": "localhost:7150",
-        "X-Forwarded-Proto": "https"
-      }
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     },
 
     {
       "DownstreamPathTemplate": "/api/users/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 7199
+          "Host": "user-service",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/users/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     },
 
-
     {
       "DownstreamPathTemplate": "/api/products/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 7081
+          "Host": "food-service",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/products/{everything}",
@@ -46,11 +41,11 @@
 
     {
       "DownstreamPathTemplate": "/api/admin/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 7081
+          "Host": "food-service",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/admin/{everything}",
@@ -59,68 +54,84 @@
 
     {
       "DownstreamPathTemplate": "/api/search/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 7060
+          "Host": "food-service",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/search/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     },
+
     {
       "DownstreamPathTemplate": "/api/cart/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 7185
+          "Host": "cart-service",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/cart/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     },
+
     {
       "DownstreamPathTemplate": "/api/orders/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 7264
+          "Host": "order-service",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/orders/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ]
     },
+
     {
       "DownstreamPathTemplate": "/api/payments/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 7251
+          "Host": "payment-service",
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/payments/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     },
+
     {
-      "DownstreamPathTemplate": "/api/tracking/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamPathTemplate": "/notificationPayOS/{everything}",
+      "DownstreamScheme": "ws",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 7139
+          "Host": "payment-service",
+          "Port": 8080
         }
       ],
-      "UpstreamPathTemplate": "/tracking/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+      "UpstreamPathTemplate": "/notificationPayOS/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "OPTIONS" ]
+    },
+    {
+      "DownstreamPathTemplate": "/QRCodeOrder/{everything}",
+      "DownstreamScheme": "ws",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "payment-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/QRCodeOrder/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "OPTIONS" ]
     }
 
   ],
 
   "GlobalConfiguration": {
-    "BaseUrl": "https://localhost:7150"
+    "BaseUrl": "http://127.0.0.1:9080"
   }
 }
