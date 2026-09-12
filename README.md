@@ -23,8 +23,7 @@ The project demonstrates advanced enterprise backend engineering patterns includ
 
 ### Architecture Preview
 
-<img width="1488" height="762" alt="Foodly architecture preview" src="https://github.com/user-attachments/assets/1745a384-6535-4d7a-8972-ba2bf606120b" />
-
+<img width="1753" height="897" alt="55bb0710-26ab-44ce-9b57-7ab544f5de98" src="https://github.com/user-attachments/assets/313d747a-46be-4b98-bc56-a5dbe2497613" />
 ### Desktop & Tablet UI
 
 <img width="1863" height="951" alt="Foodly home app screenshot" src="https://github.com/user-attachments/assets/ed2f4db0-0b66-4335-94bf-c0ca750a7d9e" />
@@ -34,14 +33,14 @@ The project demonstrates advanced enterprise backend engineering patterns includ
 <img width="475" height="938" alt="Foodly mobile app 1" src="https://github.com/user-attachments/assets/72730bdb-a14d-45f7-ad65-cee3d84e3219" /> <img width="478" height="940" alt="Foodly mobile app 2" src="https://github.com/user-attachments/assets/433a5f47-3686-49e0-a470-c6400c3b8ae4" />
 
 ### Admin Management App
+<img width="1916" height="917" alt="Screenshot 2026-09-12 153603" src="https://github.com/user-attachments/assets/bd1df971-39d7-4fb2-a0d9-25c6a7077bea" />
 
-<img width="1843" height="949" alt="Foodly admin app screenshot" src="https://github.com/user-attachments/assets/7bd837df-6065-4d07-94c7-eae4203079e5" />
 
 > Frontend repository: [Food Ordering Microservices Frontend](https://github.com/khongphaiduc/food-ordering-microservices-frontend)
 
 ---
 
-## 🏗️ Architecture Overview
+##  Architecture Overview
 
 The system consists of **8 distinct microservices** coordinated through an **API Gateway (Ocelot)** for client-facing HTTP/REST endpoints, **gRPC** for low-latency internal service-to-service RPCs, and **RabbitMQ via MassTransit** for asynchronous event publishing and transactional Outbox messaging.
 
@@ -122,7 +121,7 @@ flowchart TB
 
 ---
 
-## 🧩 Microservices Breakdown
+##  Microservices Breakdown
 
 | Service | Subfolder | Primary Responsibility | Inter-Service Protocol | Databases & Infra |
 | :--- | :--- | :--- | :--- | :--- |
@@ -137,7 +136,7 @@ flowchart TB
 
 ---
 
-## 🔄 gRPC Inter-Service Communication
+##  gRPC Inter-Service Communication
 
 Low-latency synchronous service calls are handled via gRPC Protocol Buffers:
 
@@ -153,7 +152,7 @@ Low-latency synchronous service calls are handled via gRPC Protocol Buffers:
 
 ---
 
-## ⚡ Event-Driven Messaging & Outbox Pattern
+##  Event-Driven Messaging & Outbox Pattern
 
 Asynchronous operations are managed using **RabbitMQ** and **MassTransit**:
 - **Transactional Outbox/Inbox Pattern**: Integrated via EF Core in `Order Service` and `Payment Service` to guarantee message delivery without distributed transaction failures.
@@ -163,7 +162,7 @@ Asynchronous operations are managed using **RabbitMQ** and **MassTransit**:
 
 ---
 
-## 🗄️ Infrastructure & Port Mappings
+##  Infrastructure & Port Mappings
 
 The project provisions all required infrastructure services via **Docker Compose**:
 
@@ -178,7 +177,7 @@ The project provisions all required infrastructure services via **Docker Compose
 
 ---
 
-## 📂 Repository Structure
+##  Repository Structure
 
 ```text
 .
@@ -198,28 +197,66 @@ The project provisions all required infrastructure services via **Docker Compose
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
-### Prerequisites
+### Option 1: Quick Run (Without Cloning Source Code)
 
+You can run the full system instantly using pre-built Docker Hub images without downloading or compiling the source code.
+
+#### Deployment Folder Structure:
+```text
+.
+├── docker-compose.yml
+├── .example.env          # Main environment variables template
+├── auth.example.env      # Auth Service environment variables
+├── cart.example.env      # Cart Service environment variables
+├── food.example.env      # Food Service environment variables
+├── gateway.example.env   # API Gateway environment variables
+├── order.example.env     # Order Service environment variables
+├── payment.example.env   # Payment Service environment variables
+└── user.example.env      # User Service environment variables
+```
+
+#### Setup Steps:
+1. Open the deployment folder.
+2. Rename all `*.example.env` files to remove `.example`:
+   - `.example.env` ➔ `.env`
+   - `auth.example.env` ➔ `auth.env`
+   - `cart.example.env` ➔ `cart.env`
+   - `food.example.env` ➔ `food.env`
+   - `gateway.example.env` ➔ `gateway.env`
+   - `order.example.env` ➔ `order.env`
+   - `payment.example.env` ➔ `payment.env`
+   - `user.example.env` ➔ `user.env`
+3. Start all services (pre-built images `ptrungduc1011/foodly*` will be pulled automatically from Docker Hub):
+   ```bash
+   docker compose up -d
+   ```
+
+---
+
+### Option 2: Build & Run from Source Code
+
+#### Prerequisites
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [Git](https://git-scm.com/)
 
-### 1. Clone the Repository
+#### Steps:
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/khongphaiduc/food-ordering-microservices-system.git
+   cd food-ordering-microservices-system
+   ```
 
-```bash
-git clone https://github.com/khongphaiduc/food-ordering-microservices-system.git
-cd food-ordering-microservices-system
-```
+2. **Build and Start Containers**:
+   ```bash
+   docker compose up --build -d
+   ```
 
-### 2. Run Infrastructure & Services with Docker Compose
+---
 
-```bash
-docker compose up --build -d
-```
-
-### 3. Service Access Endpoints
+###  Service Access Endpoints
 
 - **API Gateway (Public Entry Point)**: `http://localhost:9080`
 - **RabbitMQ Management Dashboard**: `http://localhost:15672` (Default login: `guest` / `guest`)
@@ -227,37 +264,7 @@ docker compose up --build -d
 
 ---
 
-## 🧪 Testing
-
-The solution includes comprehensive unit test suites covering the application services, repositories, and domain logic using **xUnit**, **Moq**, and **EF Core InMemory Database**.
-
-Run tests from the repository root:
-
-```bash
-dotnet test Foodly.Tests/Foodly.Tests.csproj
-```
-
-Included unit tests cover:
-- **AuthService**: User login, password hashing, JWT token validation & token refresh mechanics.
-- **UserService**: Profile updates & address book management.
-- **FoodService**: Category creation, product list queries & daily inventory management.
-- **CartService**: Cart item initialization, quantity adjustments & cart clearing.
-- **OrderService**: Order status state machine transitions & order validation.
-
----
-
-## 🔄 CI/CD Pipeline (Jenkins Automation)
-
-The project includes an enterprise-grade `Jenkinsfile` pipeline that automates continuous integration and deployment:
-
-1. **Smart Change Detection**: Uses `git diff` to identify modified microservices (`auth-services`, `cart-service`, `food-service`, etc.).
-2. **Targeted Container Builds**: Builds Docker images only for changed services to optimize build times.
-3. **Automated Docker Hub Registry Push**: Pushes tagged container images (`ptrungduc1011/<service-name>:${BUILD_NUMBER}`) and updates the `latest` tag.
-4. **Automated Zero-Downtime Deployment**: Pulls newly built images and updates live containers via Docker Compose.
-
----
-
-## 🧑‍💻 Author
+##  Author
 
 **Pham Trung Duc**  
 - Email: ptrungduc1011@gmail.com  
@@ -265,6 +272,6 @@ The project includes an enterprise-grade `Jenkinsfile` pipeline that automates c
 
 ---
 
-## 📄 License
+##  License
 
 This project is open-source and intended for learning, software architecture demonstration, and portfolio purposes.
