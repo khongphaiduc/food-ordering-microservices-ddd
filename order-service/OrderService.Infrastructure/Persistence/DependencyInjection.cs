@@ -50,10 +50,10 @@ namespace order_service.OrderService.Infrastructure.Persistence
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = config["Jwt:Issuer"],
-                    ValidAudience = config["Jwt:Audience"],
+                    ValidIssuer = config["JWT_ISSUER"],
+                    ValidAudience = config["JWT_AUDIENCE"],
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        System.Text.Encoding.UTF8.GetBytes(config["Jwt:Key:AccessToken"]!)
+                        System.Text.Encoding.UTF8.GetBytes(config["JWT_KEY_ACCESSTOKEN"]!)
                     )
                 };
 

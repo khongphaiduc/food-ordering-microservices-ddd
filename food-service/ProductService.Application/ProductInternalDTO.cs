@@ -21,5 +21,6 @@ namespace food_service.ProductService.Application
 
         public List<ProductVariantInternalDTO> productVariantInternalDTOs { get; set; }
 
+       
     }
 }

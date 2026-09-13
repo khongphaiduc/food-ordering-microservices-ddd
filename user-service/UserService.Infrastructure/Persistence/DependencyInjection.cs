@@ -35,10 +35,10 @@ namespace user_service.UserService.Infrastructure.Persistence
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = config["JWT:Issuer"],
-                    ValidAudience = config["JWT:Audience"],
+                    ValidIssuer = config["JWT_ISSUER"],
+                    ValidAudience = config["JWT_AUDIENCE"],
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        System.Text.Encoding.UTF8.GetBytes(config["JWT:Key"]!)
+                        System.Text.Encoding.UTF8.GetBytes(config["JWT_KEY_ACCESSTOKEN"]!)
                     )
                 };
             });

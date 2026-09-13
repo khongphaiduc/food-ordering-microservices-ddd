@@ -32,7 +32,7 @@ namespace ApiGateway
 
             app.UseCors("AllowReact");
 
-            app.UseWebSockets();
+            app.UseWebSockets();   // note
 
             await app.UseOcelot();
 

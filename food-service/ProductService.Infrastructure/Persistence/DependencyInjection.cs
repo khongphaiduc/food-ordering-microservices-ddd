@@ -44,10 +44,10 @@ namespace food_service.ProductService.Infrastructure.Persistence
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = config["Jwt:Issuer"],
-                    ValidAudience = config["Jwt:Audience"],
+                    ValidIssuer = config["JWT_ISSUER"],
+                    ValidAudience = config["JWT_AUDIENCE"],
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        System.Text.Encoding.UTF8.GetBytes(config["Jwt:Key:AccessToken"]!)
+                        System.Text.Encoding.UTF8.GetBytes(config["JWT_KEY_ACCESSTOKEN"]!)
                     )
                 };
             });
@@ -137,12 +137,12 @@ namespace food_service.ProductService.Infrastructure.Persistence
 
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = config["RedisAddress"];
+                options.Configuration = config["REDIS_HOST"];
                 options.InstanceName = "FoodAppShared_";
             });
 
             services.AddSingleton<IConnectionMultiplexer>(sp =>
-                ConnectionMultiplexer.Connect(config["RedisAddress"]!));
+                ConnectionMultiplexer.Connect(config["REDIS_HOST"]!));
 
             services.AddTransient<IRedisLockService, RedisLockService>();
 

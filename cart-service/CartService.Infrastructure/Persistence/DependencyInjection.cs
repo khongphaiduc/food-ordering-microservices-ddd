@@ -33,10 +33,10 @@ namespace cart_service.CartService.Infrastructure.Persistence
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = configuration["Jwt:Issuer"],
-                    ValidAudience = configuration["Jwt:Audience"],
+                    ValidIssuer = configuration["JWT_ISSUER"],
+                    ValidAudience = configuration["JWT_AUDIENCE"],
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        System.Text.Encoding.UTF8.GetBytes(configuration["Jwt:Key:AccessToken"]!)
+                        System.Text.Encoding.UTF8.GetBytes(configuration["JWT_KEY_ACCESSTOKEN"]!)
                     )
                 };
             });

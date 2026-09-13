@@ -47,7 +47,7 @@ namespace payment_service.PaymentService.Infrastructure.Persistence
                         s.ConcurrentMessageLimit = 10;
                         s.PrefetchCount = 20;
                         s.ConfigureConsumer<PaymentConsumer>(context);
-                        
+
                     });
 
                     //end point to cancel the order which was TimeOut
@@ -57,7 +57,7 @@ namespace payment_service.PaymentService.Infrastructure.Persistence
                         s.ConcurrentMessageLimit = 10;
                         s.PrefetchCount = 20;
                         s.ConfigureConsumer<CancelPaymentConsumer>(context);
-                      
+
                     });
                 });
             });
@@ -75,10 +75,10 @@ namespace payment_service.PaymentService.Infrastructure.Persistence
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = config["Jwt:Issuer"],
-                ValidAudience = config["Jwt:Audience"],
+                ValidIssuer = config["JWT_ISSUER"],
+                ValidAudience = config["JWT_AUDIENCE"],
                 IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(config["Jwt:Key:AccessToken"]!)
+                    Encoding.UTF8.GetBytes(config["JWT_KEY_ACCESSTOKEN"]!)
                 )
             };
 

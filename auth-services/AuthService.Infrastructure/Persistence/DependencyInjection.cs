@@ -41,9 +41,9 @@ namespace auth_services.AuthService.Infrastructure.Persistence
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = configuration["Jwt:Issuer"],
-                    ValidAudience = configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configuration["Jwt:Key:AccessToken"]!))
+                    ValidIssuer = configuration["JWT_ISSUER"],
+                    ValidAudience = configuration["JWT_AUDIENCE"],
+                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configuration["JWT_KEY_ACCESSTOKEN"]!))
                 };
             }).AddJwtBearer("RefreshToken", option =>
             {
@@ -53,9 +53,9 @@ namespace auth_services.AuthService.Infrastructure.Persistence
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = configuration["Jwt:Issuer"],
-                    ValidAudience = configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configuration["Jwt:Key:RefreshToken"]!))
+                    ValidIssuer = configuration["JWT_ISSUER"],
+                    ValidAudience = configuration["JWT_AUDIENCE"],
+                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configuration["JWT_KEY_REFRESHTOKEN"]!))
                 };
             });
 
@@ -84,7 +84,7 @@ namespace auth_services.AuthService.Infrastructure.Persistence
 
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = configuration["Redis:Host"];
+                options.Configuration = configuration["REDIS_HOST"];
                 options.InstanceName = "Foodly";
             });
 
