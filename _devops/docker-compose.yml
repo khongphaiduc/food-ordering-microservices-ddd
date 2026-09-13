@@ -1,0 +1,156 @@
+services:
+
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    env_file:
+      - .env
+    ports:
+      - "1888:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$${MSSQL_SA_PASSWORD}\" -C -Q \"SELECT 1\" || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  postgres-db:
+    image: postgres:17-alpine
+    env_file:
+      - .env
+    ports:
+      - "5555:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    env_file:
+      - .env
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+
+  minio:
+    image: quay.io/minio/minio
+    command: server /data --console-address ":9001"
+    env_file:
+      - .env
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+ 
+  api-gateway:
+
+    image: ptrungduc1011/foodlyapigateway:latest  
+
+    env_file: 
+      - .env
+      - gateway.env
+    ports:
+      - "9080:8080"
+    depends_on:
+      - auth-services
+
+  auth-services:
+    image: ptrungduc1011/foodlyauth:latest
+    env_file: 
+    - .env
+    - auth.env
+    depends_on:
+      sql-server:
+        condition: service_healthy
+
+  user-service:
+    image: ptrungduc1011/foodlyuser:latest
+    env_file: 
+      - .env
+      - user.env
+    depends_on:
+      sql-server:
+        condition: service_healthy
+
+  food-service:
+    image: ptrungduc1011/foodlyfood:latest
+    env_file: 
+      - .env
+      - food.env
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+
+  order-service:
+    image: ptrungduc1011/foodlyorder:latest
+    env_file: 
+      - .env
+      - order.env
+    depends_on:
+      sql-server:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  cart-service:
+    image: ptrungduc1011/foodlycart:latest
+    env_file: 
+      - .env
+      - cart.env
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  payment-service:
+    image: ptrungduc1011/foodlypayment:latest
+    env_file: 
+      - .env
+      - payment.env
+    depends_on:
+      sql-server:
+        condition: service_healthy
+
+
+volumes:
+  sqlserver_data:
+  postgres_data:
+  rabbitmq_data:
+  redis_data:
+  minio_data:
