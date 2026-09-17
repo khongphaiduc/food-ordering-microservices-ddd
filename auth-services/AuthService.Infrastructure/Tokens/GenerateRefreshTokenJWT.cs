@@ -34,13 +34,13 @@ namespace auth_services.AuthService.Infrastructure.Tokens
                 new Claim(ClaimTypes.Role, role),
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_iconfig["Jwt:Key:RefreshToken"]!));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_iconfig["JWT_KEY_REFRESHTOKEN"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
 
             var token = new JwtSecurityToken(
-                issuer: _iconfig["Jwt:Issuer"],
-                audience: _iconfig["Jwt:Audience"],
+                issuer: _iconfig["JWT_ISSUER"],
+                audience: _iconfig["JWT_AUDIENCE"],
                 claims: listClaim,
                 expires: DateTime.UtcNow.AddDays(time),
                 signingCredentials: creds

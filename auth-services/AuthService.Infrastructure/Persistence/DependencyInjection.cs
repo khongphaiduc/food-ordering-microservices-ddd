@@ -60,7 +60,6 @@ namespace auth_services.AuthService.Infrastructure.Persistence
             });
 
 
-
             services.AddRateLimiter(options =>
             {
                 options.AddPolicy("token", context =>
