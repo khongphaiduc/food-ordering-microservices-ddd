@@ -30,7 +30,7 @@ The project demonstrates advanced enterprise backend engineering patterns includ
 
 ### Mobile Phone UI
 
-<img width="475" height="938" alt="Foodly mobile app 1" src="https://github.com/user-attachments/assets/72730bdb-a14d-45f7-ad65-cee3d84e3219" /> <img width="478" height="940" alt="Foodly mobile app 2" src="https://github.com/user-attachments/assets/433a5f47-3686-49e0-a470-c6400c3b8ae4" />
+ <img width="478" height="940" alt="Foodly mobile app 2" src="https://github.com/user-attachments/assets/433a5f47-3686-49e0-a470-c6400c3b8ae4" />
 
 ### Admin Management App
 <img width="1916" height="917" alt="Screenshot 2026-09-12 153603" src="https://github.com/user-attachments/assets/bd1df971-39d7-4fb2-a0d9-25c6a7077bea" />
