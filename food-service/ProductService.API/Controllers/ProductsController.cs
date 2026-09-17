@@ -20,15 +20,17 @@ namespace food_service.ProductService.API.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
+        private readonly ISearchProducts _search;
         private readonly IGetListProduct _iListProduct;
         private readonly IViewDetailProduct _iViewDetailProduct;
         private readonly IProductRecommendationService _recommendationProduct;
         private readonly IGetListCategory _getListCategory;
         private readonly IGetProductDailyInventory _getProductDailyInventory;
-  
 
-        public ProductsController(IGetListCategory getListCategory, IGetProductDailyInventory getProductDailyInventory, IGetListProduct listProduct, IViewDetailProduct viewDetailProduct, IProductRecommendationService productRecommendationService)
+
+        public ProductsController(ISearchProducts searchProducts,IGetListCategory getListCategory, IGetProductDailyInventory getProductDailyInventory, IGetListProduct listProduct, IViewDetailProduct viewDetailProduct, IProductRecommendationService productRecommendationService)
         {
+            _search = searchProducts;
             _iListProduct = listProduct;
             _iViewDetailProduct = viewDetailProduct;
             _recommendationProduct = productRecommendationService;
@@ -38,8 +40,17 @@ namespace food_service.ProductService.API.Controllers
 
         }
 
+        [AllowAnonymous]
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchProduct([FromQuery] RequestSearchDTO request, CancellationToken token)
+        {
+            var products = await _search.SearchProductsAsync(request.Key , request.Index, token);
+            return Ok(products);
+        }
 
-      
+
+
+
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetListProduct([FromQuery] RequestGetListProduct request)
@@ -50,7 +61,7 @@ namespace food_service.ProductService.API.Controllers
         }
 
 
-       
+
         [AllowAnonymous]
         [HttpGet("ai")]
         public async Task<IActionResult> GetListProductRecommendByAI()
@@ -87,7 +98,7 @@ namespace food_service.ProductService.API.Controllers
             });
         }
 
-  
+
         [AllowAnonymous]
         [HttpGet("{idProduct}")]
 

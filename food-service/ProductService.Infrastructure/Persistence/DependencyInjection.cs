@@ -107,9 +107,6 @@ namespace food_service.ProductService.Infrastructure.Persistence
                         e.ConfigureConsumer<RestoreProductPayTimeOutConsumer>(context);
 
                     });
-
-
-
                 });
             });
 
@@ -134,6 +131,8 @@ namespace food_service.ProductService.Infrastructure.Persistence
             services.AddScoped<IMinIOFood, MinIOFood>();
 
             services.AddScoped<IProductRecommendationService, ProductRecommendationService>();
+
+            services.AddScoped<ISearchProducts, SearchProducts>();
 
             services.AddStackExchangeRedisCache(options =>
             {
