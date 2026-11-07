@@ -12,6 +12,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.HighPerformance" Version="8.3.2" />
 		<PackageReference Include="DotNetEnv" Version="3.1.1" />
 		<PackageReference Include="Elastic.Clients.Elasticsearch" Version="8.19.13" />
 		<PackageReference Include="Google.Protobuf" Version="3.33.5" />
@@ -47,7 +48,8 @@
 
 		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.30" />
 
-		<PackageReference Include="Minio" Version="7.0.0" />
+		<!-- Cloudflare R2 (S3-compatible object storage) -->
+		<PackageReference Include="AWSSDK.S3" Version="4.0.104.11" />
 
 		<!-- OpenTelemetry -->
 		<PackageReference Include="OpenTelemetry" Version="1.15.0" />

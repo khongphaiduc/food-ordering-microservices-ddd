@@ -1,5 +1,4 @@
 ﻿using Elastic.Clients.Elasticsearch.TransformManagement;
-using Minio.DataModel.Result;
 
 namespace food_service.ProductService.Application.DTOs.Request
 {

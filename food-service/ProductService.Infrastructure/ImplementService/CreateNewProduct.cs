@@ -5,7 +5,6 @@ using food_service.ProductService.Domain.Aggregate;
 using food_service.ProductService.Domain.Entities;
 using food_service.ProductService.Domain.Interface;
 using food_service.ProductService.Domain.ValueObject;
-using Minio.Credentials;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace food_service.ProductService.Infrastructure.ImplementService

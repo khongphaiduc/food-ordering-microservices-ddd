@@ -1,123 +1,114 @@
-﻿using food_service.ProductService.Application.Interface;
-using Minio;
-using Minio.DataModel.Args;
+﻿using Amazon.Runtime;
+using Amazon.S3;
+using Amazon.S3.Model;
+using food_service.ProductService.Application.Interface;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Webp;
 using SixLabors.ImageSharp.Processing;
 
 namespace food_service.ProductService.Infrastructure.MinIO
 {
+    // Image storage backed by Cloudflare R2 (S3-compatible API).
+    // Class name kept for compatibility with existing DI registrations.
     public class MinIOFood : IMinIOFood
     {
+        private const string DefaultImage =
+            "https://i.pinimg.com/236x/8b/cf/15/8bcf15e8af97cbd56ab29f15e01933aa.jpg";
+
         private readonly IConfiguration _configuration;
-        private readonly IMinioClient _clientMinIO;
-        private readonly IMinioClient _clientMinIOPublic;
+        private readonly IAmazonS3 _s3;
         private readonly ILogger<MinIOFood> _logger;
+        private readonly string _bucket;
+        private readonly string _publicBaseUrl;
 
         public MinIOFood(
             IConfiguration configuration,
-            IMinioClient minioClient,
+            IAmazonS3 s3Client,
             ILogger<MinIOFood> logger)
         {
             _configuration = configuration;
-            _clientMinIO = minioClient;
+            _s3 = s3Client;
             _logger = logger;
 
-            var publicEndpoint =
-                _configuration["PublicEndpoint"]
-                ?? throw new InvalidOperationException(
-                    "PublicEndpoint is not configured.");
+            _bucket = _configuration["R2_BUCKET"]
+                ?? throw new InvalidOperationException("R2_BUCKET is not configured.");
 
-            var publicUseSSL =
-                _configuration.GetValue<bool>("PublicUseSSL");
-
-            _clientMinIOPublic = new MinioClient()
-                .WithEndpoint(publicEndpoint)
-                .WithCredentials(
-                    _configuration["MinIOAccessKey"],
-                    _configuration["MinIOSecretKey"])
-                .WithSSL(publicUseSSL)
-                .Build();
+            _publicBaseUrl = (_configuration["R2_PUBLIC_URL"]
+                ?? throw new InvalidOperationException("R2_PUBLIC_URL is not configured."))
+                .TrimEnd('/');
         }
 
+        public static IAmazonS3 CreateClient(IConfiguration configuration)
+        {
+            var endpoint = configuration["R2_ENDPOINT"]
+                ?? throw new InvalidOperationException("R2_ENDPOINT is not configured.");
+            var accessKey = configuration["R2_ACCESS_KEY_ID"]
+                ?? throw new InvalidOperationException("R2_ACCESS_KEY_ID is not configured.");
+            var secretKey = configuration["R2_SECRET_ACCESS_KEY"]
+                ?? throw new InvalidOperationException("R2_SECRET_ACCESS_KEY is not configured.");
 
+            return new AmazonS3Client(
+                new BasicAWSCredentials(accessKey, secretKey),
+                new AmazonS3Config
+                {
+                    ServiceURL = endpoint,
+                    AuthenticationRegion = "auto",
+                    ForcePathStyle = true,
+                    // R2 does not support the newer default flexible checksums.
+                    RequestChecksumCalculation = RequestChecksumCalculation.WHEN_REQUIRED,
+                    ResponseChecksumValidation = ResponseChecksumValidation.WHEN_REQUIRED
+                });
+        }
 
         public async Task DeleteAsync(string objectName)
         {
             if (string.IsNullOrWhiteSpace(objectName))
                 return;
 
-            var bucket = _configuration["MinIOBucket"];
-
-            if (string.IsNullOrWhiteSpace(bucket))
-                throw new InvalidOperationException(
-                    "MinIOBucket is not configured.");
-
-            await _clientMinIO.RemoveObjectAsync(
-                new RemoveObjectArgs()
-                    .WithBucket(bucket)
-                    .WithObject(objectName)
-            );
+            await _s3.DeleteObjectAsync(new DeleteObjectRequest
+            {
+                BucketName = _bucket,
+                Key = objectName
+            });
         }
 
-        
-
-        public async Task<string> GetUrlImage(
-            string bucket,
-            string imageName)
+        public async Task<string> GetUrlImage(string bucket, string imageName)
         {
-            const string defaultImage =
-                "https://i.pinimg.com/236x/8b/cf/15/8bcf15e8af97cbd56ab29f15e01933aa.jpg";
-
             if (string.IsNullOrWhiteSpace(bucket) ||
                 string.IsNullOrWhiteSpace(imageName))
             {
-                return defaultImage;
+                return DefaultImage;
             }
 
             try
             {
-                // Check object exists
-                await _clientMinIO.StatObjectAsync(
-                    new StatObjectArgs()
-                        .WithBucket(bucket)
-                        .WithObject(imageName)
-                );
+                // Confirm the object exists before handing out a URL.
+                await _s3.GetObjectMetadataAsync(_bucket, imageName);
 
-                // Generate presigned URL
-                var url =
-                    await _clientMinIOPublic.PresignedGetObjectAsync(
-                        new PresignedGetObjectArgs()
-                            .WithBucket(bucket)
-                            .WithObject(imageName)
-                            .WithExpiry(60 * 60)
-                    );
-
-                return url;
+                // Bucket is served through the public R2 custom domain.
+                return $"{_publicBaseUrl}/{Uri.EscapeDataString(imageName)}";
             }
-            catch (Minio.Exceptions.ObjectNotFoundException ex)
+            catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
                 _logger.LogWarning(
-                    "Object not found in MinIO. Bucket: {Bucket}, Object: {ObjectName}. Message: {Message}",
-                    bucket,
+                    "Object not found in R2. Bucket: {Bucket}, Object: {ObjectName}. Message: {Message}",
+                    _bucket,
                     imageName,
                     ex.Message);
 
-                return defaultImage;
+                return DefaultImage;
             }
             catch (Exception ex)
             {
                 _logger.LogError(
                     ex,
                     "Error retrieving image URL. Bucket: {Bucket}, Object: {ObjectName}",
-                    bucket,
+                    _bucket,
                     imageName);
 
-                return defaultImage;
+                return DefaultImage;
             }
         }
-
- 
 
         public async Task<string> UploadAsync(IFormFile file)
         {
@@ -128,16 +119,6 @@ namespace food_service.ProductService.Infrastructure.MinIO
                     nameof(file));
             }
 
-            var bucket = _configuration["MinIOBucket"];
-
-            if (string.IsNullOrWhiteSpace(bucket))
-            {
-                throw new InvalidOperationException(
-                    "MinIOBucket is not configured.");
-            }
-
-         
-
             using var inputStream = file.OpenReadStream();
 
             using var image =
@@ -146,7 +127,6 @@ namespace food_service.ProductService.Infrastructure.MinIO
             var originalWidth = image.Width;
             var originalHeight = image.Height;
             var originalSize = file.Length;
-
 
             const int maxWidth = 1200;
             const int maxHeight = 1200;
@@ -168,8 +148,6 @@ namespace food_service.ProductService.Infrastructure.MinIO
                     x.Resize(newWidth, newHeight));
             }
 
-           
-
             using var outputStream =
                 new MemoryStream();
 
@@ -184,37 +162,22 @@ namespace food_service.ProductService.Infrastructure.MinIO
 
             outputStream.Position = 0;
 
-          
-
             var objectName =
                 $"{Guid.NewGuid()}.webp";
 
-
-            var found =
-                await _clientMinIO.BucketExistsAsync(
-                    new BucketExistsArgs()
-                        .WithBucket(bucket)
-                );
-
-            if (!found)
+            // R2 buckets are created in the Cloudflare dashboard, so no bucket creation here.
+            await _s3.PutObjectAsync(new PutObjectRequest
             {
-                await _clientMinIO.MakeBucketAsync(
-                    new MakeBucketArgs()
-                        .WithBucket(bucket)
-                );
-            }
+                BucketName = _bucket,
+                Key = objectName,
+                InputStream = outputStream,
+                ContentType = "image/webp",
+                AutoCloseStream = false,
+                // R2 does not support the aws-chunked streaming signature
+                // (STREAMING-AWS4-HMAC-SHA256-PAYLOAD) that the SDK uses by default.
+                UseChunkEncoding = false
+            });
 
-
-            await _clientMinIO.PutObjectAsync(
-                new PutObjectArgs()
-                    .WithBucket(bucket)
-                    .WithObject(objectName)
-                    .WithStreamData(outputStream)
-                    .WithObjectSize(outputStream.Length)
-                    .WithContentType("image/webp")
-            );
-
-         
             _logger.LogInformation(
                 "Successfully uploaded optimized image. " +
                 "ObjectName={ObjectName}, " +
@@ -224,7 +187,7 @@ namespace food_service.ProductService.Infrastructure.MinIO
                 "OriginalResolution={OriginalWidth}x{OriginalHeight}, " +
                 "FinalResolution={FinalWidth}x{FinalHeight}",
                 objectName,
-                bucket,
+                _bucket,
                 originalSize,
                 outputStream.Length,
                 originalWidth,

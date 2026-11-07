@@ -9,7 +9,6 @@ using food_service.ProductService.Domain.ValueObject;
 using food_service.ProductService.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
-using Minio;
 using RabbitMQ.Client;
 using static System.Net.Mime.MediaTypeNames;
 

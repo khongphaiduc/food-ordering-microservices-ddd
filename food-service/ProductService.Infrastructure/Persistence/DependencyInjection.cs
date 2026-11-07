@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Minio;
+using Amazon.S3;
 using order_service.OrderService.API.Proto;
 using StackExchange.Redis;
 
@@ -145,14 +145,8 @@ namespace food_service.ProductService.Infrastructure.Persistence
 
             services.AddTransient<IRedisLockService, RedisLockService>();
 
-            services.AddSingleton<IMinioClient>(sp =>
-            {
-                return new MinioClient()
-                    .WithEndpoint(config["MinIOEndpoint"] ?? "localhost:9000")
-                    .WithCredentials(config["MinIOAccessKey"], config["MinIOSecretKey"])
-                    .WithSSL(false)
-                    .Build();
-            });
+            services.AddSingleton<IAmazonS3>(sp =>
+                food_service.ProductService.Infrastructure.MinIO.MinIOFood.CreateClient(config));
 
             services.AddGrpcClient<OrderGrpc.OrderGrpcClient>(options =>
             {
