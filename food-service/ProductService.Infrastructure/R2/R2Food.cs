@@ -6,25 +6,25 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Webp;
 using SixLabors.ImageSharp.Processing;
 
-namespace food_service.ProductService.Infrastructure.MinIO
+namespace food_service.ProductService.Infrastructure.R2
 {
     // Image storage backed by Cloudflare R2 (S3-compatible API).
     // Class name kept for compatibility with existing DI registrations.
-    public class MinIOFood : IMinIOFood
+    public class R2Food : IR2Food
     {
         private const string DefaultImage =
             "https://i.pinimg.com/236x/8b/cf/15/8bcf15e8af97cbd56ab29f15e01933aa.jpg";
 
         private readonly IConfiguration _configuration;
         private readonly IAmazonS3 _s3;
-        private readonly ILogger<MinIOFood> _logger;
+        private readonly ILogger<R2Food> _logger;
         private readonly string _bucket;
         private readonly string _publicBaseUrl;
 
-        public MinIOFood(
+        public R2Food(
             IConfiguration configuration,
             IAmazonS3 s3Client,
-            ILogger<MinIOFood> logger)
+            ILogger<R2Food> logger)
         {
             _configuration = configuration;
             _s3 = s3Client;

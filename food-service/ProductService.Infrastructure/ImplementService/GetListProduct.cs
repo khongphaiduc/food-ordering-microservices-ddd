@@ -16,15 +16,15 @@ namespace food_service.ProductService.Infrastructure.ImplementService
         private readonly FoodProductsDbContext _db;
         private readonly IDistributedCache _redisCatch;
         private readonly IConfiguration _config;
-        private readonly IMinIOFood _minio;
+        private readonly IR2Food _r2Food;
         private readonly IDistributedCache _cache;
 
-        public GetListProduct(IDistributedCache distributedCache, FoodProductsDbContext foodProductsDbContext, IDistributedCache _RedisCache, IConfiguration config, IMinIOFood minioClient)
+        public GetListProduct(IDistributedCache distributedCache, FoodProductsDbContext foodProductsDbContext, IDistributedCache _RedisCache, IConfiguration config, IR2Food r2Food)
         {
             _db = foodProductsDbContext;
             _redisCatch = _RedisCache;
             _config = config;
-            _minio = minioClient;
+            _r2Food = r2Food;
             _cache = distributedCache;
         }
 
@@ -69,7 +69,7 @@ namespace food_service.ProductService.Infrastructure.ImplementService
             var tasks = listProduct.SelectMany(p => p.ImageFoods ?? new List<ImageFood>()).Where(img => !string.IsNullOrEmpty(img.UrlImage))
               .Select(async img =>
               {
-                  img.UrlImage = await _minio.GetUrlImage("images", img.UrlImage);
+                  img.UrlImage = await _r2Food.GetUrlImage("images", img.UrlImage);
               });
 
             await Task.WhenAll(tasks);

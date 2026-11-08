@@ -12,12 +12,12 @@ namespace food_service.ProductService.Infrastructure.ImplementService
     public class CreateNewProduct : ICreateNewProduct
     {
         private readonly IProductRepository _iProductRepository;
-        private readonly IMinIOFood _clientMinIOFood;
+        private readonly IR2Food _r2Food;
 
-        public CreateNewProduct(IProductRepository productRepository, IMinIOFood minIOFood)
+        public CreateNewProduct(IProductRepository productRepository, IR2Food r2Food)
         {
             _iProductRepository = productRepository;
-            _clientMinIOFood = minIOFood;
+            _r2Food = r2Food;
         }
 
         public async Task<bool> ExecuteAsync(CreateNewProductDTO request)
@@ -29,7 +29,7 @@ namespace food_service.ProductService.Infrastructure.ImplementService
             {
                 foreach (var image in request.ImageProduct)
                 {
-                    var imageName = await _clientMinIOFood.UploadAsync(image.image);// luu vào MinIO then returen name image 
+                    var imageName = await _r2Food.UploadAsync(image.image);// luu vào R2 then returen name image 
                     productAggregate.AddNewImage(ProductImagesEntity.CreateNewImage(productAggregate.Id, imageName, image.IsMain));
                 }
             }
@@ -37,7 +37,7 @@ namespace food_service.ProductService.Infrastructure.ImplementService
 
             if (request.MainImage != null)
             {
-                var imageName = await _clientMinIOFood.UploadAsync(request.MainImage.image);
+                var imageName = await _r2Food.UploadAsync(request.MainImage.image);
                 productAggregate.AddNewImage(ProductImagesEntity.CreateNewImage(productAggregate.Id, imageName, true));
             }
 

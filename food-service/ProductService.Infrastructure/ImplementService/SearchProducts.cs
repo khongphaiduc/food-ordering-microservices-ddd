@@ -9,12 +9,12 @@ namespace food_service.ProductService.Infrastructure.ImplementService
     public class SearchProducts : ISearchProducts
     {
         private readonly FoodProductsDbContext _db;
-        private readonly IMinIOFood _minio;
+        private readonly IR2Food _r2Food;
 
-        public SearchProducts(FoodProductsDbContext foodProductsDbContext, IMinIOFood minIOFood)
+        public SearchProducts(FoodProductsDbContext foodProductsDbContext, IR2Food r2Food)
         {
             _db = foodProductsDbContext;
-            _minio = minIOFood;
+            _r2Food = r2Food;
         }
 
         public async Task<List<ProductDTO>> SearchProductsAsync(string query, int index, CancellationToken cancellationToken)
@@ -42,7 +42,7 @@ namespace food_service.ProductService.Infrastructure.ImplementService
             var tasks = products.SelectMany(p => p.ImageFoods ?? new List<ImageFood>()).Where(img => !string.IsNullOrEmpty(img.UrlImage))
              .Select(async img =>
              {
-                 img.UrlImage = await _minio.GetUrlImage("images", img.UrlImage);
+                 img.UrlImage = await _r2Food.GetUrlImage("images", img.UrlImage);
              });
 
             await Task.WhenAll(tasks);

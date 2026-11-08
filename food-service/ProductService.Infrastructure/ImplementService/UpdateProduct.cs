@@ -18,15 +18,15 @@ namespace food_service.ProductService.Infrastructure.ImplementService
     {
         private readonly IProductRepository _product;
         private readonly FoodProductsDbContext _db;
-        private readonly IMinIOFood _minIO;
+        private readonly IR2Food _r2Food;
         private readonly ILogger<UpdateProduct> _logger;
         private readonly IDistributedCache _cache;
 
-        public UpdateProduct(IDistributedCache distributedCache, IProductRepository productRepository, FoodProductsDbContext db, IMinIOFood minIOFood, ILogger<UpdateProduct> logger)
+        public UpdateProduct(IDistributedCache distributedCache, IProductRepository productRepository, FoodProductsDbContext db, IR2Food r2Food, ILogger<UpdateProduct> logger)
         {
             _product = productRepository;
             _db = db;
-            _minIO = minIOFood;
+            _r2Food = r2Food;
             _logger = logger;
             _cache = distributedCache;
         }
@@ -71,7 +71,7 @@ namespace food_service.ProductService.Infrastructure.ImplementService
             {
                 foreach (var image in productRequest.AddnewImagesProducts)
                 {
-                    var nameImage = await _minIO.UploadAsync(image.images);
+                    var nameImage = await _r2Food.UploadAsync(image.images);
                     productAggregate.AddNewImage(ProductImagesEntity.CreateNewImage(productAggregate.Id, nameImage, image.IsMain));
                 }
             }
@@ -81,7 +81,7 @@ namespace food_service.ProductService.Infrastructure.ImplementService
             {
                 var oldMainImage = productAggregate.ProductImagesEntities.Where(s => s.IsMain).FirstOrDefault();
                 if (oldMainImage != null) oldMainImage.UnsetAsMainImage();
-                var nameImage = await _minIO.UploadAsync(productRequest.AddMainImage.images);
+                var nameImage = await _r2Food.UploadAsync(productRequest.AddMainImage.images);
                 productAggregate.AddNewImage(ProductImagesEntity.CreateNewImage(productAggregate.Id, nameImage, true));
 
             }
@@ -103,9 +103,9 @@ namespace food_service.ProductService.Infrastructure.ImplementService
                         }
                     }
 
-                    if (image != null)  // remove image in minio
+                    if (image != null)  // remove image in R2
                     {
-                        await _minIO.DeleteAsync(image.ImageUrl);
+                        await _r2Food.DeleteAsync(image.ImageUrl);
                     }
                 }
 

@@ -15,14 +15,14 @@ namespace food_service.ProductService.Infrastructure.ImplementService
     {
         private readonly FoodProductsDbContext _db;
         private readonly IDistributedCache _redis;
-        private readonly IMinIOFood _minio;
+        private readonly IR2Food _r2Food;
         private readonly IConfiguration _configuration;
 
-        public ViewDetailProduct(FoodProductsDbContext foodProductsDbContext, IDistributedCache distributedCache, IMinIOFood minIOFood, IConfiguration configuration)
+        public ViewDetailProduct(FoodProductsDbContext foodProductsDbContext, IDistributedCache distributedCache, IR2Food r2Food, IConfiguration configuration)
         {
             _db = foodProductsDbContext;
             _redis = distributedCache;
-            _minio = minIOFood;
+            _r2Food = r2Food;
             _configuration = configuration;
         }
 
@@ -69,7 +69,7 @@ namespace food_service.ProductService.Infrastructure.ImplementService
                 .Where(i => !string.IsNullOrEmpty(i.UrlImage))
                 .Select(async i =>
                 {
-                    i.UrlImage = await _minio.GetUrlImage("images", i.UrlImage);
+                    i.UrlImage = await _r2Food.GetUrlImage("images", i.UrlImage);
                 });
 
             await Task.WhenAll(tasks);

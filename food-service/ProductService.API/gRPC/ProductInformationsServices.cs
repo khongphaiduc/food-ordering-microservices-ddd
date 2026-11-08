@@ -9,12 +9,12 @@ namespace food_service.ProductService.API.gRPC
 {
     public class ProductInformationsServices : ProductInfoGrpc.ProductInfoGrpcBase
     {
-        private readonly IMinIOFood _minIo;
+        private readonly IR2Food _r2Food;
         private readonly FoodProductsDbContext _db;
 
-        public ProductInformationsServices(FoodProductsDbContext foodProductsDbContext, IMinIOFood minIOFood)
+        public ProductInformationsServices(FoodProductsDbContext foodProductsDbContext, IR2Food r2Food)
         {
-            _minIo = minIOFood;
+            _r2Food = r2Food;
             _db = foodProductsDbContext;
         }
 
@@ -86,7 +86,7 @@ namespace food_service.ProductService.API.gRPC
             var productInforTasks = listImageMainProduct.Select(async s => new ProductInfor
             {
                 IdProduct = s.ProductId.ToString(),
-                UrlImage = await _minIo.GetUrlImage("images", s.ImageUrl)
+                UrlImage = await _r2Food.GetUrlImage("images", s.ImageUrl)
             });
 
             var productInfors = await Task.WhenAll(productInforTasks);

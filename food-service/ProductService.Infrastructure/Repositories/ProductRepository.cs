@@ -15,13 +15,13 @@ namespace food_service.ProductService.Infrastructure.Repositories
 {
     public class ProductRepository : IProductRepository
     {
-        private readonly IMinIOFood _minIo;
+        private readonly IR2Food _r2Food;
         private readonly FoodProductsDbContext _db;
         private readonly ILogger<ProductRepository> _logger;
 
-        public ProductRepository(IMinIOFood minIOFood, FoodProductsDbContext foodProductsDbContext,   ILogger<ProductRepository> logger)
+        public ProductRepository(IR2Food r2Food, FoodProductsDbContext foodProductsDbContext,   ILogger<ProductRepository> logger)
         {
-            _minIo = minIOFood;
+            _r2Food = r2Food;
             _db = foodProductsDbContext;
           
             _logger = logger;
@@ -286,7 +286,7 @@ namespace food_service.ProductService.Infrastructure.Repositories
                         var tasks = productDTP.productImageInternalDTOs
                             .Select(async image =>
                             {
-                                image.URLImage = await _minIo.GetUrlImage("images", image.URLImage);
+                                image.URLImage = await _r2Food.GetUrlImage("images", image.URLImage);
                             });
 
                         await Task.WhenAll(tasks);

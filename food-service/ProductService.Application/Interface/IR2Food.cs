@@ -1,6 +1,6 @@
 ﻿namespace food_service.ProductService.Application.Interface
 {
-    public interface IMinIOFood
+    public interface IR2Food
     {
         Task<string> UploadAsync(IFormFile file);
         Task DeleteAsync(string objectName);

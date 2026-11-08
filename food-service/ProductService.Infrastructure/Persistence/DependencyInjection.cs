@@ -4,7 +4,7 @@ using food_service.ProductService.Application.Service;
 using food_service.ProductService.Domain.Interface;
 using food_service.ProductService.Infrastructure.Consumers;
 using food_service.ProductService.Infrastructure.ImplementService;
-using food_service.ProductService.Infrastructure.MinIO;
+using food_service.ProductService.Infrastructure.R2;
 using food_service.ProductService.Infrastructure.Models;
 
 using food_service.ProductService.Infrastructure.RedisService.RedisInterface;
@@ -128,7 +128,7 @@ namespace food_service.ProductService.Infrastructure.Persistence
             services.AddScoped<IAdminProductDailyInventory, AdminProductDailyInventory>();
             services.AddSingleton<IInventoryDateProvider, InventoryDateProvider>();
 
-            services.AddScoped<IMinIOFood, MinIOFood>();
+            services.AddScoped<IR2Food, R2Food>();
 
             services.AddScoped<IProductRecommendationService, ProductRecommendationService>();
 
@@ -146,7 +146,7 @@ namespace food_service.ProductService.Infrastructure.Persistence
             services.AddTransient<IRedisLockService, RedisLockService>();
 
             services.AddSingleton<IAmazonS3>(sp =>
-                food_service.ProductService.Infrastructure.MinIO.MinIOFood.CreateClient(config));
+                food_service.ProductService.Infrastructure.R2.R2Food.CreateClient(config));
 
             services.AddGrpcClient<OrderGrpc.OrderGrpcClient>(options =>
             {
