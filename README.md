@@ -15,7 +15,7 @@
 
 Foodly is a modern, production-ready backend food ordering platform built with **.NET 8** and a **Microservices Architecture**. Designed using **Clean Architecture** and **Domain-Driven Design (DDD)** principles, the system decouples core business capabilities into 8 independent microservices handling authentication, user profiles, food catalog & inventory, shopping cart, order lifecycle, payments, notifications, and central API routing.
 
-The project demonstrates advanced enterprise backend engineering patterns including **gRPC inter-service communication**, **Event-Driven Architecture with MassTransit & RabbitMQ**, **Outbox / Inbox Transactional Messaging Pattern**, **PayOS payment gateway integration**, **MinIO S3-compatible object storage**, **Redis caching**, **SignalR real-time updates**, and **Jenkins CI/CD automation**.
+The project demonstrates advanced enterprise backend engineering patterns including **gRPC inter-service communication**, **Event-Driven Architecture with MassTransit & RabbitMQ**, **Outbox / Inbox Transactional Messaging Pattern**, **PayOS payment gateway integration**, **Cloudflare R2 object storage (S3-compatible)**, **Redis caching**, **SignalR real-time updates**, and **Jenkins CI/CD automation**.
 
 ---
 
@@ -74,7 +74,7 @@ flowchart TB
         SQLServer[("SQL Server")]
         PostgreSQL[("PostgreSQL")]
         Redis[("Redis Cache")]
-        MinIO[("MinIO Object Storage")]
+        R2[("Cloudflare R2 Object Storage")]
     end
 
     %% Client & Gateway
@@ -112,7 +112,7 @@ flowchart TB
     Cart --> PostgreSQL
     Notif --> PostgreSQL
 
-    Food --> MinIO
+    Food --> R2
     Food --> Redis
     Cart --> Redis
     Auth --> Redis
@@ -128,7 +128,7 @@ flowchart TB
 | **API Gateway** | `ApiGateway/` | Entry point, reverse proxy, routing, rate limiting & CORS handling | REST (Ocelot) | Docker (`:9080`) |
 | **Auth Service** | `auth-services/` | Identity, signup, login, JWT token generation, refresh tokens & staff RBAC | REST, gRPC Client | SQL Server, Redis |
 | **User Service** | `user-service/` | Customer profiles & delivery address book management | REST, gRPC Server | SQL Server |
-| **Food Service** | `food-service/` | Product catalog, food categories, daily inventory, food recommendations & MinIO image uploads | REST, gRPC Server/Client, MassTransit Consumer | PostgreSQL, Redis, MinIO |
+| **Food Service** | `food-service/` | Product catalog, food categories, daily inventory, food recommendations & R2 image uploads | REST, gRPC Server/Client, MassTransit Consumer | PostgreSQL, Redis, Cloudflare R2 |
 | **Cart Service** | `cart-service/` | Shopping cart lifecycle, item add/remove/update | REST, gRPC Server/Client | PostgreSQL, Redis |
 | **Order Service** | `order-service/` | Order creation, status lifecycle, history, SignalR real-time updates & automated expiration background worker | REST, gRPC Client, MassTransit Outbox/Inbox, SignalR | SQL Server, RabbitMQ |
 | **Payment Service** | `payment-service/` | PayOS payment gateway integration, payment link creation & webhook status callbacks | REST, gRPC Server/Client, MassTransit Outbox/Inbox | SQL Server, RabbitMQ, PayOS API |
@@ -173,7 +173,6 @@ The project provisions all required infrastructure services via **Docker Compose
 | **PostgreSQL** | `postgres:17-alpine` | `5555:5432` | Data store for Food, Cart, Notification services |
 | **RabbitMQ** | `rabbitmq:3-management-alpine` | `5672`, `15672` | AMQP message broker & Management Console |
 | **Redis** | `redis:alpine` | `6379:6379` | High-speed cache for catalog & cart sessions |
-| **MinIO** | `minio/minio` | `9000`, `9001` | S3-compatible image object storage & console UI |
 
 ---
 
@@ -184,7 +183,7 @@ The project provisions all required infrastructure services via **Docker Compose
 ├── ApiGateway/                  # Ocelot API Gateway project
 ├── auth-services/               # Identity, Auth & JWT Service (Clean Architecture)
 ├── user-service/                # User Profile & Address Service
-├── food-service/                # Product, Category & Storage (MinIO) Service
+├── food-service/                # Product, Category & Storage (R2) Service
 ├── cart-service/                # Shopping Cart Service
 ├── order-service/               # Order Management, SignalR & Worker Service
 ├── payment-service/             # PayOS Payment Integration & Webhook Service
@@ -260,7 +259,6 @@ You can run the full system instantly using pre-built Docker Hub images without 
 
 - **API Gateway (Public Entry Point)**: `http://localhost:9080`
 - **RabbitMQ Management Dashboard**: `http://localhost:15672` (Default login: `guest` / `guest`)
-- **MinIO Console**: `http://localhost:9001`
 
 ---
 
